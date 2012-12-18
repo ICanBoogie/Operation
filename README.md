@@ -1,5 +1,8 @@
 # Operation
 
+Operations are the doers of the MOVE world. They are responsible for making changes to your models,
+and for responding to events triggered by user interactions.
+
 
 
 
