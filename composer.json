@@ -17,9 +17,11 @@
 		"issues": "https://github.com/ICanBoogie/Operation/issues",
 		"source": "https://github.com/ICanBoogie/Operation"
 	},
+	"minimum-stability": "dev",
     "require": {
         "php": ">=5.3.0",
-        "icanboogie/http": "1.0.*"
+        "icanboogie/http": "1.0.*",
+        "icanboogie/errors": "*"
     },
     "autoload": {
         "classmap": [ "lib/" ]

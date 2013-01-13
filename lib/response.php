@@ -14,6 +14,7 @@ namespace ICanBoogie\Operation;
 use ICanBoogie\Errors;
 
 /**
+ * @property string $message The response message.
  * @property-read \ICanBoogie\Errors $errors
  */
 class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
@@ -30,7 +31,40 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 *
 	 * @var string|array
 	 */
-	public $message;
+	private $message;
+
+	/**
+	 * Sets the response message.
+	 *
+	 * @param string $message
+	 *
+	 * @throws \InvalidArgumentException if the message is an array or an object that do not implement `__toString()`.
+	 */
+	protected function volatile_set_message($message)
+	{
+		if (is_array($message) || (is_object($message) && !is_callable(array($message, '__toString'))))
+		{
+			throw new \InvalidArgumentException(\ICanBoogie\format
+			(
+				'Invalid message type "{0}", shoud be a string or an object implementing "__toString()". Given: {1}', array
+				(
+					gettype($message), $message
+				)
+			));
+		}
+
+		$this->message = $message;
+	}
+
+	/**
+	 * Returns the response message.
+	 *
+	 * @return string
+	 */
+	protected function volatile_get_message()
+	{
+		return $this->message;
+	}
 
 	/**
 	 * Errors occuring during the response.
@@ -39,7 +73,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	public $errors;
 
-	protected $metas=array();
+	protected $metas = array();
 
 	/**
 	 * Initializes the {@link $errors} property.
@@ -55,52 +89,19 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	public function __invoke()
 	{
-		if ($this->body === null)
+		if ($this->body !== null)
 		{
-			$message = $this->message;
+			return parent::__invoke();
+		}
 
-			if ($message === null)
-			{
-				$message = \ICanBoogie\Debug::fetch_messages('success');
+		$body_data = array();
 
-				if ($message)
-				{
-					$message = implode("\n", $message); // FIXME-20110923: we shouldn't use the log anymore !
-				}
-				else
-				{
-					$message = null;
-				}
-			}
-			else if (is_array($message))
-			{
-				$message = call_user_func_array('t', $message);
-			}
+		# rc
 
-			$errors = null;
+		$rc = null;
 
-			if (isset($this->errors) && count($this->errors))
-			{
-				$errors = array();
-
-				foreach ($this->errors as $identifier => $error)
-				{
-					if (!$identifier)
-					{
-						$identifier = '_base';
-					}
-
-					if (isset($errors[$identifier]))
-					{
-						$errors[$identifier] .= '; ' . $error;
-					}
-					else
-					{
-						$errors[$identifier] = $error;
-					}
-				}
-			}
-
+		if ($this->is_successful)
+		{
 			$rc = $this->rc;
 
 			if (is_object($rc) && is_callable(array($rc, '__toString')))
@@ -108,64 +109,88 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 				$rc = (string) $rc;
 			}
 
-			$body_data = array
-			(
-				'rc' => $rc,
-				'message' => $message,
-				'errors' => $errors
-			)
-
-			+ $this->metas;
-
-			if ($message === null)
-			{
-				unset($body_data['message']);
-			}
-
-			if ($errors === null)
-			{
-				unset($body_data['errors']);
-			}
-
-			if (!$this->is_successful)
-			{
-				unset($body_data['rc']);
-			}
-
-			/*
-			 * If a location is set on the request it is remove and added to the result message.
-			 * This is because if we use XHR to get the result we don't want that result to go
-			 * avail because the operation usually change the location.
-			 *
-			 * TODO-20110924: for XHR instead of JSON/XML.
-			 */
-			if ($this->location)
-			{
-				$body_data['location'] = $this->location;
-
-				$this->location = null;
-			}
-
-			$body = $rc;
-
-			if ($this->content_type == 'application/json')
-			{
-				$body = json_encode($body_data);
-				$this->content_length = null;
-			}
-			else if ($this->content_type == 'application/xml')
-			{
-				$body = array_to_xml($body_data, 'response');
-				$this->content_length = null;
-			}
-
-			if ($this->content_length === null && is_string($body))
-			{
-				$this->volatile_set_content_length(strlen($body));
-			}
-
-			$this->body = $body;
+			$body_data['rc'] = $rc;
 		}
+
+		# message
+
+		$message = $this->message;
+
+		if ($message !== null)
+		{
+			$body_data['message'] = (string) $message;
+		}
+
+		# errors
+
+		if (isset($this->errors) && count($this->errors))
+		{
+			$errors = array();
+
+			foreach ($this->errors as $identifier => $error)
+			{
+				if (!$identifier)
+				{
+					$identifier = '_base';
+				}
+
+				if (isset($errors[$identifier]))
+				{
+					$errors[$identifier] .= '; ' . $error;
+				}
+				else
+				{
+					$errors[$identifier] = $error;
+				}
+			}
+
+			$body_data['errors'] = $errors;
+		}
+
+		# metas
+
+		$body_data += $this->metas;
+
+		/*
+		 * If a location is set on the request it is remove and added to the result message.
+		 * This is because if we use XHR to get the result we don't want that result to go
+		 * avail because the operation usually change the location.
+		 *
+		 * TODO-20110924: for XHR instead of JSON/XML.
+		 */
+		if ($this->location)
+		{
+			$body_data['location'] = $this->location;
+
+			$this->location = null;
+		}
+
+		// FIXME: $rc only if valid !!!
+
+		if (is_array($rc) && !((string) $this->content_type)) // FIXME-20120107: must force 'application/json' for arrays... that might not be fair.
+		{
+			$this->content_type = 'application/json';
+		}
+
+		$body = $rc;
+
+		if ($this->content_type == 'application/json')
+		{
+			$body = json_encode($body_data);
+			$this->content_length = null;
+		}
+		else if ($this->content_type == 'application/xml')
+		{
+			$body = array_to_xml($body_data, 'response');
+			$this->content_length = null;
+		}
+
+		if ($this->content_length === null && is_string($body))
+		{
+			$this->volatile_set_content_length(strlen($body));
+		}
+
+		$this->body = $body;
 
 		return parent::__invoke();
 	}

@@ -109,7 +109,7 @@ abstract class Operation extends Object
 	{
 		global $core;
 
-		$path = Route::decontextualize($request->path);
+		$path = \ICanBoogie\Routing\decontextualize($request->path);
 		$extension = $request->extension;
 
 		if ($extension == 'json')
@@ -136,19 +136,35 @@ abstract class Operation extends Object
 				return $operation;
 			}
 
-			#
-			# We could not find a matching route, we try to extract the DESTINATION, NAME and
-			# optional KEY from the URI.
-			#
-
-			preg_match('#^([a-z\.]+)/(([^/]+)/)?([a-zA-Z0-9_\-]+)$#', substr($path, self::RESTFUL_BASE_LENGTH), $matches);
-
-			if (!$matches)
+			if ($request->is_patch)
 			{
-				throw new Exception('Unknown operation %operation.', array('operation' => $path), 404);
-			}
+				preg_match('#^([^/]+)/(\d+)$#', substr($path, self::RESTFUL_BASE_LENGTH), $matches);
 
-			list(, $module_id, , $operation_key, $operation_name) = $matches;
+				if (!$matches)
+				{
+					throw new Exception('Unknown operation %operation.', array('operation' => $path), 404);
+				}
+
+				list(, $module_id, $operation_key) = $matches;
+
+				$operation_name = 'patch';
+			}
+			else
+			{
+				#
+				# We could not find a matching route, we try to extract the DESTINATION, NAME and
+				# optional KEY from the URI.
+				#
+
+				preg_match('#^([a-z\.]+)/(([^/]+)/)?([a-zA-Z0-9_\-]+)$#', substr($path, self::RESTFUL_BASE_LENGTH), $matches);
+
+				if (!$matches)
+				{
+					throw new Exception('Unknown operation %operation.', array('operation' => $path), 404);
+				}
+
+				list(, $module_id, , $operation_key, $operation_name) = $matches;
+			}
 
 			if (empty($core->modules->descriptors[$module_id]))
 			{
@@ -311,7 +327,7 @@ abstract class Operation extends Object
 
 		. ($qs ? '?' . $qs : '');
 
-		return Route::contextualize($rc);
+		return \ICanBoogie\Routing\contextualize($rc);
 	}
 
 	/**
@@ -591,6 +607,11 @@ abstract class Operation extends Object
 			if (!$control_success)
 			{
 				new Operation\FailureEvent($this, array('type' => 'control', 'request' => $request));
+
+				if (!$response->errors->count())
+				{
+					$response->errors[] = 'Operation control failed.';
+				}
 			}
 			else
 			{
@@ -606,9 +627,14 @@ abstract class Operation extends Object
 
 				new Operation\ValidateEvent($this, $validate_payload);
 
-				if (!$validate_success || count($response->errors))
+				if (!$validate_success || $response->errors->count())
 				{
 					new Operation\FailureEvent($this, array('type' => 'validation', 'request' => $request));
+
+					if (!$response->errors->count())
+					{
+						$response->errors[] = 'Operation validation failed.';
+					}
 				}
 				else
 				{
@@ -617,6 +643,11 @@ abstract class Operation extends Object
 					if (!count($response->errors))
 					{
 						$rc = $this->process();
+
+						if ($rc === null && !$response->errors->count())
+						{
+							$response->errors[] = 'Operation failed (result was null).';
+						}
 					}
 				}
 			}
@@ -638,7 +669,7 @@ abstract class Operation extends Object
 		# errors
 		#
 
-		if (count($response->errors) && !$request->is_xhr && !isset($this->form))
+		if ($response->errors->count() && !$request->is_xhr && !isset($this->form))
 		{
 			foreach ($response->errors as $error_message)
 			{

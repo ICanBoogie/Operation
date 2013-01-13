@@ -41,7 +41,7 @@ class OperationDispatcher implements \ICanBoogie\HTTP\IDispatcher
 		}
 
 		$response = $operation($request);
-		$is_api_operation = strpos(Route::decontextualize($request->path), '/api/') === 0;
+		$is_api_operation = strpos(\ICanBoogie\Routing\decontextualize($request->path), '/api/') === 0;
 
 		if ($response)
 		{
@@ -61,7 +61,7 @@ class OperationDispatcher implements \ICanBoogie\HTTP\IDispatcher
 	/**
 	 * Retrowns the provided exception.
 	 */
-	public function rescue(\Exception $exception)
+	public function rescue(\Exception $exception, Request $request)
 	{
 		throw $exception;
 	}
