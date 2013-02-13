@@ -640,7 +640,7 @@ abstract class Operation extends Object
 				{
 					new Operation\BeforeProcessEvent($this, array('request' => $request, 'response' => $response, 'errors' => $response->errors));
 
-					if (!count($response->errors))
+					if (!$response->errors->count())
 					{
 						$rc = $this->process();
 

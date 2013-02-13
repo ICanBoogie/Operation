@@ -140,7 +140,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 				}
 				else
 				{
-					$errors[$identifier] = $error;
+					$errors[$identifier] = is_bool($error) ? $error : (string) $error;
 				}
 			}
 
