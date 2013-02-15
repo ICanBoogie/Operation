@@ -72,18 +72,21 @@ class OperationDispatcher implements \ICanBoogie\HTTP\IDispatcher
 
 	/**
 	 * Fires {@link \ICanBoogie\Operation\RescueEvent} and returns the response provided
-	 * by third parties. If no response was provided the exception (or the exception provided by
+	 * by third parties. If no response was provided, the exception (or the exception provided by
 	 * third parties) is rethrown.
 	 *
 	 * @return \ICanBoogie\HTTP\Response
 	 */
 	public function rescue(\Exception $exception, Request $request)
 	{
-		new Operation\RescueEvent($exception, $request, $this->operation, $response);
-
-		if ($response)
+		if ($this->operation)
 		{
-			return $response;
+			new Operation\RescueEvent($exception, $request, $this->operation, $response);
+
+			if ($response)
+			{
+				return $response;
+			}
 		}
 
 		throw $exception;
@@ -100,7 +103,7 @@ use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 
 /**
- * Event class for the `ICanBoogie\Operation:rescue` event.
+ * Event class for the `ICanBoogie\Operation::rescue` event.
  */
 class RescueEvent extends \ICanBoogie\Exception\RescueEvent
 {
