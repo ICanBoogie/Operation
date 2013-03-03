@@ -14,6 +14,7 @@ namespace ICanBoogie;
 use ICanBoogie\Exception;
 use ICanBoogie\HTTP;
 use ICanBoogie\HTTP\HTTPError;
+use ICanBoogie\HTTP\NotFound;
 use ICanBoogie\HTTP\Request;
 
 /**
@@ -142,7 +143,7 @@ abstract class Operation extends Object
 
 				if (!$matches)
 				{
-					throw new Exception('Unknown operation %operation.', array('operation' => $path), 404);
+					throw new NotFound(format('Unknown operation %operation.', array('operation' => $path)));
 				}
 
 				list(, $module_id, $operation_key) = $matches;
@@ -160,7 +161,7 @@ abstract class Operation extends Object
 
 				if (!$matches)
 				{
-					throw new Exception('Unknown operation %operation.', array('operation' => $path), 404);
+					throw new NotFound(format('Unknown operation %operation.', array('operation' => $path)));
 				}
 
 				list(, $module_id, , $operation_key, $operation_name) = $matches;
@@ -168,7 +169,7 @@ abstract class Operation extends Object
 
 			if (empty($core->modules->descriptors[$module_id]))
 			{
-				throw new Exception('Unknown operation %operation.', array('operation' => $path), 404);
+				throw new NotFound(format('Unknown operation %operation.', array('operation' => $path)));
 			}
 
 			$request[self::KEY] = $operation_key;
