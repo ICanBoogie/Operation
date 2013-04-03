@@ -42,7 +42,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	protected function volatile_set_message($message)
 	{
-		if (is_array($message) || (is_object($message) && !is_callable(array($message, '__toString'))))
+		if (is_array($message) || (is_object($message) && !method_exists($message, '__toString')))
 		{
 			throw new \InvalidArgumentException(\ICanBoogie\format
 			(
@@ -104,7 +104,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 		{
 			$rc = $this->rc;
 
-			if (is_object($rc) && is_callable(array($rc, '__toString')))
+			if (is_object($rc) && method_exists($rc, '__toString'))
 			{
 				$rc = (string) $rc;
 			}
