@@ -9,23 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace ICanBoogie;
+namespace ICanBoogie\Operation;
 
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\HTTP\Response;
+use ICanBoogie\Operation;
 
 /**
  * Dispatches operation requests.
  */
-class OperationDispatcher implements \ICanBoogie\HTTP\IDispatcher
+class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
 {
-	/**
-	 * Current operation.
-	 *
-	 * @var Operation
-	 */
-	private $operation;
-
 	/**
 	 * Tries to create an {@link Operation} instance from the specified request. The operation
 	 * is then executed and its response returned.
@@ -41,16 +35,12 @@ class OperationDispatcher implements \ICanBoogie\HTTP\IDispatcher
 	 */
 	public function __invoke(Request $request)
 	{
-		$operation = Operation::from($request);
+		$request->context->operation = $operation = Operation::from($request);
 
 		if (!$operation)
 		{
 			return;
 		}
-
-		$this->operation = $operation;
-
-		$request->operation = $operation;
 
 		$response = $operation($request);
 		$is_api_operation = strpos(\ICanBoogie\Routing\decontextualize($request->path), '/api/') === 0;
@@ -75,13 +65,19 @@ class OperationDispatcher implements \ICanBoogie\HTTP\IDispatcher
 	 * by third parties. If no response was provided, the exception (or the exception provided by
 	 * third parties) is rethrown.
 	 *
-	 * @return \ICanBoogie\HTTP\Response
+	 * @param \Exception $exception The exception to rescue.
+	 * @param Request $request The request.
+	 *
+	 * @return \ICanBoogie\HTTP\Response If the exception is rescued, the response is returned,
+	 * otherwise the exception is rethrown.
 	 */
 	public function rescue(\Exception $exception, Request $request)
 	{
-		if ($this->operation)
+		$operation = $request->context->operation;
+
+		if ($operation)
 		{
-			new Operation\RescueEvent($exception, $request, $this->operation, $response);
+			new Operation\RescueEvent($exception, $request, $operation, $response);
 
 			if ($response)
 			{
@@ -104,6 +100,9 @@ use ICanBoogie\Operation;
 
 /**
  * Event class for the `ICanBoogie\Operation::rescue` event.
+ *
+ * The class extends {@link \ICanBoogie\Exception\RescueEvent} to provide the operation object
+ * which processing raised an exception.
  */
 class RescueEvent extends \ICanBoogie\Exception\RescueEvent
 {

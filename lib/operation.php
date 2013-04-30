@@ -369,7 +369,7 @@ abstract class Operation extends Object
 	 */
 	static public function format_class_name($namespace, $operation_name)
 	{
-		return $namespace . '\\' . ucfirst(camelize(strtr($operation_name, '_', '-'))) . 'Operation';
+		return $namespace . '\\' . camelize(strtr($operation_name, '-', '_')) . 'Operation';
 	}
 
 	public $key;
@@ -1052,6 +1052,8 @@ abstract class ControlEventBase extends \ICanBoogie\Event
 
 /**
  * Event class for the `ICanBoogie\Operation::control:before` event.
+ *
+ * Third parties may use this event to alter the controls to run or clear them altogether.
  */
 class BeforeControlEvent extends ControlEventBase
 {
@@ -1069,6 +1071,8 @@ class BeforeControlEvent extends ControlEventBase
 
 /**
  * Event class for the `ICanBoogie\Operation::control` event.
+ *
+ * Third parties may use this event to alter the outcome of the control.
  */
 class ControlEvent extends ControlEventBase
 {
@@ -1175,6 +1179,8 @@ class FailureEvent extends \ICanBoogie\Event
 
 /**
  * Event class for the `ICanBoogie\Operation::process:before` event.
+ *
+ * Third parties may use this event to alter the request, response or errors.
  */
 class BeforeProcessEvent extends \ICanBoogie\Event
 {
@@ -1290,7 +1296,7 @@ class GetFormEvent extends \ICanBoogie\Event
  */
 class FormHasExpired extends \Exception
 {
-	public function __construct($message="The form associated with the request has expired.", $code=500, $previous=null)
+	public function __construct($message="The form associated with the request has expired.", $code=500, \Exception $previous=null)
 	{
 		parent::__construct($message, $code, $previous);
 	}
