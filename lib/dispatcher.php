@@ -73,11 +73,9 @@ class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
 	 */
 	public function rescue(\Exception $exception, Request $request)
 	{
-		$operation = $request->context->operation;
-
-		if ($operation)
+		if (!empty($request->context->operation))
 		{
-			new Operation\RescueEvent($exception, $request, $operation, $response);
+			new Operation\RescueEvent($exception, $request, $request->context->operation, $response);
 
 			if ($response)
 			{
