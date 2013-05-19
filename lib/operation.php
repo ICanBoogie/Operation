@@ -11,6 +11,8 @@
 
 namespace ICanBoogie;
 
+use ICanBoogie\I18n\FormattedString;
+
 use ICanBoogie\Exception;
 use ICanBoogie\HTTP;
 use ICanBoogie\HTTP\HTTPError;
@@ -25,9 +27,9 @@ use ICanBoogie\HTTP\Request;
  */
 abstract class Operation extends Object
 {
-	const DESTINATION = '#destination';
-	const NAME = '#operation';
-	const KEY = '#key';
+	const DESTINATION = '_operation_destination';
+	const NAME = '_operation_name';
+	const KEY = '_operation_key';
 	const SESSION_TOKEN = '_session_token';
 
 	const RESTFUL_BASE = '/api/';
@@ -172,7 +174,10 @@ abstract class Operation extends Object
 				throw new NotFound(format('Unknown operation %operation.', array('operation' => $path)));
 			}
 
-			$request[self::KEY] = $operation_key;
+			if ($operation_key)
+			{
+				$request[self::KEY] = $operation_key;
+			}
 
 			return static::from_module_request($request, $module_id, $operation_name);
 		}
@@ -225,15 +230,7 @@ abstract class Operation extends Object
 		if ($route->controller)
 		{
 			$controller = $route->controller;
-
-			if (is_callable($controller))
-			{
-				$operation = call_user_func($controller, $request);
-			}
-			else
-			{
-				$operation = new $controller($route); // TODO-20121119: should be $request instead of $route
-			}
+			$operation = is_callable($controller) ? call_user_func($controller, $request) : new $controller($request);
 
 			if (!($operation instanceof self))
 			{
@@ -509,14 +506,25 @@ abstract class Operation extends Object
 	 * The {@link $controls} property is unset in order for its getters to be called on the next
 	 * access, while keeping its scope.
 	 *
-	 * @param Module|array $destination The destination of the operation, either a module or a
-	 * route.
+	 * @param Request $request @todo: should be a Request, but is sometimes a module.
 	 */
-	public function __construct($destination=null)
+	public function __construct($request=null)
 	{
+		global $core;
+
 		unset($this->controls);
 
-		$this->module = $destination instanceof Module ? $destination : null;
+		if ($request instanceof Request)
+		{
+			if ($request['_operation_module'])
+			{
+				$this->module = $core->modules[$request['_operation_module']];
+			}
+		}
+		else if ($request instanceof Module)
+		{
+			$this->module = $request;
+		}
 	}
 
 	/**
