@@ -11,9 +11,8 @@
 
 namespace ICanBoogie;
 
-use ICanBoogie\I18n\FormattedString;
-
 use ICanBoogie\Exception;
+use ICanBoogie\I18n\FormattedString;
 use ICanBoogie\HTTP;
 use ICanBoogie\HTTP\HTTPError;
 use ICanBoogie\HTTP\NotFound;
@@ -551,6 +550,19 @@ abstract class Operation extends Object
 	 *     /api/system.nodes/12/online.json
 	 *
 	 *
+	 * The response location
+	 * ---------------------
+	 *
+	 * The `Location` header is used to ask the browser to load a different web page. This is often
+	 * used to redirect the user when an operation has been performed e.g. creating/deleting a
+	 * resource. The `location` property of the response is used to set that header. This is not
+	 * a desirable behavior for XHR because although we might want to redirect the user, we still
+	 * need to get the result of our request first. That is why when the `location` property is
+	 * set, and the request is an XHR, the location is set to the `redirect_to` field and the
+	 * `location` property is set to `null` to disable browser redirection.
+	 *
+	 *
+	 *
 	 * Control, validation and processing
 	 * ----------------------------------
 	 *
@@ -708,18 +720,24 @@ abstract class Operation extends Object
 
 		if ($response->message && !$request->previous && !$request->is_xhr)
 		{
-			call_user_func_array('ICanBoogie\log_success', (array) $response->message);
+			log_success($response->message);
 		}
 
-		/*
-		 * Operation\Request rewrites the response body if the body is null, but we only want that
-		 * for XHR request, so we need to set the response body to some value, which should be
-		 * the operation result, or an empty string of the request is redirected.
-		 */
+		#
+		# Operation\Request rewrites the response body if the body is null, but we only want that
+		# for XHR request, so we need to set the response body to some value, which should be
+		# the operation result, or an empty string of the request is redirected.
+		#
 
 		if ($request->is_xhr)
 		{
 			$response->content_type = $request->headers['Accept'];
+
+			if ($response->location)
+			{
+				$response['redirect_to'] = $response->location;
+			}
+
 			$response->location = null;
 		}
 		else if ($response->location)

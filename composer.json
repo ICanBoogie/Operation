@@ -1,31 +1,31 @@
 {
-    "name": "icanboogie/operation",
-    "type": "library",
-    "description": "Operations, the doers of the MOVE world",
-    "keywords": ["framework"],
-    "homepage": "http://icanboogie.org/",
-    "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Olivier Laviale",
+	"name": "icanboogie/operation",
+	"type": "library",
+	"description": "Operations, the doers of the MOVE world",
+	"keywords": [ "operation", "dispatch", "controller", "request", "response" ],
+	"homepage": "http://icanboogie.org/",
+	"license": "BSD-3-Clause",
+	"authors": [
+		{
+			"name": "Olivier Laviale",
 			"email": "olivier.laviale@gmail.com",
 			"homepage": "http://www.weirdog.com/",
 			"role" : "Developer"
-        }
-    ],
-    "support": {
+		}
+	],
+	"support": {
 		"issues": "https://github.com/ICanBoogie/Operation/issues",
 		"source": "https://github.com/ICanBoogie/Operation"
 	},
 	"minimum-stability": "dev",
-    "require": {
-        "php": ">=5.3.0",
-        "icanboogie/errors": "*",
-        "icanboogie/event": "*",
-        "icanboogie/http": "*",
-        "icanboogie/routing": "*"
-    },
-    "autoload": {
-        "classmap": [ "lib/" ]
-    }
+	"require": {
+		"php": ">=5.3.0",
+		"icanboogie/errors": "*",
+		"icanboogie/event": "*",
+		"icanboogie/http": "*",
+		"icanboogie/routing": "*"
+	},
+	"autoload": {
+		"classmap": [ "lib/" ]
+	}
 }

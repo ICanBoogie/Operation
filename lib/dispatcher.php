@@ -24,12 +24,12 @@ class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
 	 * Tries to create an {@link Operation} instance from the specified request. The operation
 	 * is then executed and its response returned.
 	 *
-	 * If an operation could be created from the request, the `operation` property of the request
-	 * is set to that operation.
+	 * If an operation could be created from the request, the `operation` property of the request's
+	 * context is set to that operation.
 	 *
-	 * If the operation returns an error response (client error or server error) and the resquest
+	 * If the operation returns an error response (client error or server error) and the request
 	 * is not an XHR nor an API request, `null` is returned instead of the reponse to allow another
-	 * controller to display an error message.
+	 * dispatcher to handle the request, or display an error message.
 	 *
 	 * If there is no response but the request is an API request, a 404 response is returned.
 	 */
