@@ -515,9 +515,9 @@ abstract class Operation extends Object
 
 		if ($request instanceof Request)
 		{
-			if ($request['_operation_module'])
+			if ($request[self::DESTINATION])
 			{
-				$this->module = $core->modules[$request['_operation_module']];
+				$this->module = $core->modules[$request[self::DESTINATION]];
 			}
 		}
 		else if ($request instanceof Module)
