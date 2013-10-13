@@ -147,6 +147,8 @@ $operation = Operation::from($request);
 $operation->is_forwarded; // true
 ```
 
+Note that successful responses with a location are NOT discarted.
+
 
 
 

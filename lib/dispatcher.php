@@ -26,11 +26,8 @@ class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
 	 * If an operation could be created from the request, the `operation` property of the request's
 	 * context is set to that operation.
 	 *
-	 * If the operation returns an error response (client error or server error) and the request
-	 * is not an XHR nor an API request, `null` is returned instead of the reponse to allow another
-	 * dispatcher to handle the request, or display an error message.
-	 *
-	 * If there is no response but the request is an API request, a 404 response is returned.
+	 * For forwarded operation, successful responses are not returned unless the request is an XHR
+	 * or the response has a location.
 	 */
 	public function __invoke(Request $request)
 	{
@@ -43,7 +40,7 @@ class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
 
 		$response = $operation($request);
 
-		if (!$request->is_xhr && $operation->is_forwarded)
+		if ($operation->is_forwarded && !$request->is_xhr && !$response->location)
 		{
 			return;
 		}

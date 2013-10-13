@@ -165,6 +165,24 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$this->assertNull($response);
 	}
 
+	public function test_forwarded_success_with_location()
+	{
+		$request = Request::from(array(
+
+			'path' => '/',
+			'request_params' => array
+			(
+				Operation::DESTINATION => 'sample',
+				Operation::NAME => 'success_with_location'
+			)
+		));
+
+		$dispatcher = new Dispatcher;
+		$response = $dispatcher($request);
+		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
+		$this->assertNotNull($response->location);
+	}
+
 	public function test_forwarded_error()
 	{
 		$request = Request::from(array(
@@ -243,6 +261,29 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
 		$this->assertEquals(200, $response->status);
 		$this->assertTrue($response->is_successful);
+	}
+
+	public function test_forwarded_success_with_xhr_and_location()
+	{
+		$request = Request::from(array(
+
+			'path' => '/',
+			'is_xhr' => true,
+			'request_params' => array
+			(
+				Operation::DESTINATION => 'sample',
+				Operation::NAME => 'success_with_location'
+			)
+		));
+
+		$dispatcher = new Dispatcher;
+		$response = $dispatcher($request);
+
+		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
+		$this->assertEquals(200, $response->status);
+		$this->assertTrue($response->is_successful);
+		$this->assertNull($response->location);
+		$this->assertNotNull($response['redirect_to']);
 	}
 
 	public function test_forwarded_error_with_xhr()
