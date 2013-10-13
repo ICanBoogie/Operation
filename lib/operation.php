@@ -18,6 +18,14 @@ use ICanBoogie\HTTP\Request;
 use ICanBoogie\I18n\FormattedString;
 use ICanBoogie\Operation\Failure;
 use ICanBoogie\Operation\FailureEvent;
+use ICanBoogie\Operation\GetFormEvent;
+use ICanBoogie\Operation\FormHasExpired;
+use ICanBoogie\Operation\BeforeControlEvent;
+use ICanBoogie\Operation\ControlEvent;
+use ICanBoogie\Operation\BeforeValidateEvent;
+use ICanBoogie\Operation\ValidateEvent;
+use ICanBoogie\Operation\BeforeProcessEvent;
+use ICanBoogie\Operation\ProcessEvent;
 
 /**
  * An operation.
@@ -29,14 +37,42 @@ use ICanBoogie\Operation\FailureEvent;
  */
 abstract class Operation extends Object
 {
+	/**
+	 * Defines the destination of a forwarded operation.
+	 *
+	 * @var string
+	 */
 	const DESTINATION = '_operation_destination';
+
+	/**
+	 * Defines the operation name of a forwarded operation.
+	 *
+	 * @var string
+	 */
 	const NAME = '_operation_name';
+
+	/**
+	 * Defines the key of the resource targeted by the operation.
+	 *
+	 * @var string
+	 */
 	const KEY = '_operation_key';
+
+	/**
+	 * Defines the session token to be matched.
+	 *
+	 * @var string
+	 */
 	const SESSION_TOKEN = '_session_token';
 
 	const RESTFUL_BASE = '/api/';
 	const RESTFUL_BASE_LENGTH = 5;
 
+	/**
+	 * Creates a {@link Operation} instance from the specified parameters.
+	 *
+	 * @return Operation
+	 */
 	static public function from($properties=null, array $construct_args=array(), $class_name=null)
 	{
 		if ($properties instanceof Request)
@@ -106,7 +142,8 @@ abstract class Operation extends Object
 	 * @param string $uri The request URI.
 	 * @param array $params The request parameters.
 	 *
-	 * @throws Exception When there is an error in the operation request.
+	 * @throws \BadMethodCallException when the destination module or the operation name is
+	 * not defined for a module operation.
 	 *
 	 * @return Operation|null The decoded operation or null if no operation was found.
 	 */
@@ -194,17 +231,29 @@ abstract class Operation extends Object
 		}
 		else if (!$module_id)
 		{
-			throw new Exception('The destination for the %operation operation is missing', array('%operation' => $operation_name));
+			throw new \BadMethodCallException("The operation's destination is required.");
 		}
 		else if (!$operation_name)
 		{
-			throw new Exception('The operation for the %module module is missing', array('%module' => $module_id));
+			throw new \BadMethodCallException("The operation's name is required.");
 		}
 
 		return static::from_module_request($request, $module_id, $operation_name);
 	}
 
-	static protected function from_route(HTTP\Request $request, $path)
+	/**
+	 * Tries to create an {@link Operation} instance from a route.
+	 *
+	 * @param HTTP\Request $request
+	 * @param string $path An API path.
+	 *
+	 * @throws \Exception If the route controller fails to produce an {@link Operation} instance.
+	 * @throws \InvalidArgumentException If the route's controller cannot be determined from the
+	 * route definition.
+	 *
+	 * @return Operation|null
+	 */
+	static protected function from_route(Request $request, $path)
 	{
 		$route = Routes::get()->find($path, $captured, $request->method, 'api');
 
@@ -233,14 +282,14 @@ abstract class Operation extends Object
 
 			if (!($operation instanceof self))
 			{
-				throw new Exception
+				throw new \Exception(format
 				(
 					'The controller for the route %route failed to produce an operation object, %rc returned.', array
 					(
 						'route' => $path,
 						'rc' => $operation
 					)
-				);
+				));
 			}
 		}
 		else
@@ -260,7 +309,18 @@ abstract class Operation extends Object
 		return $operation;
 	}
 
-	static protected function from_module_request(HTTP\Request $request, $module_id, $operation_name)
+	/**
+	 * Creates an {@link Operation} instance from a module request.
+	 *
+	 * @param Request $request
+	 * @param unknown $module_id
+	 * @param unknown $operation_name
+	 *
+	 * @throws HTTPError if the operation is not supported by the module.
+	 *
+	 * @return Operation
+	 */
+	static protected function from_module_request(Request $request, $module_id, $operation_name)
 	{
 		global $core;
 
@@ -269,7 +329,14 @@ abstract class Operation extends Object
 
 		if (!$class)
 		{
-			throw new HTTPError(format('Uknown operation %operation for the %module module.', array('%module' => (string) $module, '%operation' => $operation_name)), 404);
+			throw new HTTPError(format
+			(
+				'The operation %operation is not supported by the module %module.', array
+				(
+					'%module' => (string) $module,
+					'%operation' => $operation_name
+				)
+			), 404);
 		}
 
 		return new $class($module);
@@ -456,7 +523,7 @@ abstract class Operation extends Object
 	 */
 	protected function get_form()
 	{
-		new Operation\GetFormEvent($this, $this->request, $form);
+		new GetFormEvent($this, $this->request, $form);
 
 		return $form;
 	}
@@ -616,6 +683,9 @@ abstract class Operation extends Object
 	 * @param HTTP\Request $request The request triggering the operation.
 	 *
 	 * @return Operation\Response The response of the operation.
+	 *
+	 * @throws Failure when the response has a client or server error, or the
+	 * {@link FormHasExpired} exception was raised.
 	 */
 	public function __invoke(HTTP\Request $request)
 	{
@@ -631,14 +701,14 @@ abstract class Operation extends Object
 			$control_success = true;
 			$control_payload = array('success' => &$control_success, 'controls' => &$controls, 'request' => $request);
 
-			new Operation\BeforeControlEvent($this, $control_payload);
+			new BeforeControlEvent($this, $control_payload);
 
 			if ($control_success)
 			{
 				$control_success = $this->control($controls);
 			}
 
-			new Operation\ControlEvent($this, $control_payload);
+			new ControlEvent($this, $control_payload);
 
 			if (!$control_success)
 			{
@@ -654,14 +724,14 @@ abstract class Operation extends Object
 				$validate_success = true;
 				$validate_payload = array('success' => &$validate_success, 'errors' => &$response->errors, 'request' => $request);
 
-				new Operation\BeforeValidateEvent($this, $validate_payload);
+				new BeforeValidateEvent($this, $validate_payload);
 
 				if ($validate_success)
 				{
 					$validate_success = $this->validate($response->errors);
 				}
 
-				new Operation\ValidateEvent($this, $validate_payload);
+				new ValidateEvent($this, $validate_payload);
 
 				if (!$validate_success || $response->errors->count())
 				{
@@ -674,7 +744,7 @@ abstract class Operation extends Object
 				}
 				else
 				{
-					new Operation\BeforeProcessEvent($this, array('request' => $request, 'response' => $response, 'errors' => $response->errors));
+					new BeforeProcessEvent($this, array('request' => $request, 'response' => $response, 'errors' => $response->errors));
 
 					if (!$response->errors->count())
 					{
@@ -726,7 +796,7 @@ abstract class Operation extends Object
 		}
 		else
 		{
-			new Operation\ProcessEvent($this, array('rc' => &$response->rc, 'response' => $response, 'request' => $request));
+			new ProcessEvent($this, array('rc' => &$response->rc, 'response' => $response, 'request' => $request));
 		}
 
 		#
@@ -1048,7 +1118,7 @@ abstract class Operation extends Object
 	 *
 	 * The method is abstract and therefore must be implemented by subclasses.
 	 *
-	 * @throws Exception If something horribly wrong happens.
+	 * @throws \Exception If something horribly wrong happens.
 	 *
 	 * @return bool true if the operation is valid, false otherwise.
 	 */

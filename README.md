@@ -9,9 +9,9 @@ and for responding to events triggered by user interactions.
 
 ## Operation
 
-Instances of [Operation](http://icanboogie.org/docs/class-ICanBoogie.Operation.html) represent
-operations. Although the class provides many control methods and getters, the validation and
-processing of the operation must be implemented by subclasses according to their design.
+An instance of [Operation](http://icanboogie.org/docs/class-ICanBoogie.Operation.html) represents
+an operation. Although the class provides many control methods and getters, the validation and
+processing of the operation must be implemented by subclasses, according to their design.
 
 
 
@@ -117,11 +117,11 @@ is fired. Third parties may use this event to alter the result, request or respo
 
 ### Forwarded operation
 
-An operation is considered "forwarded" when the actual destination and operation type is defined
+An operation is considered "forwarded" when the actual destination and operation name is defined
 using the request parameters [Operation::DESTINATION](http://icanboogie.org/docs/class-ICanBoogie.Operation.html#DESTINATION)
 and [Operation::NAME](http://icanboogie.org/docs/class-ICanBoogie.Operation.html#NAME). The URL of the request
 is irrelevant to forwarded operation, more over whether they succeed or fail the dispatch process
-simply continue. This allows forms to be posted to their own _view_ URL (not the URL of the
+simply continues. This allows forms to be posted to their own _view_ URL (not the URL of the
 operation) and displayed again if an error occurs.
 
 ```php
@@ -169,11 +169,19 @@ is considered failed if its value is `null`, in which case the status of the ope
 
 The `Location` header is used to ask the browser to load a different web page. This is often
 used to redirect the user when an operation has been performed e.g. creating/deleting a
-resource. The `location` property of the response is used to set that header. This is not
-a desirable behavior for XHR because although we might want to redirect the user, we still
-need to get the result of our request first. That is why when the `location` property is
-set, and the request is an XHR, the location is set to the `redirect_to` field and the
-`location` property is set to `null` to disable browser redirection.
+resource. The `location` property of the response is used to set that header.
+
+
+
+
+
+#### Response location and XHR
+
+Redirecting a XHR is not a desirable behavior because although we might want to redirect the user,
+we still need to get the result of our request first. In that case, the value of the `location`
+property is moved to the `redirect_to` field and the `location` property is set to `null`.
+Thus, the browser redirection is disabled, the response is returned and it's up to the developper
+to choose if he should honor the redirection or not.
 
 
 
@@ -182,8 +190,8 @@ set, and the request is an XHR, the location is set to the `redirect_to` field a
 ## Dispatcher
 
 The package provides an HTTP dispatcher to dispatch operations. It should be placed at the top of
-the dispatcher chain, before any routing. The dispatcher tries to create an Operation instance
-from the specified Request, and returns immediatly if it fails.
+the dispatcher chain, before any routing. The dispatcher tries to create an `Operation` instance
+from the specified request, and returns immediatly if it fails.
 
 
 
@@ -191,12 +199,9 @@ from the specified Request, and returns immediatly if it fails.
 
 ### Handling of the operation response
 
-If the operation returns an error response (client error or server error) and the request
-is not an XHR nor an API request, `null` is returned instead of the response to allow another
-dispatcher to handle the request, or display an error message.
-
-If there is no response but the decontextualized request path is in the API
-namespace (`/api/`), a 404 response is returned.
+The dispatcher discarts responses from forwarded operations unless the request is an XHR or the
+response has a location. Remember that failed operations throw a [Failure](http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html)
+exception, which can be rescued.
 
 
 
@@ -209,11 +214,13 @@ If an exception is thrown during the dispatch of the operation a `rescue` event 
 upon the exception. The class extends the [RescueEvent](http://icanboogie.org/docs/class-ICanBoogie.Exception.RescueEvent.html)
 with the operation object.
 
+A third party may produce a response or a new exception.
 
 
 
 
-### Rescuing the Failure exception
+
+#### Rescuing a `Failure` exception
 
 A [Failure](http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html) exception is
 thrown when the operation response code is a client error or a server
@@ -222,7 +229,7 @@ error. The exception might be rescued by the dispatcher in the following cases:
 - The request is an XHR: the response of the operation is returned.
 
 - The operation was _forwarded_ (see above): the exception is discarted and the dispatch of the
-request continue.
+request continues.
 
 
 
