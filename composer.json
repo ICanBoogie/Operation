@@ -25,7 +25,13 @@
 		"icanboogie/http": "*",
 		"icanboogie/routing": "*"
 	},
+	"require-dev": {
+		"icanboogie/icanboogie": "*"
+	},
 	"autoload": {
 		"classmap": [ "lib/" ]
+	},
+	"autoload-dev": {
+		"classmap": [ "lib/", "test/modules/" ]
 	}
 }

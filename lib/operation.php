@@ -11,18 +11,21 @@
 
 namespace ICanBoogie;
 
-use ICanBoogie\Exception;
-use ICanBoogie\I18n\FormattedString;
 use ICanBoogie\HTTP;
 use ICanBoogie\HTTP\HTTPError;
 use ICanBoogie\HTTP\NotFound;
 use ICanBoogie\HTTP\Request;
+use ICanBoogie\I18n\FormattedString;
+use ICanBoogie\Operation\Failure;
+use ICanBoogie\Operation\FailureEvent;
 
 /**
  * An operation.
  *
  * @property ActiveRecord $record The target active record object of the operation.
  * @property-read Request $request The request.
+ * @property-read bool $is_forwarded `true` if the operation is forwarded.
+ * See {@link volatile_get_is_forwarded()}.
  */
 abstract class Operation extends Object
 {
@@ -197,9 +200,6 @@ abstract class Operation extends Object
 		{
 			throw new Exception('The operation for the %module module is missing', array('%module' => $module_id));
 		}
-
-		unset($request[self::DESTINATION]);
-		unset($request[self::NAME]);
 
 		return static::from_module_request($request, $module_id, $operation_name);
 	}
@@ -500,6 +500,21 @@ abstract class Operation extends Object
 	}
 
 	/**
+	 * Returns `true` if the operation is forwarded.
+	 *
+	 * An operation is considered forwarded if the destination module and the operation name are
+	 * defined in the request parameters. This is usually the case for forms which are posted
+	 * on their URI but forwarded to a specified destination module.
+	 *
+	 * @return boolean
+	 */
+	protected function volatile_get_is_forwarded()
+	{
+		return !empty($this->request->request_params[Operation::NAME])
+		&& !empty($this->request->request_params[Operation::DESTINATION]);
+	}
+
+	/**
 	 * Constructor.
 	 *
 	 * The {@link $controls} property is unset in order for its getters to be called on the next
@@ -627,7 +642,7 @@ abstract class Operation extends Object
 
 			if (!$control_success)
 			{
-				new Operation\FailureEvent($this, array('type' => 'control', 'request' => $request));
+				new FailureEvent($this, FailureEvent::TYPE_CONTROL, $request);
 
 				if (!$response->errors->count())
 				{
@@ -650,7 +665,7 @@ abstract class Operation extends Object
 
 				if (!$validate_success || $response->errors->count())
 				{
-					new Operation\FailureEvent($this, array('type' => 'validation', 'request' => $request));
+					new FailureEvent($this, FailureEvent::TYPE_VALIDATE, $request);
 
 					if (!$response->errors->count())
 					{
@@ -677,7 +692,7 @@ abstract class Operation extends Object
 		{
 			log_error($e->getMessage());
 
-			return;
+			throw new Failure($this, $e);
 		}
 		catch (\Exception $e)
 		{
@@ -749,9 +764,14 @@ abstract class Operation extends Object
 		{
 			$response->body = '';
 		}
-		else if (is_bool($response->rc))
+
+		#
+		# If the operation failed, we throw a Failure exception.
+		#
+
+		if ($response->is_client_error || $response->is_server_error)
 		{
-			return;
+			throw new Failure($this);
 		}
 
 		return $response;
@@ -1178,7 +1198,21 @@ class ValidateEvent extends ValidateEventBase
 class FailureEvent extends \ICanBoogie\Event
 {
 	/**
-	 * Type of failure, either `control` or `validation`.
+	 * The failure occured during {@link \ICanBoogie\Operation::control()}.
+	 *
+	 * @var string
+	 */
+	const TYPE_CONTROL = 'control';
+
+	/**
+	 * The failure occured during {@link \ICanBoogie\Operation::validate()}.
+	 *
+	 * @var string
+	 */
+	const TYPE_VALIDATE = 'validate';
+
+	/**
+	 * Type of failure, either {@link TYPE_CONTROL} or {@link TYPE_VALIDATION}.
 	 *
 	 * @var string
 	 */
@@ -1197,9 +1231,23 @@ class FailureEvent extends \ICanBoogie\Event
 	 * @param \ICanBoogie\Operation $target
 	 * @param array $payload
 	 */
-	public function __construct(\ICanBoogie\Operation $target, array $payload)
+	public function __construct(\ICanBoogie\Operation $target, $type, Request $request)
 	{
-		parent::__construct($target, 'failure', $payload);
+		$this->type = $type;
+		$this->request = $request;
+
+		parent::__construct($target, 'failure');
+	}
+
+	public function __get($property)
+	{
+		switch ($property)
+		{
+			case 'is_control': return $this->type == self::TYPE_CONTROL;
+			case 'is_validate': return $this->type == self::TYPE_VALIDATE;
+		}
+
+		return parent::__get($property);
 	}
 }
 

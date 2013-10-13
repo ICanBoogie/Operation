@@ -9,4 +9,33 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__ . '/../vendor/autoload.php';
+use ICanBoogie\Core;
+
+$loader = require __DIR__ . '/../vendor/autoload.php';
+
+$loader->addClassMap(array(
+
+	'ICanBoogie\Operation\Modules\Sample\Module' =>             __DIR__ . '/modules/sample/module.php',
+	'ICanBoogie\Operation\Modules\Sample\SuccessOperation' =>   __DIR__ . '/modules/sample/lib/operations/success.php',
+	'ICanBoogie\Operation\Modules\Sample\FailureOperation' =>   __DIR__ . '/modules/sample/lib/operations/failure.php',
+	'ICanBoogie\Operation\Modules\Sample\ErrorOperation' =>     __DIR__ . '/modules/sample/lib/operations/error.php',
+	'ICanBoogie\Operation\Modules\Sample\ExceptionOperation' => __DIR__ . '/modules/sample/lib/operations/exception.php'
+
+));
+
+$core = new Core(array(
+
+	'modules paths' => array
+	(
+		__DIR__ . '/modules'
+	)
+
+));
+
+$core();
+
+$core->events->attach(function(\ICanBoogie\HTTP\Dispatcher\AlterEvent $event, \ICanBoogie\HTTP\Dispatcher $dispatcher) {
+
+	var_dump($event);
+
+});

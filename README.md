@@ -114,6 +114,44 @@ is fired. Third parties may use this event to alter the result, request or respo
 
 
 
+
+### Forwarded operation
+
+An operation is considered "forwarded" when the actual destination and operation type is defined
+using the request parameters [Operation::DESTINATION](http://icanboogie.org/docs/class-ICanBoogie.Operation.html#DESTINATION)
+and [Operation::NAME](http://icanboogie.org/docs/class-ICanBoogie.Operation.html#NAME). The URL of the request
+is irrelevant to forwarded operation, more over whether they succeed or fail the dispatch process
+simply continue. This allows forms to be posted to their own _view_ URL (not the URL of the
+operation) and displayed again if an error occurs.
+
+```php
+<?php
+
+use ICanBoogie\HTTP\Request;
+use ICanBoogie\Operation;
+
+$request = Request::from(array(
+
+	'path' => '/',
+	'request_params' => array
+	(
+		Operation::DESTINATION => 'form',
+		Operation::NAME => 'post',
+
+		// …
+	)
+));
+
+$operation = Operation::from($request);
+
+$operation->is_forwarded; // true
+```
+
+
+
+
+
+
 ## Response
 
 The response of the operation is represented by a [Response](http://icanboogie.org/docs/class-ICanBoogie.Operation.Response.html) instance.
@@ -168,6 +206,21 @@ If an exception is thrown during the dispatch of the operation a `rescue` event 
 [RescueEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.RescueEvent.html) is fired
 upon the exception. The class extends the [RescueEvent](http://icanboogie.org/docs/class-ICanBoogie.Exception.RescueEvent.html)
 with the operation object.
+
+
+
+
+
+### Rescuing the Failure exception
+
+A [Failure](http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html) exception is
+thrown when the operation response code is a client error or a server
+error. The exception might be rescued by the dispatcher in the following cases:
+
+- The request is an XHR: the response of the operation is returned.
+
+- The operation was _forwarded_ (see above): the exception is discarted and the dispatch of the
+request continue.
 
 
 

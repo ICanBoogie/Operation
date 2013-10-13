@@ -12,7 +12,6 @@
 namespace ICanBoogie\Operation;
 
 use ICanBoogie\HTTP\Request;
-use ICanBoogie\HTTP\Response;
 use ICanBoogie\Operation;
 
 /**
@@ -43,18 +42,10 @@ class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
 		}
 
 		$response = $operation($request);
-		$is_api_operation = strpos(\ICanBoogie\Routing\decontextualize($request->path), '/api/') === 0;
 
-		if ($response)
+		if (!$request->is_xhr && $operation->is_forwarded)
 		{
-			if (($response->is_client_error || $response->is_server_error) && !$request->is_xhr && !$is_api_operation)
-			{
-				return;
-			}
-		}
-		else if ($is_api_operation)
-		{
-			return new Response(null, 404);
+			return;
 		}
 
 		return $response;
@@ -80,6 +71,26 @@ class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
 			if ($response)
 			{
 				return $response;
+			}
+		}
+
+		if ($exception instanceof Failure)
+		{
+			$operation = $exception->operation;
+
+			if ($operation->request->is_xhr)
+			{
+				return $operation->response;
+			}
+
+			#
+			# if the operation was forwarded we simply return so that the response for the actual
+			# URL is returned.
+			#
+
+			else if ($operation->is_forwarded)
+			{
+				return;
 			}
 		}
 
