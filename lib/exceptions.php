@@ -17,7 +17,7 @@ use ICanBoogie\PropertyNotDefined;
 /**
  * Exception raised when an operation fails.
  *
- * @property-read $operation Operation The operation that failed.
+ * @property-read Operation $operation The operation that failed.
  */
 class Failure extends \ICanBoogie\HTTP\HTTPError
 {
