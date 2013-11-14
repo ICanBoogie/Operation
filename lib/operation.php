@@ -15,7 +15,6 @@ use ICanBoogie\HTTP;
 use ICanBoogie\HTTP\HTTPError;
 use ICanBoogie\HTTP\NotFound;
 use ICanBoogie\HTTP\Request;
-use ICanBoogie\I18n\FormattedString;
 use ICanBoogie\Operation\Failure;
 use ICanBoogie\Operation\FailureEvent;
 use ICanBoogie\Operation\GetFormEvent;
