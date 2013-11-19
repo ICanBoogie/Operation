@@ -43,6 +43,11 @@ class Failure extends \ICanBoogie\HTTP\HTTPError
 
 			foreach ($operation->response->errors as $id => $error)
 			{
+				if ($error === true)
+				{
+					continue;
+				}
+
 				$message .= "\n– $error";
 			}
 		}
