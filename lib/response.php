@@ -40,7 +40,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 *
 	 * @throws \InvalidArgumentException if the message is an array or an object that do not implement `__toString()`.
 	 */
-	protected function volatile_set_message($message)
+	protected function set_message($message)
 	{
 		if (is_array($message) || (is_object($message) && !method_exists($message, '__toString')))
 		{
@@ -61,7 +61,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 *
 	 * @return string
 	 */
-	protected function volatile_get_message()
+	protected function get_message()
 	{
 		return $this->message;
 	}
@@ -187,7 +187,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 		if ($this->content_length === null && is_string($body))
 		{
-			$this->volatile_set_content_length(strlen($body));
+			$this->set_content_length(strlen($body));
 		}
 
 		$this->body = $body;

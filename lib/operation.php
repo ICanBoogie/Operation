@@ -32,7 +32,7 @@ use ICanBoogie\Operation\ProcessEvent;
  * @property ActiveRecord $record The target active record object of the operation.
  * @property-read Request $request The request.
  * @property-read bool $is_forwarded `true` if the operation is forwarded.
- * See {@link volatile_get_is_forwarded()}.
+ * See {@link get_is_forwarded()}.
  */
 abstract class Operation extends Object
 {
@@ -442,18 +442,13 @@ abstract class Operation extends Object
 	 */
 	protected $request;
 
-	protected function volatile_get_request()
+	protected function get_request()
 	{
 		return $this->request;
 	}
 
 	public $response;
 	public $method;
-
-	/**
-	 * @var array Controls to pass before validation.
-	 */
-	protected $controls;
 
 	const CONTROL_METHOD = 101;
 	const CONTROL_SESSION_TOKEN = 102;
@@ -464,7 +459,7 @@ abstract class Operation extends Object
 	const CONTROL_FORM = 107;
 
 	/**
-	 * Getter for the {@link $controls} property.
+	 * Returns the controls to pass.
 	 *
 	 * @return array All the controls set to false.
 	 */
@@ -487,7 +482,7 @@ abstract class Operation extends Object
 	 *
 	 * @return ActiveRecord
 	 */
-	protected function get_record()
+	protected function lazy_get_record()
 	{
 		return $this->module->model[$this->key];
 	}
@@ -497,7 +492,7 @@ abstract class Operation extends Object
 	 *
 	 * @return Operation\Response
 	 */
-	protected function volatile_get_response()
+	protected function get_response()
 	{
 		return $this->response;
 	}
@@ -520,7 +515,7 @@ abstract class Operation extends Object
 	 *
 	 * @return object|null
 	 */
-	protected function get_form()
+	protected function lazy_get_form()
 	{
 		new GetFormEvent($this, $this->request, $form);
 
@@ -539,7 +534,7 @@ abstract class Operation extends Object
 	 *
 	 * @return array
 	 */
-	protected function get_properties()
+	protected function lazy_get_properties()
 	{
 		return array();
 	}
@@ -560,7 +555,7 @@ abstract class Operation extends Object
 	 */
 	protected $module;
 
-	protected function volatile_get_module()
+	protected function get_module()
 	{
 		return $this->module;
 	}
@@ -574,7 +569,7 @@ abstract class Operation extends Object
 	 *
 	 * @return boolean
 	 */
-	protected function volatile_get_is_forwarded()
+	protected function get_is_forwarded()
 	{
 		return !empty($this->request->request_params[Operation::NAME])
 		&& !empty($this->request->request_params[Operation::DESTINATION]);
@@ -920,7 +915,7 @@ abstract class Operation extends Object
 	 * must throw an exception if the record could not be loaded or the control of this record
 	 * failed.
 	 *
-	 * The {@link record} property, or the {@link get_record()} getter, is used to get the
+	 * The {@link record} property, or the {@link lazy_get_record()} getter, is used to get the
 	 * record.
 	 *
 	 * 5. CONTROL_OWNERSHIP
@@ -1088,7 +1083,7 @@ abstract class Operation extends Object
 	 * Checks if the operation target record exists.
 	 *
 	 * The method simply returns the {@link $record} property, which calls the
-	 * {@link get_record()} getter if the property is not accessible.
+	 * {@link lazy_get_record()} getter if the property is not accessible.
 	 *
 	 * @return ActiveRecord|null
 	 */
@@ -1101,7 +1096,7 @@ abstract class Operation extends Object
 	 * Control the operation's form.
 	 *
 	 * The form is retrieved from the {@link $form} property, which invokes the
-	 * {@link get_form()} getter if the property is not accessible.
+	 * {@link lazy_get_form()} getter if the property is not accessible.
 	 *
 	 * @return bool true if the form exists and validates, false otherwise.
 	 */

@@ -22,11 +22,11 @@
 		"php": ">=5.3.0",
 		"icanboogie/errors": "*",
 		"icanboogie/event": "*",
-		"icanboogie/http": "*",
-		"icanboogie/routing": "*"
+		"icanboogie/http": "2.x",
+		"icanboogie/routing": "2.x"
 	},
 	"require-dev": {
-		"icanboogie/icanboogie": "*"
+		"icanboogie/icanboogie": "2.x"
 	},
 	"autoload": {
 		"classmap": [ "lib/" ]
