@@ -252,7 +252,7 @@ Create a `composer.json` file and run `php composer.phar install` command to ins
 {
 	"minimum-stability": "dev",
 	"require": {
-		"icanboogie/operation": "*"
+		"icanboogie/operation": "2.x"
 	}
 }
 ```
