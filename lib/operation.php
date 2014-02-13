@@ -254,7 +254,9 @@ abstract class Operation extends Object
 	 */
 	static protected function from_route(Request $request, $path)
 	{
-		$route = Routes::get()->find($path, $captured, $request->method, 'api');
+		global $core;
+
+		$route = $core->routes->find($path, $captured, $request->method, 'api');
 
 		if (!$route)
 		{
@@ -277,7 +279,19 @@ abstract class Operation extends Object
 		if ($route->controller)
 		{
 			$controller = $route->controller;
-			$operation = is_callable($controller) ? call_user_func($controller, $request) : new $controller($request);
+
+			if (is_callable($controller))
+			{
+				$operation = call_user_func($controller, $request);
+			}
+			else if (!class_exists($controller, true))
+			{
+				throw new \Exception("Unable to instantiate operation, class not found: $controller.");
+			}
+			else
+			{
+				$operation = new $controller($request);
+			}
 
 			if (!($operation instanceof self))
 			{
@@ -289,6 +303,11 @@ abstract class Operation extends Object
 						'rc' => $operation
 					)
 				));
+			}
+
+			if (isset($route->module))
+			{
+				$operation->module = $core->modules[$route->module];
 			}
 		}
 		else
