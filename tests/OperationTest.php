@@ -366,6 +366,41 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($response->offsetExists('redirect_to'));
 		$this->assertEquals('/path/to/redirection/', $response['redirect_to']);
 	}
+
+	public function test_from_route()
+	{
+		global $core;
+
+		$core->routes['api:nodes/online'] = array
+		(
+			'pattern' => '/api/:constructor/<nid:\d+>/is_online',
+			'controller' => 'ICanBoogie\Operation\Modules\Sample\OnlineOperation',
+			'via' => 'PUT',
+			'param_translation_list' => array
+			(
+				'constructor' => Operation::DESTINATION,
+				'nid' => Operation::KEY
+			)
+		);
+
+		$request = Request::from(array(
+
+			'path' => '/api/sample/123/is_online',
+			'is_put' => true
+
+		));
+
+		$operation = Operation::from($request);
+
+		$this->assertArrayHasKey(Operation::DESTINATION, $request->path_params);
+		$this->assertEquals('sample', $request->path_params[Operation::DESTINATION]);
+		$this->assertArrayHasKey(Operation::KEY, $request->path_params);
+		$this->assertEquals(123, $request->path_params[Operation::KEY]);
+
+		$this->assertInstanceOf('ICanBoogie\Operation\Modules\Sample\OnlineOperation', $operation);
+		$this->assertInstanceOf('ICanBoogie\Operation\Modules\Sample\Module', $operation->module);
+		$this->assertEquals(123, $operation->key);
+	}
 }
 
 namespace ICanBoogie\Operation\OperationTest;

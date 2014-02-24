@@ -1,4 +1,4 @@
-# Operation [![Build Status](https://travis-ci.org/ICanBoogie/Operation.png?branch=master)](https://travis-ci.org/ICanBoogie/Operation)
+# Operation [![Build Status](https://travis-ci.org/ICanBoogie/Operation.png?branch=2.0)](https://travis-ci.org/ICanBoogie/Operation)
 
 Operations are the doers of the MOVE world. They are responsible for making changes to your models,
 and for responding to events triggered by user interactions.
@@ -9,9 +9,9 @@ and for responding to events triggered by user interactions.
 
 ## Operation
 
-An instance of [Operation](http://icanboogie.org/docs/class-ICanBoogie.Operation.html) represents
-an operation. Although the class provides many control methods and getters, the validation and
-processing of the operation must be implemented by subclasses, according to their design.
+An instance of [Operation][] represents an operation. Although the class provides many control
+methods and getters, the validation and processing of the operation must be implemented
+by subclasses, according to their design.
 
 
 
@@ -43,15 +43,14 @@ class SaveOperation extends Operation
 {
 	protected function get_controls()
 	{
-		return array
-		(
+		return [
+		
 			self::CONTROL_PERMISSION => Module::PERMISSION_CREATE,
 			self::CONTROL_RECORD => true,
 			self::CONTROL_OWNERSHIP => true,
 			self::CONTROL_FORM => true
-		)
-
-		+ parent::get_controls();
+		
+		] + parent::get_controls();
 	}
 }
 ```
@@ -130,17 +129,17 @@ operation) and displayed again if an error occurs.
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 
-$request = Request::from(array(
+$request = Request::from([
 
 	'path' => '/',
-	'request_params' => array
-	(
+	'request_params' => [
+	
 		Operation::DESTINATION => 'form',
 		Operation::NAME => 'post',
 
 		// …
-	)
-));
+	]
+]);
 
 $operation = Operation::from($request);
 
@@ -235,6 +234,79 @@ request continues.
 
 
 
+## Defining operations
+
+### Defining operations as routes
+
+Operations can be defined as route controllers. Because the operation dispatcher is executed
+before the routing dispatcher, operation defined as routes are always executed before regular
+routes.
+
+The following example demonstrates how the [module Nodes][] defines routes to set/unset the
+`is_online` property:
+
+```php
+<?php
+
+namespace Icybee\Modules\Nodes;
+
+use ICanBoogie\Operation;
+
+return [
+
+	'api:nodes/online' => [
+
+		'pattern' => '/api/:constructor/<nid:\d+>/is_online',
+		'controller' =>__NAMESPACE__ . '\OnlineOperation',
+		'via' => 'PUT',
+		'param_translation_list' => [
+
+			'constructor' => Operation::DESTINATION,
+			'nid' => Operation::KEY
+
+		]
+	],
+
+	'api:nodes/offline' => [
+
+		'pattern' => '/api/:constructor/<nid:\d+>/is_online',
+		'controller' =>__NAMESPACE__ . '\OfflineOperation',
+		'via' => 'DELETE',
+		'param_translation_list' => [
+
+			'constructor' => Operation::DESTINATION,
+			'nid' => Operation::KEY
+
+		]
+	]
+
+];
+```
+
+The class of the operation is defined as the controller of the route. Notice how the request
+method is used for the same route to distinguish the operation type.
+
+The `param_translation_list` array is used to define how params captured from the pathinfo
+should be renamed before the operation is created. This handy feature allow routes to be
+formated from records, while providing mapping to operation key features.
+
+```php
+<?php
+
+$node = $core->models['nodes']->one;
+$path = $core->routes['api:nodes/online']->format($node);
+```
+
+
+
+
+
+-----
+
+
+
+
+
 ## Requirements
 
 The package requires PHP 5.2 or later.
@@ -280,7 +352,7 @@ clean the directory with the `make clean` command.
 
 The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
-[![Build Status](https://travis-ci.org/ICanBoogie/Operation.png?branch=master)](https://travis-ci.org/ICanBoogie/Operation)
+[![Build Status](https://travis-ci.org/ICanBoogie/Operation.png?branch=2.0)](https://travis-ci.org/ICanBoogie/Operation)
 
 
 
@@ -301,3 +373,9 @@ the `make clean` command.
 ## License
 
 ICanBoogie/Operation is licensed under the New BSD License - See the LICENSE file for details.
+
+
+
+
+[module Nodes]: https://github.com/Icybee/module-nodes
+[Operation]: http://icanboogie.org/docs/class-ICanBoogie.Operation.html

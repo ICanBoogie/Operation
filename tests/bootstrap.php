@@ -20,7 +20,8 @@ $loader->addClassMap(array(
 	'ICanBoogie\Operation\Modules\Sample\SuccessWithLocationOperation' => __DIR__ . '/modules/sample/lib/operations/success_with_location.php',
 	'ICanBoogie\Operation\Modules\Sample\FailureOperation' =>             __DIR__ . '/modules/sample/lib/operations/failure.php',
 	'ICanBoogie\Operation\Modules\Sample\ErrorOperation' =>               __DIR__ . '/modules/sample/lib/operations/error.php',
-	'ICanBoogie\Operation\Modules\Sample\ExceptionOperation' =>           __DIR__ . '/modules/sample/lib/operations/exception.php'
+	'ICanBoogie\Operation\Modules\Sample\ExceptionOperation' =>           __DIR__ . '/modules/sample/lib/operations/exception.php',
+	'ICanBoogie\Operation\Modules\Sample\OnlineOperation' =>              __DIR__ . '/modules/sample/lib/operations/online.php'
 
 ));
 

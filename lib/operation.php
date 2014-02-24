@@ -272,8 +272,21 @@ abstract class Operation extends Object
 
 		if ($captured)
 		{
+			if (isset($route->param_translation_list))
+			{
+				foreach ($route->param_translation_list as $from => $to)
+				{
+					$captured[$to] = $captured[$from];
+				}
+			}
+
 			$request->path_params = $captured;
 			$request->params = $captured + $request->params;
+
+			if (isset($request->path_params[self::DESTINATION]))
+			{
+				$route->module = $request->path_params[self::DESTINATION];
+			}
 		}
 
 		if ($route->controller)
@@ -308,6 +321,11 @@ abstract class Operation extends Object
 			if (isset($route->module))
 			{
 				$operation->module = $core->modules[$route->module];
+			}
+
+			if (isset($request->path_params[self::KEY]))
+			{
+				$operation->key = $request->path_params[self::KEY];
 			}
 		}
 		else
