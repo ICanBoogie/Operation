@@ -197,7 +197,7 @@ abstract class Operation extends Object
 				# optional KEY from the URI.
 				#
 
-				preg_match('#^([a-z\.]+)/(([^/]+)/)?([a-zA-Z0-9_\-]+)$#', substr($path, self::RESTFUL_BASE_LENGTH), $matches);
+				preg_match('#^([a-z\.\-]+)/(([^/]+)/)?([a-zA-Z0-9_\-]+)$#', substr($path, self::RESTFUL_BASE_LENGTH), $matches);
 
 				if (!$matches)
 				{
