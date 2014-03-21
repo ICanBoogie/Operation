@@ -38,7 +38,14 @@ class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
 			return;
 		}
 
-		$response = $operation($request);
+		new Dispatcher\BeforeDispatchEvent($this, $operation, $request, $response);
+
+		if (!$response)
+		{
+			$response = $operation($request);
+		}
+
+		new Dispatcher\DispatchEvent($this, $operation, $request, $response);
 
 		if ($operation->is_forwarded && !$request->is_xhr && !$response->location)
 		{
@@ -132,5 +139,111 @@ class RescueEvent extends \ICanBoogie\Exception\RescueEvent
 		$this->operation = $operation;
 
 		parent::__construct($target, $request, $response);
+	}
+}
+
+/*
+ * Events
+ */
+
+namespace ICanBoogie\Operation\Dispatcher;
+
+use ICanBoogie\HTTP\Request;
+use ICanBoogie\HTTP\Response;
+use ICanBoogie\Operation;
+use ICanBoogie\Operation\Dispatcher;
+
+/**
+ * Event class for the `ICanBoogie\Operation\Dispatcher::dispatch:before` event.
+ *
+ * Third parties may use this event to provide a response to the request before the route is
+ * mapped. The event is usually used by third parties to redirect requests or provide cached
+ * responses.
+ */
+class BeforeDispatchEvent extends \ICanBoogie\Event
+{
+	/**
+	 * The route.
+	 *
+	 * @var \ICanBoogie\Operation
+	 */
+	public $operation;
+
+	/**
+	 * The HTTP request.
+	 *
+	 * @var \ICanBoogie\HTTP\Request
+	 */
+	public $request;
+
+	/**
+	 * Reference to the HTTP response.
+	 *
+	 * @var \ICanBoogie\HTTP\Response
+	 */
+	public $response;
+
+	/**
+	 * The event is constructed with the type `dispatch:before`.
+	 *
+	 * @param Dispatcher $target
+	 * @param array $payload
+	 */
+	public function __construct(Dispatcher $target, Operation $operation, Request $request, &$response)
+	{
+		if ($response !== null && !($response instanceof Response))
+		{
+			throw new \InvalidArgumentException('$response must be an instance of ICanBoogie\HTTP\Response. Given: ' . get_class($response) . '.');
+		}
+
+		$this->operation = $operation;
+		$this->request = $request;
+		$this->response = &$response;
+
+		parent::__construct($target, 'dispatch:before');
+	}
+}
+
+/**
+ * Event class for the `ICanBoogie\Operation\Dispatcher::dispatch` event.
+ *
+ * Third parties may use this event to alter the response before it is returned by the dispatcher.
+ */
+class DispatchEvent extends \ICanBoogie\Event
+{
+	/**
+	 * The operation.
+	 *
+	 * @var \ICanBoogie\Operation
+	 */
+	public $operation;
+
+	/**
+	 * The request.
+	 *
+	 * @var \ICanBoogie\HTTP\Request
+	 */
+	public $request;
+
+	/**
+	 * Reference to the response.
+	 *
+	 * @var \ICanBoogie\HTTP\Response|null
+	 */
+	public $response;
+
+	/**
+	 * The event is constructed with the type `dispatch`.
+	 *
+	 * @param Dispatcher $target
+	 * @param array $payload
+	 */
+	public function __construct(Dispatcher $target, Operation $operation, Request $request, &$response)
+	{
+		$this->operation = $operation;
+		$this->request = $request;
+		$this->response = &$response;
+
+		parent::__construct($target, 'dispatch');
 	}
 }
