@@ -12,7 +12,13 @@ composer.phar:
 	@curl -s https://getcomposer.org/installer | php
 
 vendor: composer.phar
-	@php composer.phar install --dev
+	@php composer.phar install --prefer-source --dev
+
+update: vendor
+	@php composer.phar update --prefer-source --dev
+
+autoload: vendor
+	@php composer.phar dump-autoload
 
 test: vendor
 	@phpunit
@@ -32,6 +38,3 @@ clean:
 	@rm -fR vendor
 	@rm -f composer.lock
 	@rm -f composer.phar
-
-update: composer.phar
-	php composer.phar update --dev

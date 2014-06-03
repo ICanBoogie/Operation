@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-use ICanBoogie\Core;
+global $core;
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
 
@@ -25,19 +25,14 @@ $loader->addClassMap(array(
 
 ));
 
-$core = new Core(array(
+$core = new \ICanBoogie\Core( \ICanBoogie\array_merge_recursive(\ICanBoogie\get_autoconfig(), [
 
-	'modules paths' => array
-	(
-		__DIR__ . '/modules'
-	)
+	'module-path' => [
 
-));
+		__DIR__ . DIRECTORY_SEPARATOR . 'modules'
+
+	]
+
+]) );
 
 $core();
-
-$core->events->attach(function(\ICanBoogie\HTTP\Dispatcher\AlterEvent $event, \ICanBoogie\HTTP\Dispatcher $dispatcher) {
-
-	var_dump($event);
-
-});
