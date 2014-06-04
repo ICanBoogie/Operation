@@ -76,14 +76,12 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	public $errors;
 
-	protected $metas = array();
+	protected $metas = [];
 
 	/**
 	 * Initializes the {@link $errors} property.
-	 *
-	 * @see \ICanBoogie\HTTP\Response::__construct
 	 */
-	public function __construct($body=null, $status=200, array $headers=array())
+	public function __construct($body=null, $status=200, array $headers=[])
 	{
 		parent::__construct($body, $status, $headers);
 
@@ -197,8 +195,6 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	/**
 	 * Checks if a meta exists.
-	 *
-	 * @see ArrayAccess::offsetExists()
 	 */
 	public function offsetExists($offset)
 	{
@@ -207,8 +203,6 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	/**
 	 * Returns a meta or null if it is not defined.
-	 *
-	 * @see ArrayAccess::offsetGet()
 	 */
 	public function offsetGet($offset)
 	{
@@ -217,8 +211,6 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	/**
 	 * Sets a meta.
-	 *
-	 * @see ArrayAccess::offsetSet()
 	 */
 	public function offsetSet($offset, $value)
 	{
@@ -227,8 +219,6 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	/**
 	 * Unsets a meta.
-	 *
-	 * @see ArrayAccess::offsetUnset()
 	 */
 	public function offsetUnset($offset)
 	{
