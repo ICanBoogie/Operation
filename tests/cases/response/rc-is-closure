@@ -1,0 +1,20 @@
+HTTP/1.0 200 OK
+Date: #{date}
+Content-Type: text/plain; charset=utf-8
+Content-Length: 266
+
+<?php
+
+namespace ICanBoogie\Operation;
+
+$response = new Response;
+$response->content_type = "text/plain; charset=utf-8";
+$response->content_length = filesize(__FILE__);
+
+$response->rc = function($response) {
+
+	echo file_get_contents(__FILE__);
+
+};
+
+return $response;

@@ -1,0 +1,6 @@
+HTTP/1.0 400 Bad Request
+Date: #{date}
+Content-Type: application/json
+Content-Length: 144
+
+{"errors":{"_base":"A global error","title":"An error on the \"Title\" field.","password":true,"message":"Message too long; Message too short"}}

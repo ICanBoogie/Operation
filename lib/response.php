@@ -12,6 +12,9 @@
 namespace ICanBoogie\Operation;
 
 use ICanBoogie\Errors;
+use ICanBoogie\HTTP\Headers;
+use ICanBoogie\ToArray;
+use ICanBoogie\ToArrayRecursive;
 
 /**
  * @property string $message The response message.
@@ -87,146 +90,110 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 		$this->errors = new Errors();
 	}
 
-	public function __invoke()
+	/**
+	 * If `$body` is null the function does nothing.
+	 *
+	 * If {@link $rc} is a closure `$body` is set to {@link $rc}.
+	 *
+	 * Otherwise a JSON string is created with the message, errors and {@link $metas} of the
+	 * response. If the response is successful the {@link $rc} property is also present. This JSON
+	 * string is set in `$body`. The `Content-Type` header field is set to
+	 * "application/json" and the `Content-Length` header field is set to the lenght of the JSON
+	 * string.
+	 *
+	 * @see finalize_rc()
+	 */
+	protected function finalize(Headers &$headers, &$body)
 	{
-		if ($this->body !== null)
+		parent::finalize($headers, $body);
+
+		if ($body !== null)
 		{
-			return parent::__invoke();
+			return;
 		}
 
-		$body_data = array();
+		$rc = $this->rc;
 
-		# rc
+		# streaming
 
-		$rc = null;
+		if ($rc instanceof \Closure)
+		{
+			$body = $rc;
+
+			return;
+		}
+
+		# json response
+
+		$data = array_filter([
+
+			'message' => $this->finalize_message($this->message),
+			'errors'  => $this->finalize_errors($this->errors)
+
+		]) + array_map(function($v) { return (string) $v; }, $this->metas);
 
 		if ($this->is_successful)
 		{
-			$rc = $this->rc;
-
-			if (is_object($rc) && method_exists($rc, '__toString'))
-			{
-				$rc = (string) $rc;
-			}
-
-			$body_data['rc'] = $rc;
+			$data = [ 'rc' => $this->finalize_rc($rc) ] + $data;
 		}
 
-		# message
+		$body = json_encode($data);
 
-		$message = $this->message;
-
-		if ($message !== null)
-		{
-			$body_data['message'] = (string) $message;
-		}
-
-		# errors
-
-		if (isset($this->errors) && count($this->errors))
-		{
-			$errors = array();
-
-			foreach ($this->errors as $identifier => $error)
-			{
-				if (!$identifier)
-				{
-					$identifier = '_base';
-				}
-
-				if (isset($errors[$identifier]))
-				{
-					$errors[$identifier] .= '; ' . $error;
-				}
-				else
-				{
-					$errors[$identifier] = is_bool($error) ? $error : (string) $error;
-				}
-			}
-
-			$body_data['errors'] = $errors;
-		}
-
-		# metas
-
-		$body_data += $this->metas;
-
-		/*
-		 * If a location is set on the request it is remove and added to the result message.
-		 * This is because if we use XHR to get the result we don't want that result to go
-		 * avail because the operation usually change the location.
-		 *
-		 * TODO-20110924: for XHR instead of JSON/XML.
-		 */
-		if ($this->location)
-		{
-			$body_data['location'] = $this->location;
-
-			$this->location = null;
-		}
-
-		// FIXME: $rc only if valid !!!
-
-		if (is_array($rc) && !((string) $this->content_type)) // FIXME-20120107: must force 'application/json' for arrays... that might not be fair.
-		{
-			$this->content_type = 'application/json';
-		}
-
-		$body = $rc;
-
-		if ($this->content_type == 'application/json')
-		{
-			$body = json_encode($body_data);
-			$this->content_length = null;
-		}
-		else if ($this->content_type == 'application/xml')
-		{
-			$body = array_to_xml($body_data, 'response');
-			$this->content_length = null;
-		}
-
-		if ($this->content_length === null && is_string($body))
-		{
-			$this->set_content_length(strlen($body));
-		}
-
-		$this->body = $body;
-
-		return parent::__invoke();
+		$headers['Content-Type'] = 'application/json';
+		$headers['Content-Length'] = strlen($body);
 	}
 
-	/*
-	 * TODO-20110923: we used to return *all* the fields of the response, we can't do this anymore
-	 * because most of this stuff belongs to the response object. We need a mean to add
-	 * additional properties, and maybe we could use the response as an array for this purpose:
-	 *
-	 * Example:
-	 *
-	 * $response->rc = true;
-	 * $response['widget'] = (string) new Button('madonna');
-	 *
-	 * This might be better than $response->additional_results->widget = ...;
-	 *
-	 * Or we could let that behind us and force everything in the `rc`:
-	 *
-	 * rc: {
-	 *
-	 *     widget: '<div class="widget-pop-node">...</div>',
-	 *     assets: {
-	 *
-	 *         css: [...],
-	 *         js: [...]
-	 *     }
-	 * }
-	 *
-	 * We could also drop 'rc' because it was used to check if the operation was
-	 * successful (before we handle HTTP status correctly), we might not need it anymore.
-	 *
-	 * If the operation returns anything but an array, it is converted into an array with the 'rc'
-	 * key and the value, 'success' and 'errors' are added if needed. This only apply to XHR
-	 * request !!
-	 *
-	 */
+	protected function finalize_rc($rc)
+	{
+		if (is_object($rc))
+		{
+			if (method_exists($rc, '__toString'))
+			{
+				return (string) $rc;
+			}
+
+			if ($rc instanceof ToArrayRecursive)
+			{
+				return $rc->to_array_recursive();
+			}
+
+			if ($rc instanceof ToArray)
+			{
+				return $rc->to_array();
+			}
+		}
+
+		return $rc;
+	}
+
+	protected function finalize_message($message)
+	{
+		return (string) $message;
+	}
+
+	protected function finalize_errors($errors)
+	{
+		$simplified = [];
+
+		foreach ($errors as $identifier => $message)
+		{
+			if (!$identifier)
+			{
+				$identifier = '_base';
+			}
+
+			if (isset($simplified[$identifier]))
+			{
+				$simplified[$identifier] .= '; ' . $message;
+			}
+			else
+			{
+				$simplified[$identifier] = is_bool($message) ? $message : (string) $message;
+			}
+		}
+
+		return $simplified;
+	}
 
 	/**
 	 * Checks if a meta exists.
@@ -267,77 +234,4 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	{
 		unset($this->metas[$offset]);
 	}
-}
-
-function array_to_xml($array, $parent='root', $encoding='utf-8', $nest=1)
-{
-	$rc = '';
-
-	if ($nest == 1)
-	{
-		#
-		# first level, time to write the XML header and open the root markup
-		#
-
-		$rc .= '<?xml version="1.0" encoding="' . $encoding . '"?>' . PHP_EOL;
-		$rc .= '<' . $parent . '>' . PHP_EOL;
-	}
-
-	$tab = str_repeat("\t", $nest);
-
-	if (substr($parent, -3, 3) == 'ies')
-	{
-		$collection = substr($parent, 0, -3) . 'y';
-	}
-	else if (substr($parent, -2, 2) == 'es')
-	{
-		$collection = substr($parent, 0, -2);
-	}
-	else if (substr($parent, -1, 1) == 's')
-	{
-		$collection = substr($parent, 0, -1);
-	}
-	else
-	{
-		$collection = 'entry';
-	}
-
-	foreach ($array as $key => $value)
-	{
-		if (is_numeric($key))
-		{
-			$key = $collection;
-		}
-
-		if (is_array($value) || is_object($value))
-		{
-			$rc .= $tab . '<' . $key . '>' . PHP_EOL;
-			$rc .= wd_array_to_xml((array) $value, $key, $encoding, $nest + 1);
-			$rc .= $tab . '</' . $key . '>' . PHP_EOL;
-
-			continue;
-		}
-
-		#
-		# if we find special chars, we put the value into a CDATA section
-		#
-
-		if (strpos($value, '<') !== false || strpos($value, '>') !== false || strpos($value, '&') !== false)
-		{
-			$value = '<![CDATA[' . $value . ']]>';
-		}
-
-		$rc .= $tab . '<' . $key . '>' . $value . '</' . $key . '>' . PHP_EOL;
-	}
-
-	if ($nest == 1)
-	{
-		#
-		# first level, time to close the root markup
-		#
-
-		$rc .= '</' . $parent . '>';
-	}
-
-	return $rc;
 }
