@@ -128,7 +128,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 			'message' => $this->finalize_message($this->message),
 			'errors'  => $this->finalize_errors($this->errors)
 
-		]) + array_map(function($v) { return (string) $v; }, $this->metas);
+		]) + array_map(function($v) { return $this->finalize_value($v); }, $this->metas);
 
 		if ($this->is_successful)
 		{
@@ -141,27 +141,54 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 		$headers['Content-Length'] = strlen($body);
 	}
 
-	protected function finalize_rc($rc)
+	/**
+	 * Tries to transforms a value into a simple type such as a scalar or an array.
+	 *
+	 * The following transformations occur:
+	 *
+	 * - `$value` is an object and implements `__toString`: A string is returned.
+	 * - `$value` is an object and implements {@link ToArrayRecursive}: An array is returned.
+	 * - `$value` is an object and implements {@link ToArray}: An array is returned.
+	 *
+	 * Otherwise the value is returned as is.
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	protected function finalize_value($value)
 	{
-		if (is_object($rc))
+		if (is_object($value))
 		{
-			if (method_exists($rc, '__toString'))
+			if (method_exists($value, '__toString'))
 			{
-				return (string) $rc;
+				return (string) $value;
 			}
 
-			if ($rc instanceof ToArrayRecursive)
+			if ($value instanceof ToArrayRecursive)
 			{
-				return $rc->to_array_recursive();
+				return $value->to_array_recursive();
 			}
 
-			if ($rc instanceof ToArray)
+			if ($value instanceof ToArray)
 			{
-				return $rc->to_array();
+				return $value->to_array();
 			}
 		}
 
-		return $rc;
+		return $value;
+	}
+
+	/**
+	 * Finaly a value of the {@link $rc} property using {@link finalize_value()}.
+	 *
+	 * @param mixed $rc
+	 *
+	 * @return mixed
+	 */
+	protected function finalize_rc($rc)
+	{
+		return $this->finalize_value($rc);
 	}
 
 	protected function finalize_message($message)
