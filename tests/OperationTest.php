@@ -13,7 +13,6 @@ namespace ICanBoogie\Operation;
 
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
-use ICanBoogie\Routes;
 
 use ICanBoogie\Operation\Modules\Sample\SuccessOperation;
 use ICanBoogie\Operation\Modules\Sample\ErrorOperation;
