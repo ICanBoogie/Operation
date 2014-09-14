@@ -17,7 +17,7 @@ use ICanBoogie\Operation;
 /**
  * Dispatches operation requests.
  */
-class Dispatcher implements \ICanBoogie\HTTP\IDispatcher
+class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 {
 	/**
 	 * Tries to create an {@link Operation} instance from the specified request. The operation
