@@ -133,13 +133,25 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$response = $operation(Request::from());
 	}
 
-	/**
-	 * @expectedException ICanBoogie\Operation\Modules\Sample\SampleException
-	 */
 	public function test_operation_invoke_exception()
 	{
 		$operation = new ExceptionOperation;
-		$response = $operation(Request::from());
+
+		try
+		{
+			$response = $operation(Request::from());
+
+			$this->fail("Expected Failure");
+		}
+		catch (\Exception $e)
+		{
+			$previous = $e->previous;
+			$response = $e->operation->response;
+
+			$this->assertInstanceOf('ICanBoogie\Operation\Failure', $e);
+			$this->assertInstanceOf('ICanBoogie\Operation\Modules\Sample\SampleException', $previous);
+			$this->assertEquals($previous->getMessage(), $response->message);
+		}
 	}
 
 	/*

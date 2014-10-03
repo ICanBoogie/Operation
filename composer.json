@@ -26,7 +26,8 @@
 		"icanboogie/routing": "2.x"
 	},
 	"require-dev": {
-		"icanboogie/icanboogie": "2.x"
+		"icanboogie/icanboogie": "2.x",
+		"icanboogie/module": "2.x"
 	},
 	"autoload": {
 		"classmap": [ "lib/" ]

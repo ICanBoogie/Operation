@@ -2,20 +2,17 @@
 
 namespace ICanBoogie\Operation\Modules\Sample;
 
-class ExceptionOperation extends \ICanBoogie\Operation
+use ICanBoogie\Operation\FormHasExpired;
+
+class ExpiredOperation extends \ICanBoogie\Operation
 {
 	protected function validate(\ICanBoogie\Errors $errors)
 	{
-		throw new SampleException('My Exception Message.', 500);
+		throw new FormHasExpired;
 	}
 
 	protected function process()
 	{
 		return true;
 	}
-}
-
-class SampleException extends \Exception
-{
-
 }

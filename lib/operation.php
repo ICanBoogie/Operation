@@ -797,7 +797,11 @@ abstract class Operation extends Object
 		}
 		catch (\Exception $e)
 		{
-			throw $e;
+			$this->response->status = $e->getCode();
+			$this->response->message = $e->getMessage();
+			$this->response['errors'] = [ '_base' => $e->getMessage() ]; // COMPAT-20140310
+
+			throw new Failure($this, $e);
 		}
 
 		$response->rc = $rc;

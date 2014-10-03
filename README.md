@@ -152,6 +152,16 @@ Note that successful responses with a location are NOT discarted.
 
 
 
+### Exceptions
+
+Exceptions thrown during the process (control/validation/processing) are caught and turned into
+[Failure][] exceptions. The original exception is accessible using `getPrevious()` or the
+`previous` property. Unless the exception if an instance of [FormHasExpired][] the response
+is updated with the status code and message of the exception.
+
+
+
+
 
 ## Response
 
@@ -379,3 +389,5 @@ ICanBoogie/Operation is licensed under the New BSD License - See the LICENSE fil
 
 [module Nodes]: https://github.com/Icybee/module-nodes
 [Operation]: http://icanboogie.org/docs/class-ICanBoogie.Operation.html
+[Failure]: http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html
+[FormHasExpired]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FormHasExpired.html

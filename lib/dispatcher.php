@@ -82,19 +82,40 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 		{
 			$operation = $exception->operation;
 
-			if ($operation->request->is_xhr)
+			#
+			# We try to rescue the previous exception first. Note that `previous` is null if the
+			# exception was thrown because the response is not successful. Thus, if `previous` is
+			# not `null`, an exception *did* occur.
+			#
+
+			$previous = $exception->previous;
+
+			if ($previous)
 			{
-				return $operation->response;
+				new Operation\RescueEvent($exception, $request, $operation, $response);
+
+				if ($response)
+				{
+					return $response;
+				}
 			}
-
-			#
-			# if the operation was forwarded we simply return so that the response for the actual
-			# URL is returned.
-			#
-
-			else if ($operation->is_forwarded)
+			else
 			{
-				return;
+				#
+				# If the operation was forwarded we simply return so that the response for the actual
+				# URL is returned, unless the request is an XHR.
+				#
+
+				if ($operation->is_forwarded && !$request->is_xhr)
+				{
+					return;
+				}
+
+				#
+				# Otherwise we return the unsuccessful response.
+				#
+
+				return $operation->response;
 			}
 		}
 
