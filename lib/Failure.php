@@ -12,7 +12,6 @@
 namespace ICanBoogie\Operation;
 
 use ICanBoogie\Operation;
-use ICanBoogie\PropertyNotDefined;
 
 /**
  * Exception raised when an operation fails.
