@@ -81,6 +81,7 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 		if ($exception instanceof Failure)
 		{
 			$operation = $exception->operation;
+			$response = $operation->response;
 
 			#
 			# We try to rescue the previous exception first. Note that `previous` is null if the
@@ -115,7 +116,7 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 				# Otherwise we return the unsuccessful response.
 				#
 
-				return $operation->response;
+				return $response;
 			}
 		}
 
