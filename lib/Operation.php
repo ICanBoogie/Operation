@@ -797,7 +797,7 @@ abstract class Operation extends Object
 		}
 		catch (\Exception $e)
 		{
-			$this->response->status = $e->getCode();
+			$this->response->status = $e->getCode() ?: 500;
 			$this->response->message = $e->getMessage();
 			$this->response['errors'] = [ '_base' => $e->getMessage() ]; // COMPAT-20140310
 
