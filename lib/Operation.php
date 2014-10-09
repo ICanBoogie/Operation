@@ -19,6 +19,7 @@ use ICanBoogie\Operation\Failure;
 use ICanBoogie\Operation\FailureEvent;
 use ICanBoogie\Operation\GetFormEvent;
 use ICanBoogie\Operation\FormHasExpired;
+use ICanBoogie\Operation\FormNotFound;
 use ICanBoogie\Operation\BeforeControlEvent;
 use ICanBoogie\Operation\ControlEvent;
 use ICanBoogie\Operation\BeforeValidateEvent;
@@ -1144,6 +1145,11 @@ abstract class Operation extends Object
 	protected function control_form()
 	{
 		$form = $this->form;
+
+		if (!$form)
+		{
+			throw new FormNotFound($this);
+		}
 
 		return ($form && $form->validate($this->request->params, $this->response->errors));
 	}

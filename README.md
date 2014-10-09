@@ -337,6 +337,7 @@ The following exceptions are defined:
 
 - [Failure][]: Exception raised when an operation fails.
 - [FormHasExpired][]: Exception thrown when the form associated with an operation has expired.
+- [FormNotFound][]: Exception thrown when the form associated with the operation cannot be found.
 
 
 
@@ -423,3 +424,4 @@ ICanBoogie/Operation is licensed under the New BSD License - See the LICENSE fil
 [Operation]: http://icanboogie.org/docs/class-ICanBoogie.Operation.html
 [Failure]: http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html
 [FormHasExpired]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FormHasExpired.html
+[FormNotFound]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FormNotFound.html
