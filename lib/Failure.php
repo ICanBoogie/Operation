@@ -19,7 +19,7 @@ use ICanBoogie\Operation;
  * @property-read Operation $operation The operation that failed.
  * @property-read \Exception $previous The previous exception.
  */
-class Failure extends \ICanBoogie\HTTP\HTTPError
+class Failure extends \ICanBoogie\HTTP\HTTPError implements Exception
 {
 	use \ICanBoogie\GetterTrait;
 

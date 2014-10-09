@@ -311,6 +311,38 @@ $path = $core->routes['api:nodes/online']->format($node);
 
 
 
+## Exceptions
+
+The exception classes defined by the package implement the `ICanBoogie\Operation\Exception`
+interface so that they can easily be identified:
+
+```php
+<?php
+
+try
+{
+	// …
+}
+catch (\ICanBoogie\Operation\Exception $e)
+{
+	// an Operation exception
+}
+catch (\Exception $e)
+{
+	// some other exception
+}
+```
+
+The following exceptions are defined:
+
+- [Failure][]: Exception raised when an operation fails.
+- [FormHasExpired][]: Exception thrown when the form associated with an operation has expired.
+
+
+
+
+
+
 -----
 
 

@@ -16,7 +16,7 @@ namespace ICanBoogie\Operation;
  *
  * The exception is considered recoverable, if the request is not XHR.
  */
-class FormHasExpired extends \Exception
+class FormHasExpired extends \Exception implements Exception
 {
 	public function __construct($message="The form associated with the request has expired.", $code=500, \Exception $previous=null)
 	{
