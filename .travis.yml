@@ -12,4 +12,4 @@ matrix:
 
 before_script:
   - composer self-update
-  - composer install --no-interaction --prefer-source --dev
+  - COMPOSER_ROOT_VERSION=2.0.x-dev composer install --no-interaction --prefer-source --dev
