@@ -88,7 +88,7 @@ abstract class Operation extends Object
 	 *
 	 * An operation can be defined as a route, in which case the path of the request starts with
 	 * "/api/". An operation can also be defined using the request parameters, in which case
-	 * the {@link DESTINATION}, {@link NAME} and optionaly {@link KEY} parameters are defined
+	 * the {@link DESTINATION}, {@link NAME} and optionally {@link KEY} parameters are defined
 	 * within the request parameters.
 	 *
 	 * When the operation is defined as a route, the method searches for a matching route.
@@ -104,7 +104,7 @@ abstract class Operation extends Object
 	 * if the operation was defined using parameters instead of the REST API.
 	 *
 	 * Finally, the method searches for the {@link DESTINATION}, {@link NAME} and optional
-	 * {@link KEY} aparameters within the request parameters to create the Operation instance.
+	 * {@link KEY} parameters within the request parameters to create the Operation instance.
 	 *
 	 * If no operation was found in the request, the method returns null.
 	 *
@@ -790,19 +790,13 @@ abstract class Operation extends Object
 				}
 			}
 		}
-		catch (Operation\FormHasExpired $e)
+		catch (\Exception $exception)
 		{
-			log_error($e->getMessage());
+			$response->status = $exception->getCode() ?: 500;
+			$response->message = $exception->getMessage();
+			$response['errors'] = [ '_base' => $exception->getMessage() ]; // COMPAT-20140310
 
-			throw new Failure($this, $e);
-		}
-		catch (\Exception $e)
-		{
-			$this->response->status = $e->getCode() ?: 500;
-			$this->response->message = $e->getMessage();
-			$this->response['errors'] = [ '_base' => $e->getMessage() ]; // COMPAT-20140310
-
-			throw new Failure($this, $e);
+			throw new Failure($this, $exception);
 		}
 
 		$response->rc = $rc;
@@ -866,7 +860,7 @@ abstract class Operation extends Object
 			$response->body = '';
 			$response->headers['Referer'] = $request->uri;
 		}
-		else if ($response->status == 304)
+		else if ($response->status == 304) // FIXME-20141009: is this still relevant ?
 		{
 			$response->body = '';
 		}

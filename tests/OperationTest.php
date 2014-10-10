@@ -19,6 +19,7 @@ use ICanBoogie\Operation\Modules\Sample\ErrorOperation;
 use ICanBoogie\Operation\Modules\Sample\FailureOperation;
 use ICanBoogie\Operation\Modules\Sample\ExceptionOperation;
 use ICanBoogie\Operation\OperationTest\LocationOperation;
+use ICanBoogie\HTTP\Response;
 
 class OperationTest extends \PHPUnit_Framework_TestCase
 {
@@ -130,7 +131,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 	public function test_operation_invoke_failed()
 	{
 		$operation = new FailureOperation;
-		$response = $operation(Request::from());
+		$operation(Request::from());
 	}
 
 	public function test_operation_invoke_exception()
@@ -150,8 +151,81 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 			$this->assertInstanceOf('ICanBoogie\Operation\Failure', $e);
 			$this->assertInstanceOf('ICanBoogie\Operation\Modules\Sample\SampleException', $previous);
+
 			$this->assertEquals($previous->getMessage(), $response->message);
 		}
+	}
+
+	/**
+	 * @expectedException ICanBoogie\Operation\Modules\Sample\SampleException
+	 */
+	public function test_operation_invoke_exception_using_dispatch()
+	{
+		$request = Request::from('/api/exception');
+		$request();
+	}
+
+	public function test_operation_invoke_exception_using_dispatch_and_xhr()
+	{
+		$request = Request::from([
+
+			'uri' => '/api/exception',
+			'is_xhr' => true
+
+		]);
+
+		$response = $request();
+		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
+		$this->assertEquals("My Exception Message.", $response->message);
+		$this->assertFalse($response->is_successful);
+		$this->assertEquals(500, $response->status);
+	}
+
+	public function test_operation_rescue()
+	{
+		global $core;
+
+		$rescue_response = new Response("Rescued!", 200);
+
+		$eh = $core->events->attach(function(RescueEvent $event, ExceptionOperation $target) use($rescue_response) {
+
+			$event->response = $rescue_response;
+
+		});
+
+		$request = Request::from('/api/exception');
+		$response = $request();
+
+		$this->assertSame($rescue_response, $response);
+
+		$eh->detach();
+	}
+
+	public function test_operation_replace_exception()
+	{
+		global $core;
+
+		$exception = new \Exception("My exception");
+
+		$eh = $core->events->attach(function(RescueEvent $event, ExceptionOperation $target) use($exception) {
+
+			$event->exception = $exception;
+
+		});
+
+		try
+		{
+			$request = Request::from('/api/exception');
+			$request();
+
+			$this->fail('An exception should have been raised.');
+		}
+		catch (\Exception $e)
+		{
+			$this->assertSame($exception, $e);
+		}
+
+		$eh->detach();
 	}
 
 	/*

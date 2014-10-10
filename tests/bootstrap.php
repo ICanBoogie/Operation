@@ -28,6 +28,12 @@ $loader->addClassMap(array(
 
 $core = new \ICanBoogie\Core( \ICanBoogie\array_merge_recursive(\ICanBoogie\get_autoconfig(), [
 
+	'config-path' => [
+
+		__DIR__ . DIRECTORY_SEPARATOR . 'config' => 10
+
+	],
+
 	'module-path' => [
 
 		__DIR__ . DIRECTORY_SEPARATOR . 'modules'

@@ -16,31 +16,44 @@ use ICanBoogie\Operation;
 
 /**
  * Event class for the `ICanBoogie\Operation::rescue` event.
- *
- * The class extends {@link \ICanBoogie\Exception\RescueEvent} to provide the operation object
- * which processing raised an exception.
  */
-class RescueEvent extends \ICanBoogie\Exception\RescueEvent
+class RescueEvent extends \ICanBoogie\Event
 {
 	/**
-	 * Operation to rescue.
+	 * Reference to the exception that made the operation fail.
 	 *
-	 * @var \ICanBoogie\Operation
+	 * @var \Exception
 	 */
-	public $operation;
+	public $exception;
 
 	/**
-	 * Initializes the {@link $operation} property.
+	 * The request.
 	 *
-	 * @param \Exception $target
-	 * @param \ICanBoogie\HTTP\Request $request
-	 * @param \ICanBoogie\Operation $operation
-	 * @param \ICanBoogie\HTTP\Response|null $response
+	 * @var Request
 	 */
-	public function __construct(\Exception &$target, Request $request, Operation $operation, &$response)
-	{
-		$this->operation = $operation;
+	public $request;
 
-		parent::__construct($target, $request, $response);
+	/**
+	 * Reference to the rescue response.
+	 *
+	 * @var Response
+	 */
+	public $response;
+
+	/**
+	 * The event is constructed with the type `rescue`.
+	 *
+	 * @param Operation $target
+	 * @param \Exception $exception
+	 * @param Request $request
+	 * @param Response|null $response
+	 */
+	public function __construct(Operation $target, \Exception &$exception, Request $request, &$response)
+	{
+		$this->exception = &$exception;
+		$this->request = $request;
+		$this->response = &$response;
+
+		parent::__construct($target, 'rescue');
 	}
 }

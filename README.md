@@ -7,6 +7,30 @@ and for responding to events triggered by user interactions.
 
 
 
+### Preamble
+
+Events in this document are often referenced as `ICanBoogie\Operation::<event_type>`, where
+`<event_type>` is the type of the event. For instance, `ICanBoogie\Operation::rescue` is an event
+of type `rescue`, fired on an instance of `ICanBoogie\Operation`.  Now consider a `SaveOperation`
+class inheriting from `ICanBoogie\Operation`. The `rescue` event
+could also be fired on one of its instances, and an event hook could be attached to
+`SaveOperation::rescue` to rescue the operation.
+
+Because the event system is based on class hierarchy
+an event hook attached to `SaveOperation::rescue` is only invoked to rescue instances of `SaveOperation` and its subclasses,
+whereas an event hook attached to `ICanBoogie\Operation::rescue` is invoked to rescue instances of
+`ICanBoogie\Operation` and its subclasses, including `SaveOperation`.
+
+Thus, when you see `ICanBoogie\Operation::rescue` read _"the event type 'rescue' fired on an instance
+of the ICanBoogie\Operation subclass I want to listen to"_.
+
+Please read the [documentation of the icanboogie/event package] for more details about the event
+system.
+
+
+
+
+
 ## Operation
 
 An instance of [Operation][] represents an operation. Although the class provides many control
@@ -17,7 +41,7 @@ by subclasses, according to their design.
 
 
 
-### Control of the operation
+### Controlling the operation
 
 Before the operation can be validated and processed, controls are ran. The controls to run are
 defined by the operation. The following controls are implemented and can be extended:
@@ -28,8 +52,9 @@ defined by the operation. The following controls are implemented and can be exte
 to retrieve the record.
 - `CONTROL_OWNERSHIP`: Controls the ownership of the record by the user.
 - `CONTROL_FORM`: Controls the form associated with the operation. The getter `form` is used to
-retrieve the form. The exception [FormHasExpired](http://icanboogie.org/docs/class-ICanBoogie.Operation.FormHasExpired.html)
-can be thrown to indicate that the form associated with the operation has expired.
+retrieve the form. [FormNotFound][] can be thrown if the form associated with the operation
+cannot be found. [FormHasExpired][] can be thrown to indicate that the form associated with the
+operation has expired.
 
 The controls definition is obtained though the `controls` magic property:
 
@@ -44,12 +69,12 @@ class SaveOperation extends Operation
 	protected function get_controls()
 	{
 		return [
-		
+
 			self::CONTROL_PERMISSION => Module::PERMISSION_CREATE,
 			self::CONTROL_RECORD => true,
 			self::CONTROL_OWNERSHIP => true,
 			self::CONTROL_FORM => true
-		
+
 		] + parent::get_controls();
 	}
 }
@@ -58,13 +83,13 @@ class SaveOperation extends Operation
 The following events are fired during the process:
 
 - Before the control of the operation by the `control()` method, the event
-`ICanBoogie\Operation::control:before` of class [BeforeControlEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.BeforeControlEvent.html)
-is fired. Third parties may use this event to alter the controls to run, or clear them altogether.
+`ICanBoogie\Operation::control:before` of class [BeforeControlEvent][] is fired. Third parties
+may use this event to alter the controls to run, or clear them altogether.
 
-- The event `ICanBoogie\Operation::control` of class [ControlEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.ControlEvent.html)
-is fired after the control. Third parties may use this event to alter the outcome of the control.
+- The event `ICanBoogie\Operation::control` of class [ControlEvent][] is fired after the control.
+Third parties may use this event to alter the outcome of the control.
 
-- On failure the event `ICanBoogie\Operation::failure` of class [FailureEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.FailureEvent.html)
+- On failure the event `ICanBoogie\Operation::failure` of class [FailureEvent][]
 is fired, with its `type` property set to `control`.
 
 - The event `ICanBoogie\Operation::get_form` of class [GetFormEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.GetFormEvent.html)
@@ -75,7 +100,7 @@ to parameters of the request.
 
 
 
-### Validation
+### Validating the operation
 
 The operation needs to be validated before it is processed. The `validate()` method is invoked to
 validate the operation. Errors should be collected in the provided `$errors` collection. The
@@ -89,14 +114,13 @@ is fired. Third parties may use this event to alter the errors or the status of 
 - After the validation the event `ICanBoogie\Operation::validate` of class [ValidateEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.ValidateEvent.html)
 is fired. Third parties may use this event to alter the errors or the outcome of the validation.
 
-- On failure the event `ICanBoogie\Operation::failure` of class [FailureEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.FailureEvent.html)
-is fired.
+- On failure the event `ICanBoogie\Operation::failure` of class [FailureEvent][] is fired.
 
 
 
 
 
-### Processing
+### Processing the operation
 
 After the control and the validation, the operation is finally processed by invoking its
 `process()` method. The processing of the operation is considered failed if the method returns
@@ -114,14 +138,34 @@ is fired. Third parties may use this event to alter the result, request or respo
 
 
 
-### Forwarded operation
+### Handling failure
 
-An operation is considered "forwarded" when the actual destination and operation name is defined
+Exceptions thrown during the process (control/validation/processing) are caught and turned into
+[Failure][] exceptions. The original exception is accessible using the `getPrevious()` method or
+the `previous` property. The response of the operation is updated with the exception code and
+message.
+
+A [Failure][] exception is also thrown in the response has a client or server error, in which case
+the exception is fired without a previous exception.
+
+**Note**: Failed operations can be rescued by the operation dispatcher.
+
+
+
+
+
+
+
+## Forwarded operations
+
+An operation is considered _forwarded_ when the actual destination and operation name is defined
 using the request parameters [Operation::DESTINATION](http://icanboogie.org/docs/class-ICanBoogie.Operation.html#DESTINATION)
 and [Operation::NAME](http://icanboogie.org/docs/class-ICanBoogie.Operation.html#NAME). The URL of the request
-is irrelevant to forwarded operation, more over whether they succeed or fail the dispatch process
-simply continues. This allows forms to be posted to their own _view_ URL (not the URL of the
-operation) and displayed again if an error occurs.
+is irrelevant to forwarded operations, moreover whether they succeed or fail the dispatch process
+simply continues. For instance, this allows forms to be posted to their own _view_ URL (not the
+URL of the operation) and displayed again if an error occurs.
+
+**Note**: Successful responses with a `location` are NOT discarded, they will redirect the request.
 
 ```php
 <?php
@@ -133,7 +177,7 @@ $request = Request::from([
 
 	'path' => '/',
 	'request_params' => [
-	
+
 		Operation::DESTINATION => 'form',
 		Operation::NAME => 'post',
 
@@ -145,19 +189,6 @@ $operation = Operation::from($request);
 
 $operation->is_forwarded; // true
 ```
-
-Note that successful responses with a location are NOT discarted.
-
-
-
-
-
-### Exceptions
-
-Exceptions thrown during the process (control/validation/processing) are caught and turned into
-[Failure][] exceptions. The original exception is accessible using `getPrevious()` or the
-`previous` property. Unless the exception if an instance of [FormHasExpired][] the response
-is updated with the status code and message of the exception.
 
 
 
@@ -189,7 +220,7 @@ resource. The `location` property of the response is used to set that header.
 Redirecting a XHR is not a desirable behavior because although we might want to redirect the user,
 we still need to get the result of our request first. In that case, the value of the `location`
 property is moved to the `redirect_to` field and the `location` property is set to `null`.
-Thus, the browser redirection is disabled, the response is returned and it's up to the developper
+Thus, the browser redirection is disabled, the response is returned and it's up to the developer
 to choose if he should honor the redirection or not.
 
 
@@ -200,7 +231,7 @@ to choose if he should honor the redirection or not.
 
 The package provides an HTTP dispatcher to dispatch operations. It should be placed at the top of
 the dispatcher chain, before any routing. The dispatcher tries to create an `Operation` instance
-from the specified request, and returns immediatly if it fails.
+from the specified request, and returns immediately if it fails.
 
 
 
@@ -208,37 +239,35 @@ from the specified request, and returns immediatly if it fails.
 
 ### Handling of the operation response
 
-The dispatcher discarts responses from forwarded operations unless the request is an XHR or the
-response has a location. Remember that failed operations throw a [Failure](http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html)
-exception, which can be rescued.
+The dispatcher discards responses from forwarded operations unless the request is an XHR or the
+response has a location. Remember that failed operations throw a [Failure][] exception, which can
+be rescued.
 
 
 
 
 
-### Rescuing an operation
+### Rescuing failed operations
 
-If an exception is thrown during the dispatch of the operation a `rescue` event of class
-[RescueEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.RescueEvent.html) is fired
-upon the exception. The class extends the [RescueEvent](http://icanboogie.org/docs/class-ICanBoogie.Exception.RescueEvent.html)
-with the operation object.
+If an exception is thrown during the dispatch of the operation, the dispatcher tries to rescue
+it using the following steps:
 
-A third party may produce a response or a new exception.
+1. The `ICanBoogie\Operation::rescue` event of class [RescueEvent][] is fired.
+Event hooks attached to this event may replace the exception or provide a response. If a response
+is provided it is returned.
+2. Otherwise, if the exception is not an instance of [Failure][] the exception is
+re-thrown.
+3. Otherwise, if the request is an XHR the response of the operation is returned.
+4. Otherwise, if the operation was forwarded the exception message is logged as an error
+and the method returns.
+5. Otherwise, the exception is re-thrown.
 
+In summary, a failed operation is rescued if a response is provided during the
+`ICanBoogie\Operation::rescue` event, or later if the request is an XHR. Although the rescue of an
+operation might be successful, the returned response can be an error response.
 
-
-
-
-#### Rescuing a `Failure` exception
-
-A [Failure](http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html) exception is
-thrown when the operation response code is a client error or a server
-error. The exception might be rescued by the dispatcher in the following cases:
-
-- The request is an XHR: the response of the operation is returned.
-
-- The operation was _forwarded_ (see above): the exception is discarted and the dispatch of the
-request continues.
+**Note:** If the operation is forwarded and the operation could not be rescued the request
+dispatching process will simply continue.
 
 
 
@@ -420,8 +449,13 @@ ICanBoogie/Operation is licensed under the New BSD License - See the LICENSE fil
 
 
 
+[documentation of the icanboogie/event package]: https://github.com/ICanBoogie/Event
 [module Nodes]: https://github.com/Icybee/module-nodes
-[Operation]: http://icanboogie.org/docs/class-ICanBoogie.Operation.html
+[BeforeControlEvent]: http://icanboogie.org/docs/class-ICanBoogie.Operation.BeforeControlEvent.html
+[ControlEvent]: http://icanboogie.org/docs/class-ICanBoogie.Operation.ControlEvent.html
+[FailureEvent]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FailureEvent.html
 [Failure]: http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html
 [FormHasExpired]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FormHasExpired.html
 [FormNotFound]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FormNotFound.html
+[Operation]: http://icanboogie.org/docs/class-ICanBoogie.Operation.html
+[RescueEvent]: http://icanboogie.org/docs/class-ICanBoogie.Operation.RescueEvent.html
