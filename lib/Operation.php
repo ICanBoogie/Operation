@@ -73,7 +73,7 @@ abstract class Operation extends Object
 	 *
 	 * @return Operation
 	 */
-	static public function from($properties=null, array $construct_args=array(), $class_name=null)
+	static public function from($properties=null, array $construct_args=[], $class_name=null)
 	{
 		if ($properties instanceof Request)
 		{
@@ -184,7 +184,7 @@ abstract class Operation extends Object
 
 				if (!$matches)
 				{
-					throw new NotFound(format('Unknown operation %operation.', array('operation' => $path)));
+					throw new NotFound(format('Unknown operation %operation.', [ 'operation' => $path ]));
 				}
 
 				list(, $module_id, $operation_key) = $matches;
@@ -202,7 +202,7 @@ abstract class Operation extends Object
 
 				if (!$matches)
 				{
-					throw new NotFound(format('Unknown operation %operation.', array('operation' => $path)));
+					throw new NotFound(format('Unknown operation %operation.', [ 'operation' => $path ]));
 				}
 
 				list(, $module_id, , $operation_key, $operation_name) = $matches;
@@ -210,7 +210,7 @@ abstract class Operation extends Object
 
 			if (empty($core->modules->descriptors[$module_id]))
 			{
-				throw new NotFound(format('Unknown operation %operation.', array('operation' => $path)));
+				throw new NotFound(format('Unknown operation %operation.', [ 'operation' => $path ]));
 			}
 
 			if ($operation_key)
@@ -311,11 +311,11 @@ abstract class Operation extends Object
 			{
 				throw new \Exception(format
 				(
-					'The controller for the route %route failed to produce an operation object, %rc returned.', array
-					(
+					'The controller for the route %route failed to produce an operation object, %rc returned.', [
+
 						'route' => $path,
 						'rc' => $operation
-					)
+					]
 				));
 			}
 
@@ -368,11 +368,11 @@ abstract class Operation extends Object
 		{
 			throw new HTTPError(format
 			(
-				'The operation %operation is not supported by the module %module.', array
-				(
+				'The operation %operation is not supported by the module %module.', [
+
 					'%module' => (string) $module,
 					'%operation' => $operation_name
-				)
+				]
 			), 404);
 		}
 
@@ -387,7 +387,7 @@ abstract class Operation extends Object
 	 *
 	 * @return string The operation encoded as a RESTful relative URL.
 	 */
-	static public function encode($pattern, array $params=array())
+	static public function encode($pattern, array $params=[])
 	{
 		$destination = null;
 		$name = null;
@@ -416,17 +416,13 @@ abstract class Operation extends Object
 
 		$qs = http_build_query($params, '', '&');
 
-		$rc = self::RESTFUL_BASE . strtr
-		(
-			$pattern, array
-			(
-				'{destination}' => $destination,
-				'{name}' => $name,
-				'{key}' => $key
-			)
-		)
+		$rc = self::RESTFUL_BASE . strtr($pattern, [
 
-		. ($qs ? '?' . $qs : '');
+			'{destination}' => $destination,
+			'{name}' => $name,
+			'{key}' => $key
+
+		]) . ($qs ? '?' . $qs : '');
 
 		return \ICanBoogie\Routing\contextualize($rc);
 	}
@@ -503,8 +499,8 @@ abstract class Operation extends Object
 	 */
 	protected function get_controls()
 	{
-		return array
-		(
+		return [
+
 			self::CONTROL_METHOD => false,
 			self::CONTROL_SESSION_TOKEN => false,
 			self::CONTROL_AUTHENTICATION => false,
@@ -512,7 +508,8 @@ abstract class Operation extends Object
 			self::CONTROL_RECORD => false,
 			self::CONTROL_OWNERSHIP => false,
 			self::CONTROL_FORM => false
-		);
+
+		];
 	}
 
 	/**
@@ -574,7 +571,7 @@ abstract class Operation extends Object
 	 */
 	protected function lazy_get_properties()
 	{
-		return array();
+		return [];
 	}
 
 	/**
@@ -731,7 +728,7 @@ abstract class Operation extends Object
 		{
 			$controls = $this->controls;
 			$control_success = true;
-			$control_payload = array('success' => &$control_success, 'controls' => &$controls, 'request' => $request);
+			$control_payload = [ 'success' => &$control_success, 'controls' => &$controls, 'request' => $request ];
 
 			new BeforeControlEvent($this, $control_payload);
 
@@ -754,7 +751,7 @@ abstract class Operation extends Object
 			else
 			{
 				$validate_success = true;
-				$validate_payload = array('success' => &$validate_success, 'errors' => &$response->errors, 'request' => $request);
+				$validate_payload = [ 'success' => &$validate_success, 'errors' => &$response->errors, 'request' => $request ];
 
 				new BeforeValidateEvent($this, $validate_payload);
 
@@ -776,7 +773,7 @@ abstract class Operation extends Object
 				}
 				else
 				{
-					new BeforeProcessEvent($this, array('request' => $request, 'response' => $response, 'errors' => $response->errors));
+					new BeforeProcessEvent($this, [ 'request' => $request, 'response' => $response, 'errors' => $response->errors ]);
 
 					if (!$response->errors->count())
 					{
@@ -822,11 +819,11 @@ abstract class Operation extends Object
 
 		if ($rc === null)
 		{
-			$response->status = array(400, 'Operation failed');
+			$response->status = [ 400, 'Operation failed' ];
 		}
 		else
 		{
-			new ProcessEvent($this, array('rc' => &$response->rc, 'response' => $response, 'request' => $request));
+			new ProcessEvent($this, [ 'rc' => &$response->rc, 'response' => $response, 'request' => $request ]);
 		}
 
 		#
@@ -907,20 +904,18 @@ abstract class Operation extends Object
 	 * are defined as an array where the key is the control identifier, and the value defines
 	 * whether the control is enabled. Controls are enabled by setting their value to true:
 	 *
-	 *     array
-	 *     (
+	 *     [
 	 *         self::CONTROL_AUTHENTICATION => true,
 	 *         self::CONTROL_RECORD => true,
 	 *         self::CONTROL_FORM => false
-	 *     );
+	 *     ];
 	 *
 	 * Instead of a boolean, the "permission" control is enabled by a permission string or a
 	 * permission level.
 	 *
-	 *     array
-	 *     (
+	 *     [
 	 *         self::CONTROL_PERMISSION => Module::PERMISSION_MAINTAIN
-	 *     );
+	 *     ];
 	 *
 	 * The {@link $controls} property is used to get the controls or its magic getter
 	 * {@link get_controls()} if the property is not accessible.
@@ -980,14 +975,12 @@ abstract class Operation extends Object
 
 		if ($method && !$this->control_method($method))
 		{
-			throw new HTTPError
-			(
-				format("The %operation operation requires the %method method.", array
-				(
-					'operation' => get_class($this),
-					'method' => $method
-				))
-			);
+			throw new HTTPError(format("The %operation operation requires the %method method.", [
+
+				'operation' => get_class($this),
+				'method' => $method
+
+			]));
 		}
 
 		if ($controls[self::CONTROL_SESSION_TOKEN] && !$this->control_session_token())
@@ -997,39 +990,29 @@ abstract class Operation extends Object
 
 		if ($controls[self::CONTROL_AUTHENTICATION] && !$this->control_authentication())
 		{
-			throw new HTTPError
-			(
-				format('The %operation operation requires authentication.', array
-				(
-					'%operation' => get_class($this)
-				)),
+			throw new HTTPError(format('The %operation operation requires authentication.', [
 
-				401
-			);
+				'%operation' => get_class($this)
+
+			]), 401);
 		}
 
 		if ($controls[self::CONTROL_PERMISSION] && !$this->control_permission($controls[self::CONTROL_PERMISSION]))
 		{
-			throw new HTTPError
-			(
-				format("You don't have permission to perform the %operation operation.", array
-				(
-					'%operation' => get_class($this)
-				)),
+			throw new HTTPError(format("You don't have permission to perform the %operation operation.", [
 
-				401
-			);
+				'%operation' => get_class($this)
+
+			]), 401);
 		}
 
 		if ($controls[self::CONTROL_RECORD] && !$this->control_record())
 		{
-			throw new HTTPError
-			(
-				format('Unable to retrieve record required for the %operation operation.', array
-				(
-					'%operation' => get_class($this)
-				))
-			);
+			throw new HTTPError(format('Unable to retrieve record required for the %operation operation.', [
+
+				'%operation' => get_class($this)
+
+			]));
 		}
 
 		if ($controls[self::CONTROL_OWNERSHIP] && !$this->control_ownership())
@@ -1039,7 +1022,7 @@ abstract class Operation extends Object
 
 		if ($controls[self::CONTROL_FORM] && !$this->control_form())
 		{
-			log('Control %control failed for operation %operation.', array('%control' => 'form', '%operation' => get_class($this)));
+			log('Control %control failed for operation %operation.', [ '%control' => 'form', '%operation' => get_class($this) ]);
 
 			return false;
 		}

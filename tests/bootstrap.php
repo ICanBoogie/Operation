@@ -13,7 +13,7 @@ global $core;
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
 
-$loader->addClassMap(array(
+$loader->addClassMap([
 
 	'ICanBoogie\Operation\Modules\Sample\Module' =>                       __DIR__ . '/modules/sample/module.php',
 	'ICanBoogie\Operation\Modules\Sample\SuccessOperation' =>             __DIR__ . '/modules/sample/lib/operations/success.php',
@@ -24,7 +24,7 @@ $loader->addClassMap(array(
 	'ICanBoogie\Operation\Modules\Sample\ExpiredOperation' =>             __DIR__ . '/modules/sample/lib/operations/expired.php',
 	'ICanBoogie\Operation\Modules\Sample\OnlineOperation' =>              __DIR__ . '/modules/sample/lib/operations/online.php'
 
-));
+]);
 
 $core = new \ICanBoogie\Core( \ICanBoogie\array_merge_recursive(\ICanBoogie\get_autoconfig(), [
 

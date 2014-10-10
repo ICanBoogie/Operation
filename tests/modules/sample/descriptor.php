@@ -4,8 +4,9 @@ namespace ICanBoogie\Operation\Modules\Sample;
 
 use ICanBoogie\Module;
 
-return array
-(
+return [
+
 	Module::T_NAMESPACE => __NAMESPACE__,
 	Module::T_TITLE => 'Sample'
-);
+
+];

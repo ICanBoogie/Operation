@@ -235,15 +235,16 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_forwarded_success()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/',
-			'request_params' => array
-			(
+			'request_params' => [
+
 				Operation::DESTINATION => 'sample',
 				Operation::NAME => 'success'
-			)
-		));
+
+			]
+		]);
 
 		$dispatcher = new Dispatcher;
 		$response = $dispatcher($request);
@@ -252,15 +253,16 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_forwarded_success_with_location()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/',
-			'request_params' => array
-			(
+			'request_params' => [
+
 				Operation::DESTINATION => 'sample',
 				Operation::NAME => 'success_with_location'
-			)
-		));
+
+			]
+		]);
 
 		$dispatcher = new Dispatcher;
 		$response = $dispatcher($request);
@@ -270,15 +272,16 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_forwarded_error()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/',
-			'request_params' => array
-			(
+			'request_params' => [
+
 				Operation::DESTINATION => 'sample',
 				Operation::NAME => 'error'
-			)
-		));
+
+			]
+		]);
 
 		$dispatcher = new Dispatcher;
 
@@ -296,15 +299,16 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_forwarded_failure()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/',
-			'request_params' => array
-			(
+			'request_params' => [
+
 				Operation::DESTINATION => 'sample',
 				Operation::NAME => 'failure'
-			)
-		));
+
+			]
+		]);
 
 		$dispatcher = new Dispatcher;
 
@@ -329,16 +333,17 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_forwarded_success_with_xhr()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/',
 			'is_xhr' => true,
-			'request_params' => array
-			(
+			'request_params' => [
+
 				Operation::DESTINATION => 'sample',
 				Operation::NAME => 'success'
-			)
-		));
+
+			]
+		]);
 
 		$dispatcher = new Dispatcher;
 		$response = $dispatcher($request);
@@ -350,16 +355,17 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_forwarded_success_with_xhr_and_location()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/',
 			'is_xhr' => true,
-			'request_params' => array
-			(
+			'request_params' => [
+
 				Operation::DESTINATION => 'sample',
 				Operation::NAME => 'success_with_location'
-			)
-		));
+
+			]
+		]);
 
 		$dispatcher = new Dispatcher;
 		$response = $dispatcher($request);
@@ -373,16 +379,17 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_forwarded_error_with_xhr()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/',
 			'is_xhr' => true,
-			'request_params' => array
-			(
+			'request_params' => [
+
 				Operation::DESTINATION => 'sample',
 				Operation::NAME => 'error'
-			)
-		));
+
+			]
+		]);
 
 		$dispatcher = new Dispatcher;
 
@@ -400,16 +407,17 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_forwarded_failure_with_xhr()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/',
 			'is_xhr' => true,
-			'request_params' => array
-			(
+			'request_params' => [
+
 				Operation::DESTINATION => 'sample',
 				Operation::NAME => 'failure'
-			)
-		));
+
+			]
+		]);
 
 		$dispatcher = new Dispatcher;
 
@@ -437,12 +445,12 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_response_location_with_xhr()
 	{
-		$request = Request::from(array(
+		$request = Request::from([
 
 			'path' => '/api/test/location',
 			'is_xhr' => true
 
-		));
+		]);
 
 		$operation = new LocationOperation;
 		$response = $operation($request);
@@ -456,24 +464,25 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 	{
 		global $core;
 
-		$core->routes['api:nodes/online'] = array
-		(
+		$core->routes['api:nodes/online'] = [
+
 			'pattern' => '/api/:constructor/<nid:\d+>/is_online',
 			'controller' => 'ICanBoogie\Operation\Modules\Sample\OnlineOperation',
 			'via' => 'PUT',
-			'param_translation_list' => array
-			(
+			'param_translation_list' => [
+
 				'constructor' => Operation::DESTINATION,
 				'nid' => Operation::KEY
-			)
-		);
 
-		$request = Request::from(array(
+			]
+		];
+
+		$request = Request::from([
 
 			'path' => '/api/sample/123/is_online',
 			'is_put' => true
 
-		));
+		]);
 
 		$operation = Operation::from($request);
 
