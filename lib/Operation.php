@@ -830,7 +830,7 @@ abstract class Operation extends Object
 		# We log the `message` if the request is the main request and is not an XHR.
 		#
 
-		if ($response->message && !$request->previous && !$request->is_xhr)
+		if ($response->message && !$request->parent && !$request->is_xhr)
 		{
 			log_success($response->message);
 		}
