@@ -1022,8 +1022,6 @@ abstract class Operation extends Object
 
 		if ($controls[self::CONTROL_FORM] && !$this->control_form())
 		{
-			log('Control %control failed for operation %operation.', [ '%control' => 'form', '%operation' => get_class($this) ]);
-
 			return false;
 		}
 
