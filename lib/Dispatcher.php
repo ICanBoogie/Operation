@@ -150,7 +150,10 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 
 		if ($operation->is_forwarded)
 		{
-			\ICanBoogie\log_error($exception->getMessage());
+			if ($failure->previous)
+			{
+				\ICanBoogie\log_error($exception->getMessage());
+			}
 
 			return;
 		}
