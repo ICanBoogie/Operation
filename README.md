@@ -1,4 +1,4 @@
-# Operation [![Build Status](https://travis-ci.org/ICanBoogie/Operation.png?branch=2.0)](https://travis-ci.org/ICanBoogie/Operation)
+# Operation [![Build Status](https://travis-ci.org/ICanBoogie/Operation.svg?branch=2.0)](https://travis-ci.org/ICanBoogie/Operation)
 
 Operations are the doers of the MOVE world. They are responsible for making changes to your models,
 and for responding to events triggered by user interactions.
@@ -388,16 +388,10 @@ The package requires PHP 5.4 or later.
 
 ## Installation
 
-The recommended way to install this package is through [Composer](http://getcomposer.org/).
-Create a `composer.json` file and run `php composer.phar install` command to install it:
+The recommended way to install this package is through [Composer](http://getcomposer.org/):
 
-```json
-{
-	"minimum-stability": "dev",
-	"require": {
-		"icanboogie/operation": "2.x"
-	}
-}
+```
+composer require icanboogie/operation
 ```
 
 
@@ -409,7 +403,7 @@ Create a `composer.json` file and run `php composer.phar install` command to ins
 The package is [available on GitHub](https://github.com/ICanBoogie/Operation), its repository can
 be cloned with the following command line:
 
-	$ git clone git://github.com/ICanBoogie/Operation.git
+	$ git clone https://github.com/ICanBoogie/Operation.git
 
 
 
@@ -423,7 +417,7 @@ clean the directory with the `make clean` command.
 
 The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
-[![Build Status](https://travis-ci.org/ICanBoogie/Operation.png?branch=2.0)](https://travis-ci.org/ICanBoogie/Operation)
+[![Build Status](https://travis-ci.org/ICanBoogie/Operation.svg?branch=2.0)](https://travis-ci.org/ICanBoogie/Operation)
 
 
 
