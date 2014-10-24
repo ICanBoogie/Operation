@@ -17,12 +17,10 @@
 		"issues": "https://github.com/ICanBoogie/Operation/issues",
 		"source": "https://github.com/ICanBoogie/Operation"
 	},
-	"minimum-stability": "dev",
 	"require": {
 		"php": ">=5.4.0",
-		"icanboogie/errors": "*",
-		"icanboogie/event": "*",
-		"icanboogie/http": "2.x",
+		"icanboogie/errors": "1.x",
+		"icanboogie/event": "1.x",
 		"icanboogie/routing": "2.x"
 	},
 	"require-dev": {
@@ -40,6 +38,6 @@
 		"classmap": [ "lib/Operation.php" ]
 	},
 	"scripts": {
-		"post-autoload-dump": "ICanBoogie\\AutoConfig\\Generator::on_autoload_dump"
+		"post-autoload-dump": "ICanBoogie\\AutoConfig\\Hooks::on_autoload_dump"
 	}
 }
