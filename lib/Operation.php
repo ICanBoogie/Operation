@@ -875,6 +875,20 @@ abstract class Operation extends Object
 	}
 
 	/**
+	 * Format a string.
+	 *
+	 * @param string $format String format.
+	 * @param array $args Format arguments.
+	 * @param array $options I18n options.
+	 *
+	 * @return \ICanBoogie\I18n\FormattedString
+	 */
+	protected function format($format, array $args=[], array $options=[])
+	{
+		return new \ICanBoogie\I18n\FormattedString($format, $args, $options);
+	}
+
+	/**
 	 * Resets the operation state.
 	 *
 	 * A same operation object can be used multiple time to perform an operation with different
