@@ -883,7 +883,7 @@ abstract class Operation extends Object
 	 *
 	 * @return \ICanBoogie\I18n\FormattedString
 	 */
-	protected function format($format, array $args=[], array $options=[])
+	public function format($format, array $args=[], array $options=[])
 	{
 		return new \ICanBoogie\I18n\FormattedString($format, $args, $options);
 	}
