@@ -9,8 +9,6 @@
  * file that was distributed with this source code.
  */
 
-global $core;
-
 $loader = require __DIR__ . '/../vendor/autoload.php';
 
 $loader->addClassMap([
@@ -26,7 +24,7 @@ $loader->addClassMap([
 
 ]);
 
-$core = new \ICanBoogie\Core( \ICanBoogie\array_merge_recursive(\ICanBoogie\get_autoconfig(), [
+$app = new \ICanBoogie\Core( \ICanBoogie\array_merge_recursive(\ICanBoogie\get_autoconfig(), [
 
 	'config-path' => [
 
@@ -42,4 +40,4 @@ $core = new \ICanBoogie\Core( \ICanBoogie\array_merge_recursive(\ICanBoogie\get_
 
 ]) );
 
-$core->boot();
+$app->boot();

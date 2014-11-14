@@ -149,8 +149,6 @@ abstract class Operation extends Object
 	 */
 	static protected function from_request(HTTP\Request $request)
 	{
-		global $core;
-
 		$path = \ICanBoogie\Routing\decontextualize($request->path);
 		$extension = $request->extension;
 
@@ -208,7 +206,7 @@ abstract class Operation extends Object
 				list(, $module_id, , $operation_key, $operation_name) = $matches;
 			}
 
-			if (empty($core->modules->descriptors[$module_id]))
+			if (empty(\ICanBoogie\app()->modules->descriptors[$module_id]))
 			{
 				throw new NotFound(format('Unknown operation %operation.', [ 'operation' => $path ]));
 			}
@@ -255,9 +253,8 @@ abstract class Operation extends Object
 	 */
 	static protected function from_route(Request $request, $path)
 	{
-		global $core;
-
-		$route = $core->routes->find($path, $captured, $request->method, 'api');
+		$app = \ICanBoogie\app();
+		$route = $app->routes->find($path, $captured, $request->method, 'api');
 
 		if (!$route)
 		{
@@ -321,7 +318,7 @@ abstract class Operation extends Object
 
 			if (isset($route->module))
 			{
-				$operation->module = $core->modules[$route->module];
+				$operation->module = $app->modules[$route->module];
 			}
 
 			if (isset($request->path_params[self::KEY]))
@@ -359,9 +356,7 @@ abstract class Operation extends Object
 	 */
 	static protected function from_module_request(Request $request, $module_id, $operation_name)
 	{
-		global $core;
-
-		$module = $core->modules[$module_id];
+		$module = \ICanBoogie\app()->modules[$module_id];
 		$class = self::resolve_operation_class($operation_name, $module);
 
 		if (!$class)
@@ -620,15 +615,13 @@ abstract class Operation extends Object
 	 */
 	public function __construct($request=null)
 	{
-		global $core;
-
 		unset($this->controls);
 
 		if ($request instanceof Request)
 		{
 			if ($request[self::DESTINATION])
 			{
-				$this->module = $core->modules[$request[self::DESTINATION]];
+				$this->module = $this->app->modules[$request[self::DESTINATION]];
 			}
 		}
 		else if ($request instanceof Module)
@@ -1064,11 +1057,9 @@ abstract class Operation extends Object
 	 */
 	protected function control_session_token()
 	{
-		global $core;
-
 		$request = $this->request;
 
-		return isset($request->request_params['_session_token']) && $request->request_params['_session_token'] == $core->session->token;
+		return isset($request->request_params['_session_token']) && $request->request_params['_session_token'] == $this->app->session->token;
 	}
 
 	/**
@@ -1076,9 +1067,7 @@ abstract class Operation extends Object
 	 */
 	protected function control_authentication()
 	{
-		global $core;
-
-		return ($core->user_id != 0);
+		return ($this->app->user_id != 0);
 	}
 
 	/**
@@ -1090,9 +1079,7 @@ abstract class Operation extends Object
 	 */
 	protected function control_permission($permission)
 	{
-		global $core;
-
-		return $core->user->has_permission($permission, $this->module);
+		return $this->app->user->has_permission($permission, $this->module);
 	}
 
 	/**
@@ -1103,11 +1090,9 @@ abstract class Operation extends Object
 	 */
 	protected function control_ownership()
 	{
-		global $core;
-
 		$record = $this->record;
 
-		return (!$record || $core->user->has_ownership($this->module, $record));
+		return (!$record || $this->app->user->has_ownership($this->module, $record));
 	}
 
 	/**

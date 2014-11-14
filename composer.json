@@ -2,7 +2,7 @@
 	"name": "icanboogie/operation",
 	"type": "library",
 	"description": "Operations, the doers of the MOVE world",
-	"keywords": [ "operation", "dispatch", "controller", "request", "response" ],
+	"keywords": [ "operation", "dispatch", "controller" ],
 	"homepage": "http://icanboogie.org/",
 	"license": "BSD-3-Clause",
 	"authors": [
@@ -28,13 +28,9 @@
 		"icanboogie/module": "2.x"
 	},
 	"autoload": {
-
 		"psr-4": {
-
 			"ICanBoogie\\Operation\\": "lib"
-
 		},
-
 		"classmap": [ "lib/Operation.php" ]
 	},
 	"scripts": {

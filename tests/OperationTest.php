@@ -25,45 +25,45 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 {
 	public function test_operation_invoke_successful()
 	{
-		global $core;
+		$app = \ICanBoogie\app();
 
 		$before_control_event_called = false;
-		$before_control_eh = $core->events->attach(function(Operation\BeforeControlEvent $event, SuccessOperation $target) use(&$before_control_event_called) {
+		$before_control_eh = $app->events->attach(function(Operation\BeforeControlEvent $event, SuccessOperation $target) use(&$before_control_event_called) {
 
 			$before_control_event_called = true;
 
 		});
 
 		$control_event_called = false;
-		$control_eh = $core->events->attach(function(Operation\ControlEvent $event, SuccessOperation $target) use(&$control_event_called) {
+		$control_eh = $app->events->attach(function(Operation\ControlEvent $event, SuccessOperation $target) use(&$control_event_called) {
 
 			$control_event_called = true;
 
 		});
 
 		$before_validate_event_called = false;
-		$before_validate_eh = $core->events->attach(function(Operation\BeforeValidateEvent $event, SuccessOperation $target) use(&$before_validate_event_called) {
+		$before_validate_eh = $app->events->attach(function(Operation\BeforeValidateEvent $event, SuccessOperation $target) use(&$before_validate_event_called) {
 
 			$before_validate_event_called = true;
 
 		});
 
 		$validate_event_called = false;
-		$validate_eh = $core->events->attach(function(Operation\ValidateEvent $event, SuccessOperation $target) use(&$validate_event_called) {
+		$validate_eh = $app->events->attach(function(Operation\ValidateEvent $event, SuccessOperation $target) use(&$validate_event_called) {
 
 			$validate_event_called = true;
 
 		});
 
 		$before_process_event_called = false;
-		$before_process_eh = $core->events->attach(function(Operation\BeforeProcessEvent $event, SuccessOperation $target) use(&$before_process_event_called) {
+		$before_process_eh = $app->events->attach(function(Operation\BeforeProcessEvent $event, SuccessOperation $target) use(&$before_process_event_called) {
 
 			$before_process_event_called = true;
 
 		});
 
 		$process_event_called = false;
-		$process_eh = $core->events->attach(function(Operation\ProcessEvent $event, SuccessOperation $target) use(&$process_event_called) {
+		$process_eh = $app->events->attach(function(Operation\ProcessEvent $event, SuccessOperation $target) use(&$process_event_called) {
 
 			$process_event_called = true;
 
@@ -97,13 +97,13 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function test_operation_invoke_errored()
 	{
-		global $core;
+		$app = \ICanBoogie\app();
 
 		$operation = new ErrorOperation;
 		$failure_event_called = false;
 		$failure_event_type = null;
 
-		$eh = $core->events->attach(function(\ICanBoogie\Operation\FailureEvent $event, ErrorOperation $target) use(&$failure_event_called, &$failure_event_type) {
+		$eh = $app->events->attach(function(\ICanBoogie\Operation\FailureEvent $event, ErrorOperation $target) use(&$failure_event_called, &$failure_event_type) {
 
 			$failure_event_called = true;
 			$failure_event_type = $event->type;
@@ -183,11 +183,11 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_operation_rescue()
 	{
-		global $core;
+		$app = \ICanBoogie\app();
 
 		$rescue_response = new Response("Rescued!", 200);
 
-		$eh = $core->events->attach(function(RescueEvent $event, ExceptionOperation $target) use($rescue_response) {
+		$eh = $app->events->attach(function(RescueEvent $event, ExceptionOperation $target) use($rescue_response) {
 
 			$event->response = $rescue_response;
 
@@ -203,11 +203,11 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_operation_replace_exception()
 	{
-		global $core;
+		$app = \ICanBoogie\app();
 
 		$exception = new \Exception("My exception");
 
-		$eh = $core->events->attach(function(RescueEvent $event, ExceptionOperation $target) use($exception) {
+		$eh = $app->events->attach(function(RescueEvent $event, ExceptionOperation $target) use($exception) {
 
 			$event->exception = $exception;
 
@@ -462,9 +462,9 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 	public function test_from_route()
 	{
-		global $core;
+		$app = \ICanBoogie\app();
 
-		$core->routes['api:nodes/online'] = [
+		$app->routes['api:nodes/online'] = [
 
 			'pattern' => '/api/:constructor/<nid:\d+>/is_online',
 			'controller' => 'ICanBoogie\Operation\Modules\Sample\OnlineOperation',
