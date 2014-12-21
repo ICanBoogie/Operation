@@ -782,7 +782,14 @@ abstract class Operation extends Object
 		}
 		catch (\Exception $exception)
 		{
-			$response->status = $exception->getCode() ?: 500;
+			$code = $exception->getCode();
+
+			if ($code < 200 || $code >= 600)
+			{
+				$code = 500;
+			}
+
+			$response->status = $code;
 			$response->message = $exception->getMessage();
 			$response['errors'] = [ '_base' => $exception->getMessage() ]; // COMPAT-20140310
 
