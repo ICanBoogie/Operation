@@ -35,5 +35,11 @@
 	},
 	"scripts": {
 		"post-autoload-dump": "ICanBoogie\\Autoconfig\\Hooks::on_autoload_dump"
+	},
+
+	"extra": {
+		"icanboogie": {
+			"config-path": "config"
+		}
 	}
 }
