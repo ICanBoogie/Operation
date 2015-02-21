@@ -11,13 +11,14 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Event;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 
 /**
  * Event class for the `ICanBoogie\Operation::rescue` event.
  */
-class RescueEvent extends \ICanBoogie\Event
+class RescueEvent extends Event
 {
 	/**
 	 * Reference to the exception that made the operation fail.

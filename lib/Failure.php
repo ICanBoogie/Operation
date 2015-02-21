@@ -11,6 +11,7 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Accessor\AccessorTrait;
 use ICanBoogie\Operation;
 
 /**
@@ -19,9 +20,9 @@ use ICanBoogie\Operation;
  * @property-read Operation $operation The operation that failed.
  * @property-read \Exception $previous The previous exception.
  */
-class Failure extends \ICanBoogie\HTTP\HTTPError implements Exception
+class Failure extends \Exception implements Exception
 {
-	use \ICanBoogie\GetterTrait;
+	use AccessorTrait;
 
 	private $operation;
 
@@ -46,7 +47,7 @@ class Failure extends \ICanBoogie\HTTP\HTTPError implements Exception
 		$this->operation = $operation;
 
 		$message = $this->format_message($operation);
-		$code = $operation->response->status;
+		$code = $operation->response->status->code;
 
 		parent::__construct($message, $code, $previous);
 	}
@@ -56,7 +57,7 @@ class Failure extends \ICanBoogie\HTTP\HTTPError implements Exception
 		$message = $operation->response->message ?: "The operation failed.";
 		$errors = $operation->response->errors;
 
-		if ($errors->count())
+		if (count($errors))
 		{
 			$message .= "\n\nThe following errors where raised:";
 

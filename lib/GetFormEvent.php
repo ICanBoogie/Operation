@@ -11,12 +11,14 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Event;
 use ICanBoogie\HTTP\Request;
+use ICanBoogie\Operation;
 
 /**
  * Event class for the `ICanBoogie\Operation::get_form` event.
  */
-class GetFormEvent extends \ICanBoogie\Event
+class GetFormEvent extends Event
 {
 	/**
 	 * Reference to the result variable.
@@ -28,17 +30,18 @@ class GetFormEvent extends \ICanBoogie\Event
 	/**
 	 * The request that triggered the operation.
 	 *
-	 * @var \ICanBoogie\HTTP\Request
+	 * @var Request
 	 */
 	public $request;
 
 	/**
 	 * The event is constructed with the type `get_form`.
 	 *
-	 * @param \ICanBoogie\Operation $target
-	 * @param array $payload
+	 * @param Operation $target
+	 * @param Request $request
+	 * @param mixed $form
 	 */
-	public function __construct(\ICanBoogie\Operation $target, Request $request, &$form)
+	public function __construct(Operation $target, Request $request, &$form)
 	{
 		$this->request = $request;
 		$this->form = &$form;

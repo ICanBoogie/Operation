@@ -12,13 +12,12 @@
 namespace ICanBoogie;
 
 use ICanBoogie\HTTP;
-use ICanBoogie\HTTP\HTTPError;
 use ICanBoogie\HTTP\NotFound;
 use ICanBoogie\HTTP\Request;
+use ICanBoogie\Module\Descriptor;
 use ICanBoogie\Operation\Failure;
 use ICanBoogie\Operation\FailureEvent;
 use ICanBoogie\Operation\GetFormEvent;
-use ICanBoogie\Operation\FormHasExpired;
 use ICanBoogie\Operation\FormNotFound;
 use ICanBoogie\Operation\BeforeControlEvent;
 use ICanBoogie\Operation\ControlEvent;
@@ -30,10 +29,11 @@ use ICanBoogie\Operation\ProcessEvent;
 /**
  * An operation.
  *
+ * @property-read Core $app
  * @property ActiveRecord $record The target active record object of the operation.
  * @property-read Request $request The request.
- * @property-read bool $is_forwarded `true` if the operation is forwarded.
- * See {@link get_is_forwarded()}.
+ * @property-read array $controls The controls to apply to the operation before it is processed.
+ * @property-read bool $is_forwarded `true` if the operation is forwarded, `false` otherwise.
  */
 abstract class Operation extends Object
 {
@@ -71,9 +71,11 @@ abstract class Operation extends Object
 	/**
 	 * Creates a {@link Operation} instance from the specified parameters.
 	 *
+	 * @inheritdoc
+	 *
 	 * @return Operation
 	 */
-	static public function from($properties=null, array $construct_args=[], $class_name=null)
+	static public function from($properties = null, array $construct_args = [], $class_name = null)
 	{
 		if ($properties instanceof Request)
 		{
@@ -139,15 +141,16 @@ abstract class Operation extends Object
 	 * An instance of the found class is created with the request arguments and returned. If the
 	 * class could not be found to create the operation instance, an exception is raised.
 	 *
-	 * @param string $uri The request URI.
-	 * @param array $params The request parameters.
+	 * @param Request $request The request parameters.
 	 *
 	 * @throws \BadMethodCallException when the destination module or the operation name is
 	 * not defined for a module operation.
 	 *
+	 * @throws NotFound if the operation is not found.
+	 *
 	 * @return Operation|null The decoded operation or null if no operation was found.
 	 */
-	static protected function from_request(HTTP\Request $request)
+	static protected function from_request(Request $request)
 	{
 		$path = \ICanBoogie\Routing\decontextualize($request->path);
 		$extension = $request->extension;
@@ -221,11 +224,10 @@ abstract class Operation extends Object
 
 		$module_id = $request[self::DESTINATION];
 		$operation_name = $request[self::NAME];
-		$operation_key = $request[self::KEY];
 
 		if (!$module_id && !$operation_name)
 		{
-			return;
+			return null;
 		}
 		else if (!$module_id)
 		{
@@ -258,7 +260,7 @@ abstract class Operation extends Object
 
 		if (!$route)
 		{
-			return;
+			return null;
 		}
 
 		#
@@ -287,57 +289,41 @@ abstract class Operation extends Object
 			}
 		}
 
-		if ($route->controller)
+		$controller = $route->controller;
+
+		if (is_callable($controller))
 		{
-			$controller = $route->controller;
-
-			if (is_callable($controller))
-			{
-				$operation = call_user_func($controller, $request);
-			}
-			else if (!class_exists($controller, true))
-			{
-				throw new \Exception("Unable to instantiate operation, class not found: $controller.");
-			}
-			else
-			{
-				$operation = new $controller($request);
-			}
-
-			if (!($operation instanceof self))
-			{
-				throw new \Exception(format
-				(
-					'The controller for the route %route failed to produce an operation object, %rc returned.', [
-
-						'route' => $path,
-						'rc' => $operation
-					]
-				));
-			}
-
-			if (isset($route->module))
-			{
-				$operation->module = $app->modules[$route->module];
-			}
-
-			if (isset($request->path_params[self::KEY]))
-			{
-				$operation->key = $request->path_params[self::KEY];
-			}
+			$operation = call_user_func($controller, $request);
+		}
+		else if (!class_exists($controller, true))
+		{
+			throw new \Exception("Unable to instantiate operation, class not found: $controller.");
 		}
 		else
 		{
-			if ($route->callback)
-			{
-				throw new \InvalidArgumentException("'callback' is no longer supported, use 'controller'.");
-			}
-			else if ($route->class)
-			{
-				throw new \InvalidArgumentException("'class' is no longer supported, use 'controller'.");
-			}
+			$operation = new $controller($request);
+		}
 
-			throw new \InvalidArgumentException("'controller' is required.");
+		if (!($operation instanceof self))
+		{
+			throw new \Exception(format
+			(
+				'The controller for the route %route failed to produce an operation object, %rc returned.', [
+
+					'route' => $path,
+					'rc' => $operation
+				]
+			));
+		}
+
+		if (isset($route->module))
+		{
+			$operation->module = $app->modules[$route->module];
+		}
+
+		if (isset($request->path_params[self::KEY]))
+		{
+			$operation->key = $request->path_params[self::KEY];
 		}
 
 		return $operation;
@@ -347,10 +333,10 @@ abstract class Operation extends Object
 	 * Creates an {@link Operation} instance from a module request.
 	 *
 	 * @param Request $request
-	 * @param unknown $module_id
-	 * @param unknown $operation_name
+	 * @param string $module_id
+	 * @param string $operation_name
 	 *
-	 * @throws HTTPError if the operation is not supported by the module.
+	 * @throws \Exception if the operation is not supported by the module.
 	 *
 	 * @return Operation
 	 */
@@ -361,7 +347,7 @@ abstract class Operation extends Object
 
 		if (!$class)
 		{
-			throw new HTTPError(format
+			throw new \Exception(format
 			(
 				'The operation %operation is not supported by the module %module.', [
 
@@ -439,7 +425,7 @@ abstract class Operation extends Object
 
 		while ($module)
 		{
-			$class = self::format_class_name($module->descriptor[Module::T_NAMESPACE], $name);
+			$class = self::format_class_name($module->descriptor[Descriptor::NS], $name);
 
 			if (class_exists($class, true))
 			{
@@ -547,6 +533,8 @@ abstract class Operation extends Object
 	 */
 	protected function lazy_get_form()
 	{
+		$form = null;
+
 		new GetFormEvent($this, $this->request, $form);
 
 		return $form;
@@ -613,7 +601,7 @@ abstract class Operation extends Object
 	 *
 	 * @param Request $request @todo: should be a Request, but is sometimes a module.
 	 */
-	public function __construct($request=null)
+	public function __construct($request = null)
 	{
 		unset($this->controls);
 
@@ -707,7 +695,7 @@ abstract class Operation extends Object
 	 * @return Operation\Response The response of the operation.
 	 *
 	 * @throws Failure when the response has a client or server error, or the
-	 * {@link FormHasExpired} exception was raised.
+	 * {@link \ICanBoogie\Operation\FormHasExpired} exception was raised.
 	 */
 	public function __invoke(HTTP\Request $request)
 	{
@@ -819,7 +807,8 @@ abstract class Operation extends Object
 
 		if ($rc === null)
 		{
-			$response->status = [ 400, 'Operation failed' ];
+			$response->status->code = 400;
+			$response->status->message = 'Operation failed';
 		}
 		else
 		{
@@ -857,7 +846,7 @@ abstract class Operation extends Object
 			$response->body = '';
 			$response->headers['Referer'] = $request->uri;
 		}
-		else if ($response->status == 304) // FIXME-20141009: is this still relevant ?
+		else if ($response->status->code == 304) // FIXME-20141009: is this still relevant ?
 		{
 			$response->body = '';
 		}
@@ -866,7 +855,7 @@ abstract class Operation extends Object
 		# If the operation failed, we throw a Failure exception.
 		#
 
-		if ($response->is_client_error || $response->is_server_error)
+		if ($response->status->is_client_error || $response->status->is_server_error)
 		{
 			throw new Failure($this);
 		}
@@ -883,7 +872,7 @@ abstract class Operation extends Object
 	 *
 	 * @return \ICanBoogie\I18n\FormattedString
 	 */
-	public function format($format, array $args=[], array $options=[])
+	public function format($format, array $args = [], array $options = [])
 	{
 		return new \ICanBoogie\I18n\FormattedString($format, $args, $options);
 	}
@@ -892,7 +881,7 @@ abstract class Operation extends Object
 	 * Resets the operation state.
 	 *
 	 * A same operation object can be used multiple time to perform an operation with different
-	 * parameters, this method is invoked to reset the operation state before it is controled,
+	 * parameters, this method is invoked to reset the operation state before it is controlled,
 	 * validated and processed.
 	 */
 	protected function reset()
@@ -979,7 +968,7 @@ abstract class Operation extends Object
 	 *
 	 * @return boolean true if all the controls pass, false otherwise.
 	 *
-	 * @throws HTTPError Depends on the control.
+	 * @throws \Exception Depends on the control.
 	 */
 	protected function control(array $controls)
 	{
@@ -989,7 +978,7 @@ abstract class Operation extends Object
 
 		if ($method && !$this->control_method($method))
 		{
-			throw new HTTPError(format("The %operation operation requires the %method method.", [
+			throw new \Exception(format("The %operation operation requires the %method method.", [
 
 				'operation' => get_class($this),
 				'method' => $method
@@ -999,12 +988,12 @@ abstract class Operation extends Object
 
 		if ($controls[self::CONTROL_SESSION_TOKEN] && !$this->control_session_token())
 		{
-			throw new HTTPError("Session token doesn't match", 401);
+			throw new \Exception("Session token doesn't match", 401);
 		}
 
 		if ($controls[self::CONTROL_AUTHENTICATION] && !$this->control_authentication())
 		{
-			throw new HTTPError(format('The %operation operation requires authentication.', [
+			throw new \Exception(format('The %operation operation requires authentication.', [
 
 				'%operation' => get_class($this)
 
@@ -1013,7 +1002,7 @@ abstract class Operation extends Object
 
 		if ($controls[self::CONTROL_PERMISSION] && !$this->control_permission($controls[self::CONTROL_PERMISSION]))
 		{
-			throw new HTTPError(format("You don't have permission to perform the %operation operation.", [
+			throw new \Exception(format("You don't have permission to perform the %operation operation.", [
 
 				'%operation' => get_class($this)
 
@@ -1022,7 +1011,7 @@ abstract class Operation extends Object
 
 		if ($controls[self::CONTROL_RECORD] && !$this->control_record())
 		{
-			throw new HTTPError(format('Unable to retrieve record required for the %operation operation.', [
+			throw new \Exception(format('Unable to retrieve record required for the %operation operation.', [
 
 				'%operation' => get_class($this)
 
@@ -1031,7 +1020,7 @@ abstract class Operation extends Object
 
 		if ($controls[self::CONTROL_OWNERSHIP] && !$this->control_ownership())
 		{
-			throw new HTTPError("You don't have ownership of the record.", 401);
+			throw new \Exception("You don't have ownership of the record.", 401);
 		}
 
 		if ($controls[self::CONTROL_FORM] && !$this->control_form())
@@ -1140,9 +1129,9 @@ abstract class Operation extends Object
 	 *
 	 * The method is abstract and therefore must be implemented by subclasses.
 	 *
-	 * @throws \Exception If something horribly wrong happens.
+	 * @param Errors $errors
 	 *
-	 * @return bool true if the operation is valid, false otherwise.
+	 * @return bool
 	 */
 	abstract protected function validate(Errors $errors);
 
@@ -1151,7 +1140,7 @@ abstract class Operation extends Object
 	 *
 	 * The method is abstract and therefore must be implemented by subclasses.
 	 *
-	 * @return mixed Depends on the implementation.
+	 * @return mixed According to the implementation.
 	 */
 	abstract protected function process();
 }

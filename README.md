@@ -1,4 +1,11 @@
-# Operation [![Build Status](https://travis-ci.org/ICanBoogie/Operation.svg?branch=2.0)](https://travis-ci.org/ICanBoogie/Operation)
+# Operation
+
+[![Release](https://img.shields.io/packagist/v/icanboogie/operation.svg)](https://packagist.org/packages/icanboogie/operation)
+[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation.svg)](http://travis-ci.org/ICanBoogie/Operation)
+[![HHVM](https://img.shields.io/hhvm/icanboogie/operation.svg)](http://hhvm.h4cc.de/package/icanboogie/operation)
+[![Code Quality](https://img.shields.io/scrutinizer/g/ICanBoogie/Operation.svg)](https://scrutinizer-ci.com/g/ICanBoogie/Operation)
+[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation.svg)](https://coveralls.io/r/ICanBoogie/Operation)
+[![Packagist](https://img.shields.io/packagist/dt/icanboogie/operation.svg)](https://packagist.org/packages/icanboogie/operation)
 
 Operations are the doers of the MOVE world. They are responsible for making changes to your models,
 and for responding to events triggered by user interactions.
@@ -417,7 +424,8 @@ clean the directory with the `make clean` command.
 
 The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
-[![Build Status](https://travis-ci.org/ICanBoogie/Operation.svg?branch=2.0)](https://travis-ci.org/ICanBoogie/Operation)
+[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation.svg)](http://travis-ci.org/ICanBoogie/Operation)
+[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation.svg)](https://coveralls.io/r/ICanBoogie/Operation)
 
 
 

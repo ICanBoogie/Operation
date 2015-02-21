@@ -11,20 +11,23 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Event;
+use ICanBoogie\Operation;
+
 /**
  * Event class for the `ICanBoogie\Operation::validate` event.
  */
-class ValidateEvent extends \ICanBoogie\Event
+class ValidateEvent extends Event
 {
 	use ValidateEventTrait;
 
 	/**
 	 * The event is constructed with the type `validate`.
 	 *
-	 * @param \ICanBoogie\Operation $target
+	 * @param Operation $target
 	 * @param array $payload
 	 */
-	public function __construct(\ICanBoogie\Operation $target, array $payload)
+	public function __construct(Operation $target, array $payload)
 	{
 		parent::__construct($target, 'validate', $payload);
 	}

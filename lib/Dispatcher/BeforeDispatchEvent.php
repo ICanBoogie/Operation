@@ -11,6 +11,7 @@
 
 namespace ICanBoogie\Operation\Dispatcher;
 
+use ICanBoogie\Event;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\HTTP\Response;
 use ICanBoogie\Operation;
@@ -23,26 +24,26 @@ use ICanBoogie\Operation\Dispatcher;
  * mapped. The event is usually used by third parties to redirect requests or provide cached
  * responses.
  */
-class BeforeDispatchEvent extends \ICanBoogie\Event
+class BeforeDispatchEvent extends Event
 {
 	/**
 	 * The route.
 	 *
-	 * @var \ICanBoogie\Operation
+	 * @var Operation
 	 */
 	public $operation;
 
 	/**
 	 * The HTTP request.
 	 *
-	 * @var \ICanBoogie\HTTP\Request
+	 * @var Request
 	 */
 	public $request;
 
 	/**
 	 * Reference to the HTTP response.
 	 *
-	 * @var \ICanBoogie\HTTP\Response
+	 * @var Response
 	 */
 	public $response;
 
@@ -50,13 +51,15 @@ class BeforeDispatchEvent extends \ICanBoogie\Event
 	 * The event is constructed with the type `dispatch:before`.
 	 *
 	 * @param Dispatcher $target
-	 * @param array $payload
+	 * @param Operation $operation
+	 * @param Request $request
+	 * @param Response|null $response
 	 */
 	public function __construct(Dispatcher $target, Operation $operation, Request $request, &$response)
 	{
 		if ($response !== null && !($response instanceof Response))
 		{
-			throw new \InvalidArgumentException('$response must be an instance of ICanBoogie\HTTP\Response. Given: ' . get_class($response) . '.');
+			throw new \InvalidArgumentException('$response must be an instance of ICanBoogie\HTTP\Response. Given: ' . (is_object($response) ? get_class($response) : gettype($response)) . '.');
 		}
 
 		$this->operation = $operation;

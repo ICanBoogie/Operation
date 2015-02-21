@@ -11,29 +11,32 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Accessor\AccessorTrait;
+use ICanBoogie\Event;
 use ICanBoogie\HTTP\Request;
+use ICanBoogie\Operation;
 
 /**
  * Event class for the `ICanBoogie\Operation::failure` event.
  *
- * @property-read bool $is_control `true` if failure occured during
+ * @property-read bool $is_control `true` if failure occurred during
  * {@link \ICanBoogie\Operation::control()}, `false` otherwise.
- * @property-read bool $is_validate `true` if failure occured during
+ * @property-read bool $is_validate `true` if failure occurred during
  * {@link \ICanBoogie\Operation::validate()}, `false` otherwise.
  */
-class FailureEvent extends \ICanBoogie\Event
+class FailureEvent extends Event
 {
-	use \ICanBoogie\GetterTrait;
+	use AccessorTrait;
 
 	/**
-	 * The failure occured during {@link \ICanBoogie\Operation::control()}.
+	 * The failure occurred during {@link \ICanBoogie\Operation::control()}.
 	 *
 	 * @var string
 	 */
 	const TYPE_CONTROL = 'control';
 
 	/**
-	 * The failure occured during {@link \ICanBoogie\Operation::validate()}.
+	 * The failure occurred during {@link \ICanBoogie\Operation::validate()}.
 	 *
 	 * @var string
 	 */
@@ -49,17 +52,18 @@ class FailureEvent extends \ICanBoogie\Event
 	/**
 	 * The request that triggered the operation.
 	 *
-	 * @var \ICanBoogie\HTTP\Request
+	 * @var Request
 	 */
 	public $request;
 
 	/**
 	 * The event is constructed with the type `failure`.
 	 *
-	 * @param \ICanBoogie\Operation $target
-	 * @param array $payload
+	 * @param Operation $target
+	 * @param string $type
+	 * @param Request $request
 	 */
-	public function __construct(\ICanBoogie\Operation $target, $type, Request $request)
+	public function __construct(Operation $target, $type, Request $request)
 	{
 		$this->type = $type;
 		$this->request = $request;

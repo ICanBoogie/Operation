@@ -11,10 +11,13 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Event;
+use ICanBoogie\Operation;
+
 /**
  * Event class for the `ICanBoogie\Operation::process` event.
  */
-class ProcessEvent extends \ICanBoogie\Event
+class ProcessEvent extends Event
 {
 	/**
 	 * Reference to the response result property.
@@ -40,10 +43,10 @@ class ProcessEvent extends \ICanBoogie\Event
 	/**
 	 * The event is constructed with the type `process`.
 	 *
-	 * @param \ICanBoogie\Operation $target
+	 * @param Operation $target
 	 * @param array $payload
 	 */
-	public function __construct(\ICanBoogie\Operation $target, array $payload)
+	public function __construct(Operation $target, array $payload)
 	{
 		parent::__construct($target, 'process', $payload);
 	}

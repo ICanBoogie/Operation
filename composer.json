@@ -1,7 +1,7 @@
 {
 	"name": "icanboogie/operation",
 	"type": "library",
-	"description": "Operations, the doers of the MOVE world",
+	"description": "Operation oriented controllers API",
 	"keywords": [ "operation", "dispatch", "controller" ],
 	"homepage": "http://icanboogie.org/",
 	"license": "BSD-3-Clause",
@@ -19,13 +19,13 @@
 	},
 	"require": {
 		"php": ">=5.4.0",
-		"icanboogie/errors": "1.x",
-		"icanboogie/event": "1.x",
-		"icanboogie/routing": "2.x"
+		"icanboogie/errors": "~1.0.0",
+		"icanboogie/event": "~1.3.0",
+		"icanboogie/routing": "~2.2.0"
 	},
 	"require-dev": {
-		"icanboogie/icanboogie": "2.x",
-		"icanboogie/module": "2.x"
+        "icanboogie/icanboogie": "~2.2.0",
+		"icanboogie/module": "~2.2.0"
 	},
 	"autoload": {
 		"psr-4": {
@@ -34,6 +34,6 @@
 		"classmap": [ "lib/Operation.php" ]
 	},
 	"scripts": {
-		"post-autoload-dump": "ICanBoogie\\AutoConfig\\Hooks::on_autoload_dump"
+		"post-autoload-dump": "ICanBoogie\\Autoconfig\\Hooks::on_autoload_dump"
 	}
 }

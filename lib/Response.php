@@ -49,7 +49,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 		{
 			throw new \InvalidArgumentException(\ICanBoogie\format
 			(
-				'Invalid message type "{0}", shoud be a string or an object implementing "__toString()". Given: {1}', array
+				'Invalid message type "{0}", should be a string or an object implementing "__toString()". Given: {1}', array
 				(
 					gettype($message), $message
 				)
@@ -70,7 +70,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	}
 
 	/**
-	 * Errors occuring during the response.
+	 * Errors occurring during the response.
 	 *
 	 * @var Errors
 	 */
@@ -80,8 +80,10 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	/**
 	 * Initializes the {@link $errors} property.
+	 *
+	 * @inheritdoc
 	 */
-	public function __construct($body=null, $status=200, array $headers=[])
+	public function __construct($body = null, $status = 200, array $headers = [])
 	{
 		parent::__construct($body, $status, $headers);
 
@@ -96,10 +98,10 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 * Otherwise a JSON string is created with the message, errors and {@link $metas} of the
 	 * response. If the response is successful the {@link $rc} property is also present. This JSON
 	 * string is set in `$body`. The `Content-Type` header field is set to
-	 * "application/json" and the `Content-Length` header field is set to the lenght of the JSON
+	 * "application/json" and the `Content-Length` header field is set to the length of the JSON
 	 * string.
 	 *
-	 * @see finalize_rc()
+	 * @inheritdoc
 	 */
 	protected function finalize(Headers &$headers, &$body)
 	{
@@ -121,8 +123,25 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 			return;
 		}
 
-		# json response
+		$this->finalize_as_json($this->finalize_as_array($rc), $headers, $body);
+	}
 
+	/**
+	 * Finalizes the response as an array.
+	 *
+	 * The array contains the following keys:
+	 *
+	 * - `rc`: The result of the operation. This key absent if the response is not successful.
+	 * - `message`: The message associated with the response, a success or error message.
+	 * - `errors`: An array of errors, which might only be present if the response is not
+	 * successful.
+	 *
+	 * @param $rc
+	 *
+	 * @return array
+	 */
+	protected function finalize_as_array($rc)
+	{
 		$data = array_filter([
 
 			'message' => $this->finalize_message($this->message),
@@ -130,12 +149,26 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 		]) + array_map(function($v) { return $this->finalize_value($v); }, $this->metas);
 
-		if ($this->is_successful)
+		if ($this->status->is_successful)
 		{
 			$data = [ 'rc' => $this->finalize_rc($rc) ] + $data;
 		}
 
-		$body = json_encode($data);
+		return $data;
+	}
+
+	/**
+	 * Finalizes the response as a JSON string.
+	 *
+	 * The following methods are invoked
+	 *
+	 * @param array $rc
+	 * @param Headers $headers
+	 * @param mixed $body
+	 */
+	protected function finalize_as_json(array $rc, Headers &$headers, &$body)
+	{
+		$body = json_encode($rc);
 
 		$headers['Content-Type'] = 'application/json';
 		$headers['Content-Length'] = strlen($body);
@@ -158,29 +191,43 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	protected function finalize_value($value)
 	{
-		if (is_object($value))
+		return is_object($value) ? $this->finalize_value_object($value) : $value;
+	}
+
+	/**
+	 * Finalizes value object.
+	 *
+	 * - If the value implements `__toString` the value is cast as a string.
+	 * - If the value is an instance of {@link ToArrayRecursive} the value is converted into an array.
+	 * - If the value is an instance of {@link ToArray} the value is converted into an array.
+	 * - Otherwise the value is returned as is.
+	 *
+	 * @param $value
+	 *
+	 * @return mixed
+	 */
+	protected function finalize_value_object($value)
+	{
+		if (method_exists($value, '__toString'))
 		{
-			if (method_exists($value, '__toString'))
-			{
-				return (string) $value;
-			}
+			return (string) $value;
+		}
 
-			if ($value instanceof ToArrayRecursive)
-			{
-				return $value->to_array_recursive();
-			}
+		if ($value instanceof ToArrayRecursive)
+		{
+			return $value->to_array_recursive();
+		}
 
-			if ($value instanceof ToArray)
-			{
-				return $value->to_array();
-			}
+		if ($value instanceof ToArray)
+		{
+			return $value->to_array();
 		}
 
 		return $value;
 	}
 
 	/**
-	 * Finaly a value of the {@link $rc} property using {@link finalize_value()}.
+	 * Finalizes a value of the {@link $rc} property using {@link finalize_value()}.
 	 *
 	 * @param mixed $rc
 	 *
@@ -191,11 +238,25 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 		return $this->finalize_value($rc);
 	}
 
+	/**
+	 * Finalizes a message.
+	 *
+	 * @param mixed $message
+	 *
+	 * @return string
+	 */
 	protected function finalize_message($message)
 	{
 		return (string) $message;
 	}
 
+	/**
+	 * Finalizes errors into a nice array.
+	 *
+	 * @param $errors
+	 *
+	 * @return array
+	 */
 	protected function finalize_errors($errors)
 	{
 		$simplified = [];
@@ -222,6 +283,8 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	/**
 	 * Checks if a meta exists.
+	 *
+	 * @inheritdoc
 	 */
 	public function offsetExists($offset)
 	{
@@ -230,6 +293,8 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	/**
 	 * Returns a meta or null if it is not defined.
+	 *
+	 * @inheritdoc
 	 */
 	public function offsetGet($offset)
 	{
@@ -238,6 +303,8 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 
 	/**
 	 * Sets a meta.
+	 *
+	 * @inheritdoc
 	 */
 	public function offsetSet($offset, $value)
 	{
@@ -245,7 +312,9 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	}
 
 	/**
-	 * Unsets a meta.
+	 * Unset a meta.
+	 *
+	 * @inheritdoc
 	 */
 	public function offsetUnset($offset)
 	{

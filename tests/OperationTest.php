@@ -86,7 +86,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($validate_event_called);
 		$this->assertTrue($before_process_event_called);
 		$this->assertTrue($process_event_called);
-		$this->assertTrue($response->is_successful);
+		$this->assertTrue($response->status->is_successful);
 		$this->assertNotNull($response->rc);
 		$this->assertEquals(0, $response->errors->count());
 	}
@@ -117,7 +117,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		}
 		catch (\ICanBoogie\Operation\Failure $e)
 		{
-			$this->assertTrue($operation->response->is_client_error);
+			$this->assertTrue($operation->response->status->is_client_error);
 			$this->assertNotEquals(0, $operation->response->errors->count());
 			$this->assertTrue($failure_event_called);
 		}
@@ -177,8 +177,8 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$response = $request();
 		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
 		$this->assertEquals("My Exception Message.", $response->message);
-		$this->assertFalse($response->is_successful);
-		$this->assertEquals(500, $response->status);
+		$this->assertFalse($response->status->is_successful);
+		$this->assertEquals(500, $response->status->code);
 	}
 
 	public function test_operation_rescue()
@@ -349,8 +349,8 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$response = $dispatcher($request);
 
 		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
-		$this->assertEquals(200, $response->status);
-		$this->assertTrue($response->is_successful);
+		$this->assertEquals(200, $response->status->code);
+		$this->assertTrue($response->status->is_successful);
 	}
 
 	public function test_forwarded_success_with_xhr_and_location()
@@ -371,8 +371,8 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$response = $dispatcher($request);
 
 		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
-		$this->assertEquals(200, $response->status);
-		$this->assertTrue($response->is_successful);
+		$this->assertEquals(200, $response->status->code);
+		$this->assertTrue($response->status->is_successful);
 		$this->assertNull($response->location);
 		$this->assertNotNull($response['redirect_to']);
 	}

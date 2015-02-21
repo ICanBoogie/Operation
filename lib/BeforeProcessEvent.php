@@ -11,12 +11,15 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Event;
+use ICanBoogie\Operation;
+
 /**
  * Event class for the `ICanBoogie\Operation::process:before` event.
  *
  * Third parties may use this event to alter the request, response or errors.
  */
-class BeforeProcessEvent extends \ICanBoogie\Event
+class BeforeProcessEvent extends Event
 {
 	/**
 	 * The request that triggered the operation.
@@ -42,10 +45,10 @@ class BeforeProcessEvent extends \ICanBoogie\Event
 	/**
 	 * The event is constructed with the type `process:before`.
 	 *
-	 * @param \ICanBoogie\Operation $target
+	 * @param Operation $target
 	 * @param array $payload
 	 */
-	public function __construct(\ICanBoogie\Operation $target, array $payload)
+	public function __construct(Operation $target, array $payload)
 	{
 		parent::__construct($target, 'process:before', $payload);
 	}

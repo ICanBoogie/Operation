@@ -11,6 +11,7 @@
 
 namespace ICanBoogie\Operation\Dispatcher;
 
+use ICanBoogie\Event;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 use ICanBoogie\Operation\Dispatcher;
@@ -20,19 +21,19 @@ use ICanBoogie\Operation\Dispatcher;
  *
  * Third parties may use this event to alter the response before it is returned by the dispatcher.
  */
-class DispatchEvent extends \ICanBoogie\Event
+class DispatchEvent extends Event
 {
 	/**
 	 * The operation.
 	 *
-	 * @var \ICanBoogie\Operation
+	 * @var Operation
 	 */
 	public $operation;
 
 	/**
 	 * The request.
 	 *
-	 * @var \ICanBoogie\HTTP\Request
+	 * @var Request
 	 */
 	public $request;
 
@@ -47,7 +48,9 @@ class DispatchEvent extends \ICanBoogie\Event
 	 * The event is constructed with the type `dispatch`.
 	 *
 	 * @param Dispatcher $target
-	 * @param array $payload
+	 * @param Operation $operation
+	 * @param Request $request
+	 * @param \ICanBoogie\HTTP\Response $response
 	 */
 	public function __construct(Dispatcher $target, Operation $operation, Request $request, &$response)
 	{

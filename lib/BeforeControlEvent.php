@@ -11,22 +11,25 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Event;
+use ICanBoogie\Operation;
+
 /**
  * Event class for the `ICanBoogie\Operation::control:before` event.
  *
  * Third parties may use this event to alter the controls to run or clear them altogether.
  */
-class BeforeControlEvent extends \ICanBoogie\Event
+class BeforeControlEvent extends Event
 {
 	use ControlEventTrait;
 
 	/**
 	 * The event is constructed with the type `control:before`.
 	 *
-	 * @param \ICanBoogie\Operation $target
+	 * @param Operation $target
 	 * @param array $payload
 	 */
-	public function __construct(\ICanBoogie\Operation $target, array $payload)
+	public function __construct(Operation $target, array $payload)
 	{
 		parent::__construct($target, 'control:before', $payload);
 	}

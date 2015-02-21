@@ -11,6 +11,7 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Accessor\AccessorTrait;
 use ICanBoogie\Operation;
 
 /**
@@ -20,7 +21,7 @@ use ICanBoogie\Operation;
  */
 class FormNotFound extends \RuntimeException implements Exception
 {
-	use \ICanBoogie\GetterTrait;
+	use AccessorTrait;
 
 	private $operation;
 
@@ -29,7 +30,7 @@ class FormNotFound extends \RuntimeException implements Exception
 		return $this->operation;
 	}
 
-	public function __construct(Operation $operation, $message=null, $code=500, \Exception $previous=null)
+	public function __construct(Operation $operation, $message = null, $code = 500, \Exception $previous = null)
 	{
 		$this->operation = $operation;
 

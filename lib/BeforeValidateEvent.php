@@ -11,20 +11,23 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Event;
+use ICanBoogie\Operation;
+
 /**
  * Event class for the `ICanBoogie\Operation::validate:before` event.
  */
-class BeforeValidateEvent extends \ICanBoogie\Event
+class BeforeValidateEvent extends Event
 {
 	use ValidateEventTrait;
 
 	/**
 	 * The event is constructed with the type `validate:before`.
 	 *
-	 * @param \ICanBoogie\Operation $target
+	 * @param Operation $target
 	 * @param array $payload
 	 */
-	public function __construct(\ICanBoogie\Operation $target, array $payload)
+	public function __construct(Operation $target, array $payload)
 	{
 		parent::__construct($target, 'validate:before', $payload);
 	}

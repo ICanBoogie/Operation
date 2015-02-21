@@ -11,6 +11,7 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\HTTP\DispatcherInterface;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 use ICanBoogie\Operation\Dispatcher\BeforeDispatchEvent;
@@ -19,7 +20,7 @@ use ICanBoogie\Operation\Dispatcher\DispatchEvent;
 /**
  * Dispatches operation requests.
  */
-class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
+class Dispatcher implements DispatcherInterface
 {
 	/**
 	 * Tries to create an {@link Operation} instance from the specified request. The operation
@@ -30,6 +31,8 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 	 *
 	 * For forwarded operation, successful responses are not returned unless the request is an XHR
 	 * or the response has a location.
+	 *
+	 * @inheritdoc
 	 */
 	public function __invoke(Request $request)
 	{
@@ -37,8 +40,25 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 
 		if (!$operation)
 		{
-			return;
+			return null;
 		}
+
+		return $this->respond($operation, $request);
+	}
+
+	/**
+	 * Executes the operation and returns a response.
+	 *
+	 * @param Operation $operation
+	 * @param Request $request
+	 *
+	 * @return Response|null
+	 */
+	protected function respond(Operation $operation, Request $request)
+	{
+		/* @var $response Response */
+
+		$response = null;
 
 		new BeforeDispatchEvent($this, $operation, $request, $response);
 
@@ -49,12 +69,7 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 
 		new DispatchEvent($this, $operation, $request, $response);
 
-		if ($operation->is_forwarded && !$request->is_xhr && !$response->location)
-		{
-			return;
-		}
-
-		return $response;
+		return ($operation->is_forwarded && !$request->is_xhr && !$response->location) ? null : $response;
 	}
 
 	/**
@@ -82,41 +97,23 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 	 * @param Request $request The request.
 	 *
 	 * @return Response|null A response or `null` if the operation was forwarded.
+	 *
+	 * @throws Failure
+	 * @throws \Exception
 	 */
 	public function rescue(\Exception $exception, Request $request)
 	{
+		/* @var $failure Failure */
 		$failure = null;
-
-		if ($exception instanceof Failure)
-		{
-			$failure = $exception;
-
-			if ($failure->previous)
-			{
-				$exception = $failure->previous;
-			}
-
-			$operation = $failure->operation;
-		}
-		else if (!empty($request->context->operation))
-		{
-			$operation = $request->context->operation;
-		}
-		else
-		{
-			#
-			# The exception is re-thrown because it is not of type Failure, and we have no way to
-			# retrieve the operation to rescue it.
-			#
-
-			throw $exception;
-		}
+		$operation = $this->retrieve_operation($exception, $request, $failure);
 
 		#
 		# We try to rescue the exception, the original exception in case of a Failure exception. If
 		# the exception is rescued we return the response, otherwise if the exception is not a
 		# Failure we re-throw the exception.
 		#
+
+		$response = null;
 
 		new RescueEvent($operation, $exception, $request, $response);
 
@@ -155,8 +152,46 @@ class Dispatcher implements \ICanBoogie\HTTP\DispatcherInterface
 				\ICanBoogie\log_error($exception->getMessage());
 			}
 
-			return;
+			return null;
 		}
+
+		throw $exception;
+	}
+
+	/**
+	 * Retrieve the operation from the exception or request.
+	 *
+	 * @param \Exception $exception
+	 * @param Request $request
+	 * @param Failure $failure
+	 *
+	 * @return Operation
+	 *
+	 * @throws \Exception when the operation cannot be retrieved, that is the original exception.
+	 */
+	protected function retrieve_operation(\Exception &$exception, Request $request, Failure &$failure = null)
+	{
+		if ($exception instanceof Failure)
+		{
+			$failure = $exception;
+
+			if ($failure->previous)
+			{
+				$exception = $failure->previous;
+			}
+
+			return $failure->operation;
+		}
+
+		if (!empty($request->context->operation))
+		{
+			return $request->context->operation;
+		}
+
+		#
+		# The exception is re-thrown because it is not of type Failure, and we have no way to
+		# retrieve the operation to rescue it.
+		#
 
 		throw $exception;
 	}
