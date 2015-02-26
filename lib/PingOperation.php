@@ -22,6 +22,11 @@ use ICanBoogie\Session;
  */
 class PingOperation extends Operation
 {
+	static private function format_time($finish)
+	{
+		return number_format(($finish - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 3, '.', '') . ' ms';
+	}
+
 	protected function validate(Errors $errors)
 	{
 		return true;
@@ -40,7 +45,10 @@ class PingOperation extends Operation
 
 		if ($this->request['timer'] !== null)
 		{
-			$rc .= ', in ' . number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 3, '.', '') . ' ms.';
+			$boot_time = self::format_time($_SERVER['ICANBOOGIE_READY_TIME_FLOAT']);
+			$run_time = self::format_time(microtime(true));
+
+			$rc .= ", in $run_time (ready in $boot_time)";
 		}
 
 		return $rc;
