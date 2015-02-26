@@ -21,10 +21,10 @@
 		"php": ">=5.4.0",
 		"icanboogie/errors": "~1.0.0",
 		"icanboogie/event": "~1.3.0",
-		"icanboogie/routing": "~2.2.0"
+		"icanboogie/routing": "~2.3.0"
 	},
 	"require-dev": {
-        "icanboogie/icanboogie": "~2.2.0",
+        "icanboogie/icanboogie": "2.3.x-dev",
 		"icanboogie/module": "~2.2.0"
 	},
 	"autoload": {
