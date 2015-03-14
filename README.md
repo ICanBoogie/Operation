@@ -339,8 +339,8 @@ formated from records, while providing mapping to operation key features.
 ```php
 <?php
 
-$node = $core->models['nodes']->one;
-$path = $core->routes['api:nodes/online']->format($node);
+$node = $app->models['nodes']->one;
+$path = $app->routes['api:nodes/online']->format($node);
 ```
 
 
