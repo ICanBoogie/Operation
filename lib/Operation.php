@@ -462,7 +462,14 @@ abstract class Operation extends Object
 		return $this->request;
 	}
 
+	/**
+	 * @var Operation\Response
+	 */
 	public $response;
+
+	/**
+	 * @var string
+	 */
 	public $method;
 
 	const CONTROL_METHOD = 101;

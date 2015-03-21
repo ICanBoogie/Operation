@@ -171,7 +171,6 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 		$body = json_encode($rc);
 
 		$headers['Content-Type'] = 'application/json';
-		$headers['Content-Length'] = strlen($body);
 	}
 
 	/**
