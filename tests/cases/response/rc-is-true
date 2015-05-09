@@ -1,6 +1,5 @@
 HTTP/1.0 200 OK
 Date: #{date}
 Content-Type: application/json
-Content-Length: 11
 
 {"rc":true}
