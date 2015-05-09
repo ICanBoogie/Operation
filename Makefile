@@ -1,6 +1,7 @@
 # customization
 
-PACKAGE_NAME = "ICanBoogie/Operation"
+PACKAGE_NAME = ICanBoogie/Operation
+PACKAGE_VERSION = 2.1.3
 COMPOSER_ENV = COMPOSER_ROOT_VERSION=2.1.x-dev
 
 # do not edit the following lines
@@ -25,16 +26,14 @@ test-coverage: vendor
 	@phpunit --coverage-html build/coverage
 
 doc: vendor
-	@mkdir -p "docs"
-
-	@apigen \
-	--source ./ \
-	--destination docs/ --title $(PACKAGE_NAME) \
-	--exclude "*/composer/*" \
-	--exclude "*/tests/*" \
-	--template-config /usr/share/php/data/ApiGen/templates/bootstrap/config.neon
+	@mkdir -p build/docs
+	@apigen generate \
+	--source lib \
+	--destination build/docs/ \
+	--title "$(PACKAGE_NAME) v$(PACKAGE_VERSION)" \
+	--template-theme "bootstrap"
 
 clean:
-	@rm -fR docs
+	@rm -fR build
 	@rm -fR vendor
 	@rm -f composer.lock

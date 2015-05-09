@@ -99,7 +99,7 @@ Third parties may use this event to alter the outcome of the control.
 - On failure the event `ICanBoogie\Operation::failure` of class [FailureEvent][]
 is fired, with its `type` property set to `control`.
 
-- The event `ICanBoogie\Operation::get_form` of class [GetFormEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.GetFormEvent.html)
+- The event `ICanBoogie\Operation::get_form` of class [GetFormEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.GetFormEvent.html)
 is fired if the `form` getter is not overridden. It allows third parties to provide a form to check
 to parameters of the request.
 
@@ -115,10 +115,10 @@ validation is considered failed if the method returns an empty value or errors a
 
 The following events are fired during the process:
 
-- Before the validation the event `ICanBoogie\Operation::validate:before` of class [BeforeValidateEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.BeforeValidateEvent.html)
+- Before the validation the event `ICanBoogie\Operation::validate:before` of class [BeforeValidateEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.BeforeValidateEvent.html)
 is fired. Third parties may use this event to alter the errors or the status of the validation.
 
-- After the validation the event `ICanBoogie\Operation::validate` of class [ValidateEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.ValidateEvent.html)
+- After the validation the event `ICanBoogie\Operation::validate` of class [ValidateEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.ValidateEvent.html)
 is fired. Third parties may use this event to alter the errors or the outcome of the validation.
 
 - On failure the event `ICanBoogie\Operation::failure` of class [FailureEvent][] is fired.
@@ -135,10 +135,10 @@ After the control and the validation, the operation is finally processed by invo
 
 The following events are fired during the process:
 
-- Before the processing the event `ICanBoogie\Operation::process:before` of class [BeforeProcessEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.BeforeProcessEvent.html)
+- Before the processing the event `ICanBoogie\Operation::process:before` of class [BeforeProcessEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.BeforeProcessEvent.html)
 is fired. Third parties may use this event to alter the request, response or errors.
 
-- After the processing the event `ICanBoogie\Operation::process` of class [ProcessEvent](http://icanboogie.org/docs/class-ICanBoogie.Operation.ProcessEvent.html)
+- After the processing the event `ICanBoogie\Operation::process` of class [ProcessEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.ProcessEvent.html)
 is fired. Third parties may use this event to alter the result, request or response.
 
 
@@ -166,8 +166,8 @@ the exception is fired without a previous exception.
 ## Forwarded operations
 
 An operation is considered _forwarded_ when the actual destination and operation name is defined
-using the request parameters [Operation::DESTINATION](http://icanboogie.org/docs/class-ICanBoogie.Operation.html#DESTINATION)
-and [Operation::NAME](http://icanboogie.org/docs/class-ICanBoogie.Operation.html#NAME). The URL of the request
+using the request parameters [Operation::DESTINATION](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.html#DESTINATION)
+and [Operation::NAME](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.html#NAME). The URL of the request
 is irrelevant to forwarded operations, moreover whether they succeed or fail the dispatch process
 simply continues. For instance, this allows forms to be posted to their own _view_ URL (not the
 URL of the operation) and displayed again if an error occurs.
@@ -203,7 +203,7 @@ $operation->is_forwarded; // true
 
 ## Response
 
-The response of the operation is represented by a [Response](http://icanboogie.org/docs/class-ICanBoogie.Operation.Response.html) instance.
+The response of the operation is represented by a [Response](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.Response.html) instance.
 The value returned by the `process()` method is set to its `rc` property. The operation
 is considered failed if its value is `null`, in which case the status of the operation is set to
 "400 Operation failed".
@@ -398,7 +398,7 @@ The package requires PHP 5.4 or later.
 The recommended way to install this package is through [Composer](http://getcomposer.org/):
 
 ```
-composer require icanboogie/operation
+$ composer require icanboogie/operation
 ```
 
 
@@ -416,11 +416,18 @@ be cloned with the following command line:
 
 
 
+## Documentation
+
+The package is documented as part of the [ICanBoogie][] framework
+[documentation](http://api.icanboogie.org/operation/). You can generate the documentation for the package and its dependencies with the `make doc` command. The documentation is generated in the `build/docs` directory. [ApiGen](http://apigen.org/) is required. The directory can later be cleaned with the `make clean` command.
+
+
+
+
+
 ## Testing
 
-The test suite is ran with the `make test` command. [Composer](http://getcomposer.org/) is
-automatically installed as well as all dependencies required to run the suite. You can later
-clean the directory with the `make clean` command.
+The test suite is ran with the `make test` command. [PHPUnit](https://phpunit.de/) and [Composer](http://getcomposer.org/) need to be globally available to run the suite. The command installs dependencies as required. The `make test-coverage` command runs test suite and also creates an HTML coverage report in `build/coverage`. The directory can later be cleaned with the `make clean` command.
 
 The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
@@ -431,32 +438,21 @@ The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
 
 
-## Documentation
-
-The package is documented as part of the [ICanBoogie](http://icanboogie.org/) framework
-[documentation](http://icanboogie.org/docs/). You can generate the documentation for the package
-and its dependencies with the `make doc` command. The documentation is generated in the `docs`
-directory. [ApiGen](http://apigen.org/) is required. You can later clean the directory with
-the `make clean` command.
-
-
-
-
-
 ## License
 
-ICanBoogie/Operation is licensed under the New BSD License - See the LICENSE file for details.
+**icanboogie/operation** is licensed under the New BSD License - See the LICENSE file for details.
+
 
 
 
 
 [documentation of the icanboogie/event package]: https://github.com/ICanBoogie/Event
 [module Nodes]: https://github.com/Icybee/module-nodes
-[BeforeControlEvent]: http://icanboogie.org/docs/class-ICanBoogie.Operation.BeforeControlEvent.html
-[ControlEvent]: http://icanboogie.org/docs/class-ICanBoogie.Operation.ControlEvent.html
-[FailureEvent]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FailureEvent.html
-[Failure]: http://icanboogie.org/docs/class-ICanBoogie.Operation.Failure.html
-[FormHasExpired]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FormHasExpired.html
-[FormNotFound]: http://icanboogie.org/docs/class-ICanBoogie.Operation.FormNotFound.html
-[Operation]: http://icanboogie.org/docs/class-ICanBoogie.Operation.html
-[RescueEvent]: http://icanboogie.org/docs/class-ICanBoogie.Operation.RescueEvent.html
+[BeforeControlEvent]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.BeforeControlEvent.html
+[ControlEvent]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.ControlEvent.html
+[FailureEvent]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.FailureEvent.html
+[Failure]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.Failure.html
+[FormHasExpired]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.FormHasExpired.html
+[FormNotFound]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.FormNotFound.html
+[Operation]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.html
+[RescueEvent]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.RescueEvent.html
