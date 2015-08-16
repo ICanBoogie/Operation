@@ -11,16 +11,16 @@
 
 namespace ICanBoogie\Operation;
 
-use ICanBoogie\HTTP\DispatcherInterface;
+use ICanBoogie\HTTP\Dispatcher;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
-use ICanBoogie\Operation\Dispatcher\BeforeDispatchEvent;
-use ICanBoogie\Operation\Dispatcher\DispatchEvent;
+use ICanBoogie\Operation\OperationDispatcher\BeforeDispatchEvent;
+use ICanBoogie\Operation\OperationDispatcher\DispatchEvent;
 
 /**
  * Dispatches operation requests.
  */
-class Dispatcher implements DispatcherInterface
+class OperationDispatcher implements Dispatcher
 {
 	/**
 	 * Tries to create an {@link Operation} instance from the specified request. The operation

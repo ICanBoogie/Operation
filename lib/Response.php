@@ -18,7 +18,7 @@ use ICanBoogie\ToArrayRecursive;
 
 /**
  * @property string $message The response message.
- * @property-read \ICanBoogie\Errors $errors
+ * @property Errors $errors
  */
 class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 {

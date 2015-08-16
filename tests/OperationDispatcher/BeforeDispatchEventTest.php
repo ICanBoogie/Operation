@@ -9,14 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace ICanBoogie\Operation\Dispatcher;
+namespace ICanBoogie\Operation\OperationDispatcher;
+
+use ICanBoogie\Operation\OperationDispatcher;
 
 class BeforeDispatchEventTest extends \PHPUnit_Framework_TestCase
 {
 	public function test_response_must_be_instance_of_response()
 	{
 		$dispatcher = $this
-			->getMockBuilder('ICanBoogie\Operation\Dispatcher')
+			->getMockBuilder(OperationDispatcher::class)
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -30,7 +32,7 @@ class BeforeDispatchEventTest extends \PHPUnit_Framework_TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		/* @var $dispatcher \ICanBoogie\Operation\Dispatcher */
+		/* @var $dispatcher \ICanBoogie\Operation\OperationDispatcher */
 		/* @var $operation \ICanBoogie\Operation */
 		/* @var $request \ICanBoogie\HTTP\Request */
 

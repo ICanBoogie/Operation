@@ -246,7 +246,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			]
 		]);
 
-		$dispatcher = new Dispatcher;
+		$dispatcher = new OperationDispatcher;
 		$response = $dispatcher($request);
 		$this->assertNull($response);
 	}
@@ -264,7 +264,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			]
 		]);
 
-		$dispatcher = new Dispatcher;
+		$dispatcher = new OperationDispatcher;
 		$response = $dispatcher($request);
 		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
 		$this->assertNotNull($response->location);
@@ -283,7 +283,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			]
 		]);
 
-		$dispatcher = new Dispatcher;
+		$dispatcher = new OperationDispatcher;
 
 		try
 		{
@@ -310,7 +310,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			]
 		]);
 
-		$dispatcher = new Dispatcher;
+		$dispatcher = new OperationDispatcher;
 
 		try
 		{
@@ -345,7 +345,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			]
 		]);
 
-		$dispatcher = new Dispatcher;
+		$dispatcher = new OperationDispatcher;
 		$response = $dispatcher($request);
 
 		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
@@ -367,7 +367,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			]
 		]);
 
-		$dispatcher = new Dispatcher;
+		$dispatcher = new OperationDispatcher;
 		$response = $dispatcher($request);
 
 		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
@@ -391,7 +391,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			]
 		]);
 
-		$dispatcher = new Dispatcher;
+		$dispatcher = new OperationDispatcher;
 
 		try
 		{
@@ -419,7 +419,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			]
 		]);
 
-		$dispatcher = new Dispatcher;
+		$dispatcher = new OperationDispatcher;
 
 		try
 		{

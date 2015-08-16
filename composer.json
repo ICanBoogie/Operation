@@ -17,14 +17,16 @@
 		"issues": "https://github.com/ICanBoogie/Operation/issues",
 		"source": "https://github.com/ICanBoogie/Operation"
 	},
+	"minimum-stability": "dev",
 	"require": {
-		"php": ">=5.4.0",
-		"icanboogie/errors": "~1.0.0",
-		"icanboogie/routing": "~2.4.0"
+		"php": ">=5.5.0",
+		"icanboogie/errors": "^1.0.0",
+		"icanboogie/routing": "2.5.x-dev"
 	},
 	"require-dev": {
-        "icanboogie/icanboogie": "~2.3.0",
-		"icanboogie/module": "~2.2.0"
+        "icanboogie/icanboogie": "2.4.x-dev",
+		"icanboogie/bind-routing": "0.2.x-dev",
+		"icanboogie/module": "2.3.x-dev"
 	},
 	"autoload": {
 		"psr-4": {

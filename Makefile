@@ -1,8 +1,8 @@
 # customization
 
 PACKAGE_NAME = ICanBoogie/Operation
-PACKAGE_VERSION = 2.1.3
-COMPOSER_ENV = COMPOSER_ROOT_VERSION=2.1.x-dev
+PACKAGE_VERSION = 2.2.x-dev
+COMPOSER_ENV = COMPOSER_ROOT_VERSION=$(PACKAGE_VERSION)
 
 # do not edit the following lines
 

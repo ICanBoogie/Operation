@@ -29,7 +29,7 @@ use ICanBoogie\Operation\ProcessEvent;
 /**
  * An operation.
  *
- * @property-read Core $app
+ * @property-read Core|Module\CoreBindings $app
  * @property ActiveRecord $record The target active record object of the operation.
  * @property-read Request $request The request.
  * @property-read array $controls The controls to apply to the operation before it is processed.
@@ -256,6 +256,7 @@ abstract class Operation extends Object
 	static protected function from_route(Request $request, $path)
 	{
 		$app = \ICanBoogie\app();
+		$captured = [];
 		$route = $app->routes->find($path, $captured, $request->method, 'api');
 
 		if (!$route)
@@ -1067,6 +1068,8 @@ abstract class Operation extends Object
 
 	/**
 	 * Controls the authentication of the user.
+	 *
+	 * @TODO-20150816: should be a prototype method
 	 */
 	protected function control_authentication()
 	{
@@ -1079,6 +1082,8 @@ abstract class Operation extends Object
 	 * @param mixed $permission The required permission.
 	 *
 	 * @return bool true if the user has the specified permission, false otherwise.
+	 *
+	 * @TODO-20150816: should be a prototype method
 	 */
 	protected function control_permission($permission)
 	{
@@ -1090,12 +1095,14 @@ abstract class Operation extends Object
 	 *
 	 * @return bool true if the user as ownership of the record or there is no record, false
 	 * otherwise.
+	 *
+	 * @TODO-20150816: should be a prototype method
 	 */
 	protected function control_ownership()
 	{
 		$record = $this->record;
 
-		return (!$record || $this->app->user->has_ownership($this->module, $record));
+		return (!$record || $this->app->user->has_ownership($record));
 	}
 
 	/**

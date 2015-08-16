@@ -9,15 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace ICanBoogie\Operation\Dispatcher;
+namespace ICanBoogie\Operation\OperationDispatcher;
 
 use ICanBoogie\Event;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
-use ICanBoogie\Operation\Dispatcher;
+use ICanBoogie\Operation\OperationDispatcher;
 
 /**
- * Event class for the `ICanBoogie\Operation\Dispatcher::dispatch` event.
+ * Event class for the `ICanBoogie\Operation\OperationDispatcher::dispatch` event.
  *
  * Third parties may use this event to alter the response before it is returned by the dispatcher.
  */
@@ -47,12 +47,12 @@ class DispatchEvent extends Event
 	/**
 	 * The event is constructed with the type `dispatch`.
 	 *
-	 * @param Dispatcher $target
+	 * @param OperationDispatcher $target
 	 * @param Operation $operation
 	 * @param Request $request
 	 * @param \ICanBoogie\HTTP\Response $response
 	 */
-	public function __construct(Dispatcher $target, Operation $operation, Request $request, &$response)
+	public function __construct(OperationDispatcher $target, Operation $operation, Request $request, &$response)
 	{
 		$this->operation = $operation;
 		$this->request = $request;
