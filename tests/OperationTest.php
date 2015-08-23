@@ -126,7 +126,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException ICanBoogie\Operation\Failure
+	 * @expectedException \ICanBoogie\Operation\Failure
 	 */
 	public function test_operation_invoke_failed()
 	{
@@ -157,7 +157,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException ICanBoogie\Operation\Modules\Sample\SampleException
+	 * @expectedException \ICanBoogie\Operation\Modules\Sample\SampleException
 	 */
 	public function test_operation_invoke_exception_using_dispatch()
 	{
