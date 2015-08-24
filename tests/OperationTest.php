@@ -25,6 +25,8 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 {
 	public function test_operation_invoke_successful()
 	{
+		/* @var $app \ICanBoogie\Core|\ICanBoogie\Binding\Event\CoreBindings */
+
 		$app = \ICanBoogie\app();
 
 		$before_control_event_called = false;
@@ -144,15 +146,17 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 			$this->fail("Expected Failure");
 		}
-		catch (\Exception $e)
+		catch (Failure $e)
 		{
 			$previous = $e->previous;
 			$response = $e->operation->response;
 
-			$this->assertInstanceOf('ICanBoogie\Operation\Failure', $e);
 			$this->assertInstanceOf('ICanBoogie\Operation\Modules\Sample\SampleException', $previous);
-
 			$this->assertEquals($previous->getMessage(), $response->message);
+		}
+		catch (\Exception $e)
+		{
+			$this->fail("Expected Failure");
 		}
 	}
 

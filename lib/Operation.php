@@ -29,11 +29,12 @@ use ICanBoogie\Operation\ProcessEvent;
 /**
  * An operation.
  *
- * @property-read Core|Module\CoreBindings $app
+ * @property-read Core|\ICanBoogie\Binding\Routing\CoreBindings|Module\CoreBindings $app
  * @property ActiveRecord $record The target active record object of the operation.
  * @property-read Request $request The request.
  * @property-read array $controls The controls to apply to the operation before it is processed.
  * @property-read bool $is_forwarded `true` if the operation is forwarded, `false` otherwise.
+ * @property Module $module
  */
 abstract class Operation extends Object
 {
