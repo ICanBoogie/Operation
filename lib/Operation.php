@@ -36,7 +36,7 @@ use ICanBoogie\Operation\ProcessEvent;
  * @property-read bool $is_forwarded `true` if the operation is forwarded, `false` otherwise.
  * @property Module $module
  */
-abstract class Operation extends Object
+abstract class Operation extends Prototyped
 {
 	/**
 	 * Defines the destination of a forwarded operation.
