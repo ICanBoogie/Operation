@@ -11,22 +11,25 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\HTTP\Request;
+use ICanBoogie\Operation;
+
 class GetFormEventTest extends \PHPUnit_Framework_TestCase
 {
 	public function test_instance()
 	{
 		$operation = $this
-			->getMockBuilder('ICanBoogie\Operation')
+			->getMockBuilder(Operation::class)
 			->disableOriginalConstructor()
 			->getMockForAbstractClass();
 
 		$request = $this
-			->getMockBuilder('ICanBoogie\HTTP\Request')
+			->getMockBuilder(Request::class)
 			->disableOriginalConstructor()
 			->getMock();
 
-		/* @var $operation \ICanBoogie\Operation */
-		/* @var $request \ICanBoogie\HTTP\Request */
+		/* @var $operation Operation */
+		/* @var $request Request */
 
 		$form = null;
 		$expected_form = uniqid();

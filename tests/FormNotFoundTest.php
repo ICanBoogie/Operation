@@ -11,16 +11,18 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Operation;
+
 class FormNotFoundTest extends \PHPUnit_Framework_TestCase
 {
 	public function test_instance()
 	{
 		$operation = $this
-			->getMockBuilder('ICanBoogie\Operation')
+			->getMockBuilder(Operation::class)
 			->disableOriginalConstructor()
 			->getMockForAbstractClass();
 
-		/* @var $operation \ICanBoogie\Operation */
+		/* @var $operation Operation */
 
 		$instance = new FormNotFound($operation);
 		$this->assertSame($operation, $instance->operation);

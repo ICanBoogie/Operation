@@ -2,11 +2,11 @@
 
 namespace ICanBoogie\Operation\Modules\Sample;
 
-use ICanBoogie\Module;
+use ICanBoogie\Module\Descriptor;
 
 return [
 
-	Module::T_NAMESPACE => __NAMESPACE__,
-	Module::T_TITLE => 'Sample'
+	Descriptor::NS => __NAMESPACE__,
+	Descriptor::TITLE => 'Sample'
 
 ];

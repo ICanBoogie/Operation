@@ -1,8 +1,8 @@
 <?php
 
-namespace ICanBoogie\Operation\Modules\Sample;
+namespace ICanBoogie\Operation\Modules\Sample\Operation;
 
-class SuccessOperation extends \ICanBoogie\Operation
+class FailureOperation extends \ICanBoogie\Operation
 {
 	protected function validate(\ICanBoogie\Errors $errors)
 	{
@@ -11,6 +11,6 @@ class SuccessOperation extends \ICanBoogie\Operation
 
 	protected function process()
 	{
-		return true;
+		return;
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace ICanBoogie\Operation\Modules\Sample;
+namespace ICanBoogie\Operation\Modules\Sample\Operation;
 
 class SuccessWithLocationOperation extends \ICanBoogie\Operation
 {

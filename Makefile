@@ -1,7 +1,7 @@
 # customization
 
-PACKAGE_NAME = ICanBoogie/Operation
-PACKAGE_VERSION = 2.2.x-dev
+PACKAGE_NAME = icanboogie/operation
+PACKAGE_VERSION = 3.0.0
 COMPOSER_ENV = COMPOSER_ROOT_VERSION=$(PACKAGE_VERSION)
 
 # do not edit the following lines

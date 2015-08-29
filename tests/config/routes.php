@@ -1,11 +1,13 @@
 <?php
 
+namespace ICanBoogie\Operation\Modules\Sample;
+
 return [
 
 	'api:exception' => [
 
 		'pattern' => '/api/exception',
-		'controller' => 'ICanBoogie\Operation\Modules\Sample\ExceptionOperation'
+		'controller' => Operation\ExceptionOperation::class
 
 	]
 

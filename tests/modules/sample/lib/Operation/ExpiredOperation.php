@@ -1,6 +1,6 @@
 <?php
 
-namespace ICanBoogie\Operation\Modules\Sample;
+namespace ICanBoogie\Operation\Modules\Sample\Operation;
 
 use ICanBoogie\Operation\FormHasExpired;
 

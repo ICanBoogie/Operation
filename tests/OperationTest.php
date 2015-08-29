@@ -14,10 +14,10 @@ namespace ICanBoogie\Operation;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 
-use ICanBoogie\Operation\Modules\Sample\SuccessOperation;
-use ICanBoogie\Operation\Modules\Sample\ErrorOperation;
-use ICanBoogie\Operation\Modules\Sample\FailureOperation;
-use ICanBoogie\Operation\Modules\Sample\ExceptionOperation;
+use ICanBoogie\Operation\Modules\Sample\Operation\SuccessOperation;
+use ICanBoogie\Operation\Modules\Sample\Operation\ErrorOperation;
+use ICanBoogie\Operation\Modules\Sample\Operation\FailureOperation;
+use ICanBoogie\Operation\Modules\Sample\Operation\ExceptionOperation;
 use ICanBoogie\Operation\OperationTest\LocationOperation;
 use ICanBoogie\HTTP\Response;
 
@@ -151,7 +151,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			$previous = $e->previous;
 			$response = $e->operation->response;
 
-			$this->assertInstanceOf('ICanBoogie\Operation\Modules\Sample\SampleException', $previous);
+			$this->assertInstanceOf(Operation\Modules\Sample\SampleException::class, $previous);
 			$this->assertEquals($previous->getMessage(), $response->message);
 		}
 		catch (\Exception $e)

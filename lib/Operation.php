@@ -449,7 +449,7 @@ abstract class Operation extends Prototyped
 	 */
 	static public function format_class_name($namespace, $operation_name)
 	{
-		return $namespace . '\\' . camelize(strtr($operation_name, '-', '_')) . 'Operation';
+		return $namespace . '\Operation\\' . camelize(strtr($operation_name, '-', '_')) . 'Operation';
 	}
 
 	public $key;

@@ -1,6 +1,8 @@
 <?php
 
-namespace ICanBoogie\Operation\Modules\Sample;
+namespace ICanBoogie\Operation\Modules\Sample\Operation;
+
+use ICanBoogie\Operation\Modules\Sample\SampleException;
 
 class ExceptionOperation extends \ICanBoogie\Operation
 {
@@ -13,9 +15,4 @@ class ExceptionOperation extends \ICanBoogie\Operation
 	{
 		return true;
 	}
-}
-
-class SampleException extends \Exception
-{
-
 }
