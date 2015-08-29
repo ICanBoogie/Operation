@@ -14,6 +14,7 @@ namespace ICanBoogie;
 use ICanBoogie\HTTP;
 use ICanBoogie\HTTP\NotFound;
 use ICanBoogie\HTTP\Request;
+use ICanBoogie\HTTP\Status;
 use ICanBoogie\Module\Descriptor;
 use ICanBoogie\Operation\Failure;
 use ICanBoogie\Operation\FailureEvent;
@@ -783,7 +784,7 @@ abstract class Operation extends Prototyped
 
 			if ($code < 200 || $code >= 600)
 			{
-				$code = 500;
+				$code = Status::INTERNAL_SERVER_ERROR;
 			}
 
 			$response->status = $code;
@@ -816,7 +817,7 @@ abstract class Operation extends Prototyped
 
 		if ($rc === null)
 		{
-			$response->status->code = 400;
+			$response->status->code = Status::BAD_REQUEST;
 			$response->status->message = 'Operation failed';
 		}
 		else
@@ -855,7 +856,7 @@ abstract class Operation extends Prototyped
 			$response->body = '';
 			$response->headers['Referer'] = $request->uri;
 		}
-		else if ($response->status->code == 304) // FIXME-20141009: is this still relevant ?
+		else if ($response->status->code == Status::NOT_MODIFIED) // FIXME-20141009: is this still relevant ?
 		{
 			$response->body = '';
 		}
@@ -997,7 +998,7 @@ abstract class Operation extends Prototyped
 
 		if ($controls[self::CONTROL_SESSION_TOKEN] && !$this->control_session_token())
 		{
-			throw new \Exception("Session token doesn't match", 401);
+			throw new \Exception("Session token doesn't match", Status::UNAUTHORIZED);
 		}
 
 		if ($controls[self::CONTROL_AUTHENTICATION] && !$this->control_authentication())
@@ -1006,7 +1007,7 @@ abstract class Operation extends Prototyped
 
 				'%operation' => get_class($this)
 
-			]), 401);
+			]), Status::UNAUTHORIZED);
 		}
 
 		if ($controls[self::CONTROL_PERMISSION] && !$this->control_permission($controls[self::CONTROL_PERMISSION]))
@@ -1015,7 +1016,7 @@ abstract class Operation extends Prototyped
 
 				'%operation' => get_class($this)
 
-			]), 401);
+			]), Status::UNAUTHORIZED);
 		}
 
 		if ($controls[self::CONTROL_RECORD] && !$this->control_record())
@@ -1029,7 +1030,7 @@ abstract class Operation extends Prototyped
 
 		if ($controls[self::CONTROL_OWNERSHIP] && !$this->control_ownership())
 		{
-			throw new \Exception("You don't have ownership of the record.", 401);
+			throw new \Exception("You don't have ownership of the record.", Status::UNAUTHORIZED);
 		}
 
 		if ($controls[self::CONTROL_FORM] && !$this->control_form())
