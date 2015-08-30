@@ -13,6 +13,7 @@ namespace ICanBoogie;
 
 use ICanBoogie\HTTP;
 use ICanBoogie\HTTP\NotFound;
+use ICanBoogie\HTTP\PermissionRequired;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\HTTP\Status;
 use ICanBoogie\Module\Descriptor;
@@ -1012,7 +1013,7 @@ abstract class Operation extends Prototyped
 
 		if ($controls[self::CONTROL_PERMISSION] && !$this->control_permission($controls[self::CONTROL_PERMISSION]))
 		{
-			throw new \Exception(format("You don't have permission to perform the %operation operation.", [
+			throw new PermissionRequired(format("You don't have permission to perform the %operation operation.", [
 
 				'%operation' => get_class($this)
 
@@ -1021,7 +1022,7 @@ abstract class Operation extends Prototyped
 
 		if ($controls[self::CONTROL_RECORD] && !$this->control_record())
 		{
-			throw new \Exception(format('Unable to retrieve record required for the %operation operation.', [
+			throw new NotFound(format('Unable to retrieve record required for the %operation operation.', [
 
 				'%operation' => get_class($this)
 
