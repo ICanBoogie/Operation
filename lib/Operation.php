@@ -454,7 +454,6 @@ abstract class Operation extends Prototyped
 	}
 
 	public $key;
-	public $destination;
 
 	/**
 	 * @var \ICanBoogie\HTTP\Request The request triggering the operation.
