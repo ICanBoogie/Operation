@@ -551,23 +551,6 @@ abstract class Operation extends Prototyped
 	}
 
 	/**
-	 * @var array The properties for the operation.
-	 */
-	protected $properties;
-
-	/**
-	 * Getter for the {@link $properties} property.
-	 *
-	 * The getter should only be called during the {@link process()} method.
-	 *
-	 * @return array
-	 */
-	protected function lazy_get_properties()
-	{
-		return [];
-	}
-
-	/**
 	 * Output format of the operation response.
 	 *
 	 * @var string
@@ -900,7 +883,6 @@ abstract class Operation extends Prototyped
 
 		unset($this->form);
 		unset($this->record);
-		unset($this->properties);
 
 		$key = $this->request[self::KEY];
 
