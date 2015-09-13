@@ -21,6 +21,9 @@ use ICanBoogie\Operation\Modules\Sample\Operation\ExceptionOperation;
 use ICanBoogie\Operation\OperationTest\LocationOperation;
 use ICanBoogie\HTTP\Response;
 
+use ICanBoogie\Operation\Modules\Sample as SampleModule;
+use ICanBoogie\Routing\Route\RescueEvent;
+
 class OperationTest extends \PHPUnit_Framework_TestCase
 {
 	public function test_operation_invoke_successful()
@@ -105,7 +108,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$failure_event_called = false;
 		$failure_event_type = null;
 
-		$eh = $app->events->attach(function(\ICanBoogie\Operation\FailureEvent $event, ErrorOperation $target) use(&$failure_event_called, &$failure_event_type) {
+		$app->events->once(function(Operation\FailureEvent $event, ErrorOperation $target) use(&$failure_event_called, &$failure_event_type) {
 
 			$failure_event_called = true;
 			$failure_event_type = $event->type;
@@ -114,17 +117,15 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 		try
 		{
-			$response = $operation(Request::from());
+			$operation(Request::from());
 			$this->fail('The Failure exception should have been raised');
 		}
-		catch (\ICanBoogie\Operation\Failure $e)
+		catch (Failure $e)
 		{
 			$this->assertTrue($operation->response->status->is_client_error);
 			$this->assertNotEquals(0, $operation->response->errors->count());
 			$this->assertTrue($failure_event_called);
 		}
-
-		$eh->detach();
 	}
 
 	/**
@@ -142,7 +143,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 
 		try
 		{
-			$response = $operation(Request::from());
+			$operation(Request::from());
 
 			$this->fail("Expected Failure");
 		}
@@ -151,7 +152,7 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 			$previous = $e->previous;
 			$response = $e->operation->response;
 
-			$this->assertInstanceOf(Operation\Modules\Sample\SampleException::class, $previous);
+			$this->assertInstanceOf(SampleModule\SampleException::class, $previous);
 			$this->assertEquals($previous->getMessage(), $response->message);
 		}
 		catch (\Exception $e)
@@ -185,258 +186,6 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(500, $response->status->code);
 	}
 
-	public function test_operation_rescue()
-	{
-		$app = \ICanBoogie\app();
-
-		$rescue_response = new Response("Rescued!", 200);
-
-		$eh = $app->events->attach(function(RescueEvent $event, ExceptionOperation $target) use($rescue_response) {
-
-			$event->response = $rescue_response;
-
-		});
-
-		$request = Request::from('/api/exception');
-		$response = $request();
-
-		$this->assertSame($rescue_response, $response);
-
-		$eh->detach();
-	}
-
-	public function test_operation_replace_exception()
-	{
-		$app = \ICanBoogie\app();
-
-		$exception = new \Exception("My exception");
-
-		$eh = $app->events->attach(function(RescueEvent $event, ExceptionOperation $target) use($exception) {
-
-			$event->exception = $exception;
-
-		});
-
-		try
-		{
-			$request = Request::from('/api/exception');
-			$request();
-
-			$this->fail('An exception should have been raised.');
-		}
-		catch (\Exception $e)
-		{
-			$this->assertSame($exception, $e);
-		}
-
-		$eh->detach();
-	}
-
-	/*
-	 * Whatever the outcome of a forwarded operation, the dispatcher must not return a response,
-	 * unless the request is an XHR.
-	 */
-
-	public function test_forwarded_success()
-	{
-		$request = Request::from([
-
-			'path' => '/',
-			'request_params' => [
-
-				Operation::DESTINATION => 'sample',
-				Operation::NAME => 'success'
-
-			]
-		]);
-
-		$dispatcher = new OperationDispatcher;
-		$response = $dispatcher($request);
-		$this->assertNull($response);
-	}
-
-	public function test_forwarded_success_with_location()
-	{
-		$request = Request::from([
-
-			'path' => '/',
-			'request_params' => [
-
-				Operation::DESTINATION => 'sample',
-				Operation::NAME => 'success_with_location'
-
-			]
-		]);
-
-		$dispatcher = new OperationDispatcher;
-		$response = $dispatcher($request);
-		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
-		$this->assertNotNull($response->location);
-	}
-
-	public function test_forwarded_error()
-	{
-		$request = Request::from([
-
-			'path' => '/',
-			'request_params' => [
-
-				Operation::DESTINATION => 'sample',
-				Operation::NAME => 'error'
-
-			]
-		]);
-
-		$dispatcher = new OperationDispatcher;
-
-		try
-		{
-			$response = $dispatcher($request);
-			$this->fail('The Failure exception should have been raised.');
-		}
-		catch (\ICanBoogie\Operation\Failure $exception)
-		{
-			$response = $dispatcher->rescue($exception, $request);
-			$this->assertNull($response);
-		}
-	}
-
-	public function test_forwarded_failure()
-	{
-		$request = Request::from([
-
-			'path' => '/',
-			'request_params' => [
-
-				Operation::DESTINATION => 'sample',
-				Operation::NAME => 'failure'
-
-			]
-		]);
-
-		$dispatcher = new OperationDispatcher;
-
-		try
-		{
-			$response = $dispatcher($request);
-		}
-		catch (\ICanBoogie\Operation\Failure $exception)
-		{
-			$response = $dispatcher->rescue($exception, $request);
-			$this->assertNull($response);
-
-			return;
-		}
-
-		$this->fail('The Failure exception should have been raised.');
-	}
-
-	/*
-	 * The response to a forwarded operation must be return if the request is an XHR.
-	 */
-
-	public function test_forwarded_success_with_xhr()
-	{
-		$request = Request::from([
-
-			'path' => '/',
-			'is_xhr' => true,
-			'request_params' => [
-
-				Operation::DESTINATION => 'sample',
-				Operation::NAME => 'success'
-
-			]
-		]);
-
-		$dispatcher = new OperationDispatcher;
-		$response = $dispatcher($request);
-
-		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
-		$this->assertEquals(200, $response->status->code);
-		$this->assertTrue($response->status->is_successful);
-	}
-
-	public function test_forwarded_success_with_xhr_and_location()
-	{
-		$request = Request::from([
-
-			'path' => '/',
-			'is_xhr' => true,
-			'request_params' => [
-
-				Operation::DESTINATION => 'sample',
-				Operation::NAME => 'success_with_location'
-
-			]
-		]);
-
-		$dispatcher = new OperationDispatcher;
-		$response = $dispatcher($request);
-
-		$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
-		$this->assertEquals(200, $response->status->code);
-		$this->assertTrue($response->status->is_successful);
-		$this->assertNull($response->location);
-		$this->assertNotNull($response['redirect_to']);
-	}
-
-	public function test_forwarded_error_with_xhr()
-	{
-		$request = Request::from([
-
-			'path' => '/',
-			'is_xhr' => true,
-			'request_params' => [
-
-				Operation::DESTINATION => 'sample',
-				Operation::NAME => 'error'
-
-			]
-		]);
-
-		$dispatcher = new OperationDispatcher;
-
-		try
-		{
-			$response = $dispatcher($request);
-			$this->fail('The Failure exception should have been raised.');
-		}
-		catch (\ICanBoogie\Operation\Failure $exception)
-		{
-			$response = $dispatcher->rescue($exception, $request);
-			$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
-		}
-	}
-
-	public function test_forwarded_failure_with_xhr()
-	{
-		$request = Request::from([
-
-			'path' => '/',
-			'is_xhr' => true,
-			'request_params' => [
-
-				Operation::DESTINATION => 'sample',
-				Operation::NAME => 'failure'
-
-			]
-		]);
-
-		$dispatcher = new OperationDispatcher;
-
-		try
-		{
-			$response = $dispatcher($request);
-			$this->fail('The Failure exception should have been raised.');
-		}
-		catch (\ICanBoogie\Operation\Failure $exception)
-		{
-			$response = $dispatcher->rescue($exception, $request);
-			$this->assertInstanceOf('ICanBoogie\Operation\Response', $response);
-		}
-	}
-
 	public function test_response_location()
 	{
 		$request = Request::from('/api/test/location');
@@ -464,14 +213,14 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('/path/to/redirection/', $response['redirect_to']);
 	}
 
-	public function test_from_route()
+	public function __test_from_route()
 	{
 		$app = \ICanBoogie\app();
 
 		$app->routes['api:nodes/online'] = [
 
 			'pattern' => '/api/:constructor/<nid:\d+>/is_online',
-			'controller' => 'ICanBoogie\Operation\Modules\Sample\OnlineOperation',
+			'controller' => SampleModule\Operation\OnlineOperation::class,
 			'via' => 'PUT',
 			'param_translation_list' => [
 
@@ -495,28 +244,8 @@ class OperationTest extends \PHPUnit_Framework_TestCase
 		$this->assertArrayHasKey(Operation::KEY, $request->path_params);
 		$this->assertEquals(123, $request->path_params[Operation::KEY]);
 
-		$this->assertInstanceOf('ICanBoogie\Operation\Modules\Sample\OnlineOperation', $operation);
-		$this->assertInstanceOf('ICanBoogie\Operation\Modules\Sample\Module', $operation->module);
+		$this->assertInstanceOf(SampleModule\Operation\OnlineOperation::class, $operation);
+		$this->assertInstanceOf(SampleModule\Module::class, $operation->module);
 		$this->assertEquals(123, $operation->key);
-	}
-}
-
-namespace ICanBoogie\Operation\OperationTest;
-
-use ICanBoogie\Errors;
-use ICanBoogie\Operation;
-
-class LocationOperation extends Operation
-{
-	public function validate(Errors $errors)
-	{
-		return true;
-	}
-
-	public function process()
-	{
-		$this->response->location = '/path/to/redirection/';
-
-		return true;
 	}
 }

@@ -16,7 +16,6 @@ use ICanBoogie\HTTP\NotFound;
 use ICanBoogie\HTTP\PermissionRequired;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\HTTP\Status;
-use ICanBoogie\Module\Descriptor;
 use ICanBoogie\Operation\Failure;
 use ICanBoogie\Operation\FailureEvent;
 use ICanBoogie\Operation\GetFormEvent;
@@ -27,9 +26,12 @@ use ICanBoogie\Operation\BeforeValidateEvent;
 use ICanBoogie\Operation\ValidateEvent;
 use ICanBoogie\Operation\BeforeProcessEvent;
 use ICanBoogie\Operation\ProcessEvent;
+use ICanBoogie\Routing\Controller;
 
 /**
  * An operation.
+ *
+ * @method Operation\Response __invoke(Request $request)
  *
  * @property-read Core|\ICanBoogie\Binding\Routing\CoreBindings|Module\CoreBindings $app
  * @property ActiveRecord $record The target active record object of the operation.
@@ -38,7 +40,7 @@ use ICanBoogie\Operation\ProcessEvent;
  * @property-read bool $is_forwarded `true` if the operation is forwarded, `false` otherwise.
  * @property Module $module
  */
-abstract class Operation extends Prototyped
+abstract class Operation extends Controller
 {
 	/**
 	 * Defines the destination of a forwarded operation.
@@ -72,305 +74,14 @@ abstract class Operation extends Prototyped
 	const RESTFUL_BASE_LENGTH = 5;
 
 	/**
-	 * Creates a {@link Operation} instance from the specified parameters.
-	 *
-	 * @inheritdoc
-	 *
-	 * @return Operation
-	 */
-	static public function from($properties = null, array $construct_args = [], $class_name = null)
-	{
-		if ($properties instanceof Request)
-		{
-			return static::from_request($properties);
-		}
-
-		return parent::from($properties, $construct_args, $class_name);
-	}
-
-	/**
-	 * Creates an operation instance from a request.
-	 *
-	 * An operation can be defined as a route, in which case the path of the request starts with
-	 * "/api/". An operation can also be defined using the request parameters, in which case
-	 * the {@link DESTINATION}, {@link NAME} and optionally {@link KEY} parameters are defined
-	 * within the request parameters.
-	 *
-	 * When the operation is defined as a route, the method searches for a matching route.
-	 *
-	 * If a matching route is found, the captured parameters of the matching route are merged
-	 * with the request parameters and the method tries to create an Operation instance using the
-	 * route.
-	 *
-	 * If no matching route could be found, the method tries to extract the {@link DESTINATION},
-	 * {@link NAME} and optional {@link KEY} parameters from the route using the
-	 * `/api/:destination(/:key)/:name` pattern. If the route matches this pattern, captured
-	 * parameters are merged with the request parameters and the operation decoding continues as
-	 * if the operation was defined using parameters instead of the REST API.
-	 *
-	 * Finally, the method searches for the {@link DESTINATION}, {@link NAME} and optional
-	 * {@link KEY} parameters within the request parameters to create the Operation instance.
-	 *
-	 * If no operation was found in the request, the method returns null.
-	 *
-	 *
-	 * Instancing using the matching route
-	 * -----------------------------------
-	 *
-	 * The matching route must define either the class of the operation instance (by defining the
-	 * `class` key) or a callback that would create the operation instance (by defining the
-	 * `callback` key).
-	 *
-	 * If the route defines the instance class, it is used to create the instance. Otherwise, the
-	 * callback is used to create the instance.
-	 *
-	 *
-	 * Instancing using the request parameters
-	 * ---------------------------------------
-	 *
-	 * The operation destination (specified by the {@link DESTINATION} parameter) is the id of the
-	 * destination module. The class and the operation name (specified by the {@link NAME}
-	 * parameter) are used to search for the corresponding operation class to create the instance:
-	 *
-	 *     ICanBoogie\<normalized_module_id>\<normalized_operation_name>Operation
-	 *
-	 * The inheritance of the module class is used the find a suitable class. For example,
-	 * these are the classes tried for the "articles" module and the "save" operation:
-	 *
-	 *     ICanBoogie\Modules\Articles\SaveOperation
-	 *     ICanBoogie\Modules\Contents\SaveOperation
-	 *     ICanBoogie\Modules\Nodes\SaveOperation
-	 *
-	 * An instance of the found class is created with the request arguments and returned. If the
-	 * class could not be found to create the operation instance, an exception is raised.
-	 *
-	 * @param Request $request The request parameters.
-	 *
-	 * @throws \BadMethodCallException when the destination module or the operation name is
-	 * not defined for a module operation.
-	 *
-	 * @throws NotFound if the operation is not found.
-	 *
-	 * @return Operation|null The decoded operation or null if no operation was found.
-	 */
-	static protected function from_request(Request $request)
-	{
-		$path = \ICanBoogie\Routing\decontextualize($request->path);
-		$extension = $request->extension;
-
-		if ($extension == 'json')
-		{
-			$path = substr($path, 0, -5);
-			$request->headers['Accept'] = 'application/json';
-			$request->headers['X-Requested-With'] = 'XMLHttpRequest'; // FIXME-20110925: that's not very nice
-		}
-		else if ($extension == 'xml')
-		{
-			$path = substr($path, 0, -4);
-			$request->headers['Accept'] = 'application/xml';
-			$request->headers['X-Requested-With'] = 'XMLHttpRequest'; // FIXME-20110925: that's not very nice
-		}
-
-		$path = rtrim($path, '/');
-
-		if (substr($path, 0, self::RESTFUL_BASE_LENGTH) == self::RESTFUL_BASE)
-		{
-			$operation = static::from_route($request, $path);
-
-			if ($operation)
-			{
-				return $operation;
-			}
-
-			if ($request->is_patch)
-			{
-				preg_match('#^([^/]+)/(\d+)$#', substr($path, self::RESTFUL_BASE_LENGTH), $matches);
-
-				if (!$matches)
-				{
-					throw new NotFound(format('Unknown operation %operation.', [ 'operation' => $path ]));
-				}
-
-				list(, $module_id, $operation_key) = $matches;
-
-				$operation_name = 'patch';
-			}
-			else
-			{
-				#
-				# We could not find a matching route, we try to extract the DESTINATION, NAME and
-				# optional KEY from the URI.
-				#
-
-				preg_match('#^([a-z\.\-]+)/(([^/]+)/)?([a-zA-Z0-9_\-]+)$#', substr($path, self::RESTFUL_BASE_LENGTH), $matches);
-
-				if (!$matches)
-				{
-					throw new NotFound(format('Unknown operation %operation.', [ 'operation' => $path ]));
-				}
-
-				list(, $module_id, , $operation_key, $operation_name) = $matches;
-			}
-
-			if (empty(\ICanBoogie\app()->modules->descriptors[$module_id]))
-			{
-				throw new NotFound(format('Unknown operation %operation.', [ 'operation' => $path ]));
-			}
-
-			if ($operation_key)
-			{
-				$request[self::KEY] = $operation_key;
-			}
-
-			return static::from_module_request($request, $module_id, $operation_name);
-		}
-
-		$module_id = $request[self::DESTINATION];
-		$operation_name = $request[self::NAME];
-
-		if (!$module_id && !$operation_name)
-		{
-			return null;
-		}
-		else if (!$module_id)
-		{
-			throw new \BadMethodCallException("The operation's destination is required.");
-		}
-		else if (!$operation_name)
-		{
-			throw new \BadMethodCallException("The operation's name is required.");
-		}
-
-		return static::from_module_request($request, $module_id, $operation_name);
-	}
-
-	/**
-	 * Tries to create an {@link Operation} instance from a route.
-	 *
-	 * @param HTTP\Request $request
-	 * @param string $path An API path.
-	 *
-	 * @throws \Exception If the route controller fails to produce an {@link Operation} instance.
-	 * @throws \InvalidArgumentException If the route's controller cannot be determined from the
-	 * route definition.
-	 *
-	 * @return Operation|null
-	 */
-	static protected function from_route(Request $request, $path)
-	{
-		$app = \ICanBoogie\app();
-		$captured = [];
-		$route = $app->routes->find($path, $captured, $request->method, 'api');
-
-		if (!$route)
-		{
-			return null;
-		}
-
-		#
-		# We found a matching route. The arguments captured from the route are merged with
-		# the request parameters. The route must define either a class for the operation
-		# instance (defined using the `class` key) or a callback to create that instance
-		# (defined using the `callback` key).
-		#
-
-		if ($captured)
-		{
-			if (isset($route->param_translation_list))
-			{
-				foreach ($route->param_translation_list as $from => $to)
-				{
-					$captured[$to] = $captured[$from];
-				}
-			}
-
-			$request->path_params = $captured;
-			$request->params = $captured + $request->params;
-
-			if (isset($request->path_params[self::DESTINATION]))
-			{
-				$route->module = $request->path_params[self::DESTINATION];
-			}
-		}
-
-		$controller = $route->controller;
-
-		if (is_callable($controller))
-		{
-			$operation = call_user_func($controller, $request);
-		}
-		else if (!class_exists($controller, true))
-		{
-			throw new \Exception("Unable to instantiate operation, class not found: $controller.");
-		}
-		else
-		{
-			$operation = new $controller($request);
-		}
-
-		if (!($operation instanceof self))
-		{
-			throw new \Exception(format
-			(
-				'The controller for the route %route failed to produce an operation object, %rc returned.', [
-
-					'route' => $path,
-					'rc' => $operation
-				]
-			));
-		}
-
-		if (isset($route->module))
-		{
-			$operation->module = $app->modules[$route->module];
-		}
-
-		if (isset($request->path_params[self::KEY]))
-		{
-			$operation->key = $request->path_params[self::KEY];
-		}
-
-		return $operation;
-	}
-
-	/**
-	 * Creates an {@link Operation} instance from a module request.
-	 *
-	 * @param Request $request
-	 * @param string $module_id
-	 * @param string $operation_name
-	 *
-	 * @throws \Exception if the operation is not supported by the module.
-	 *
-	 * @return Operation
-	 */
-	static protected function from_module_request(Request $request, $module_id, $operation_name)
-	{
-		$module = \ICanBoogie\app()->modules[$module_id];
-		$class = self::resolve_operation_class($operation_name, $module);
-
-		if (!$class)
-		{
-			throw new \Exception(format
-			(
-				'The operation %operation is not supported by the module %module.', [
-
-					'%module' => (string) $module,
-					'%operation' => $operation_name
-				]
-			), 404);
-		}
-
-		return new $class($module);
-	}
-
-	/**
 	 * Encodes a RESTful operation.
 	 *
 	 * @param string $pattern
 	 * @param array $params
 	 *
 	 * @return string The operation encoded as a RESTful relative URL.
+	 *
+	 * @deprecated
 	 */
 	static public function encode($pattern, array $params=[])
 	{
@@ -412,68 +123,12 @@ abstract class Operation extends Prototyped
 		return \ICanBoogie\Routing\contextualize($rc);
 	}
 
-	/**
-	 * Resolve operation class.
-	 *
-	 * The operation class name is resolved using the inherited classes for the target and the
-	 * operation name.
-	 *
-	 * @param string $name Name of the operation.
-	 * @param Module $target Target module.
-	 *
-	 * @return string|null The resolve class name, or null if none was found.
-	 */
-	static private function resolve_operation_class($name, Module $target)
-	{
-		$module = $target;
-
-		while ($module)
-		{
-			$class = self::format_class_name($module->descriptor[Descriptor::NS], $name);
-
-			if (class_exists($class, true))
-			{
-				return $class;
-			}
-
-			$module = $module->parent;
-		}
-	}
-
-	/**
-	 * Formats the specified namespace and operation name into an operation class.
-	 *
-	 * @param string $namespace
-	 * @param string $operation_name
-	 *
-	 * @return string
-	 */
-	static public function format_class_name($namespace, $operation_name)
-	{
-		return $namespace . '\Operation\\' . camelize(strtr($operation_name, '-', '_')) . 'Operation';
-	}
-
 	public $key;
-
-	/**
-	 * @var \ICanBoogie\HTTP\Request The request triggering the operation.
-	 */
-	protected $request;
-
-	protected function get_request()
-	{
-		return $this->request;
-	}
 
 	/**
 	 * @var Operation\Response
 	 */
 	public $response;
-
-	/**
-	 * @var string
-	 */
-	public $method;
 
 	const CONTROL_METHOD = 101;
 	const CONTROL_SESSION_TOKEN = 102;
@@ -510,7 +165,7 @@ abstract class Operation extends Prototyped
 	 */
 	protected function lazy_get_record()
 	{
-		return $this->module->model[$this->key];
+		return $this->model[$this->key];
 	}
 
 	/**
@@ -558,20 +213,6 @@ abstract class Operation extends Prototyped
 	protected $format;
 
 	/**
-	 * Target module for the operation.
-	 *
-	 * The property is set by the constructor.
-	 *
-	 * @var Module
-	 */
-	protected $module;
-
-	protected function get_module()
-	{
-		return $this->module;
-	}
-
-	/**
 	 * Returns `true` if the operation is forwarded.
 	 *
 	 * An operation is considered forwarded if the destination module and the operation name are
@@ -587,35 +228,10 @@ abstract class Operation extends Prototyped
 	}
 
 	/**
-	 * Constructor.
+	 * Handles the operation and returns a response.
 	 *
-	 * The {@link $controls} property is unset in order for its getters to be called on the next
-	 * access, while keeping its scope.
-	 *
-	 * @param Request $request @todo: should be a Request, but is sometimes a module.
-	 */
-	public function __construct($request = null)
-	{
-		unset($this->controls);
-
-		if ($request instanceof Request)
-		{
-			if ($request[self::DESTINATION])
-			{
-				$this->module = $this->app->modules[$request[self::DESTINATION]];
-			}
-		}
-		else if ($request instanceof Module)
-		{
-			$this->module = $request;
-		}
-	}
-
-	/**
-	 * Handles the operation and prints or returns its result.
-	 *
- 	 * The {@link $record}, {@link $form} and {@link $properties} properties are unset in order
- 	 * for their getters to be called on the next access, while keeping their scope.
+ 	 * The {@link $record} and {@link $form} properties are unset in order for their
+	 * getters to be called on the next access, while keeping their scope.
 	 *
 	 * The response object
 	 * -------------------
@@ -632,7 +248,7 @@ abstract class Operation extends Prototyped
 	 * For API requests, the output format can also be defined by appending the corresponding
 	 * extension to the request path:
 	 *
-	 *     /api/system.nodes/12/online.json
+	 *     /api/nodes/12/online.json
 	 *
 	 *
 	 * The response location
@@ -645,7 +261,6 @@ abstract class Operation extends Prototyped
 	 * need to get the result of our request first. That is why when the `location` property is
 	 * set, and the request is an XHR, the location is set to the `redirect_to` field and the
 	 * `location` property is set to `null` to disable browser redirection.
-	 *
 	 *
 	 *
 	 * Control, validation and processing
@@ -690,9 +305,8 @@ abstract class Operation extends Prototyped
 	 * @throws Failure when the response has a client or server error, or the
 	 * {@link \ICanBoogie\Operation\FormHasExpired} exception was raised.
 	 */
-	public function __invoke(HTTP\Request $request)
+	protected function action(Request $request)
 	{
-		$this->request = $request;
 		$this->reset();
 
 		$rc = null;
@@ -1125,18 +739,14 @@ abstract class Operation extends Prototyped
 	/**
 	 * Validates the operation before processing.
 	 *
-	 * The method is abstract and therefore must be implemented by subclasses.
-	 *
 	 * @param Errors $errors
 	 *
-	 * @return bool
+	 * @return Errors|bool
 	 */
 	abstract protected function validate(Errors $errors);
 
 	/**
 	 * Processes the operation.
-	 *
-	 * The method is abstract and therefore must be implemented by subclasses.
 	 *
 	 * @return mixed According to the implementation.
 	 */

@@ -19,7 +19,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 	public function test_cases($pathname)
 	{
 		$response = require $pathname;
-		$expected = file_get_contents(substr($pathname, 0, -4));
+		$base = substr($pathname, 0, -4);
+		$expected = file_get_contents("$base.header") . file_get_contents("$base.body");
 		$expected = str_replace('#{date}', (string) $response->date, $expected);
 
 		$this->assertSame($expected, (string) $response);

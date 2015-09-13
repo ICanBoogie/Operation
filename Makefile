@@ -2,7 +2,6 @@
 
 PACKAGE_NAME = icanboogie/operation
 PACKAGE_VERSION = 3.0.0
-COMPOSER_ENV = COMPOSER_ROOT_VERSION=$(PACKAGE_VERSION)
 
 # do not edit the following lines
 
@@ -10,13 +9,13 @@ usage:
 	@echo "test:  Runs the test suite.\ndoc:   Creates the documentation.\nclean: Removes the documentation, the dependencies and the Composer files."
 
 vendor:
-	@$(COMPOSER_ENV) composer install
+	@COMPOSER_ROOT_VERSION=$(PACKAGE_VERSION) composer install
 
 update:
-	@$(COMPOSER_ENV) composer update
+	@COMPOSER_ROOT_VERSION=$(PACKAGE_VERSION) composer update
 
 autoload: vendor
-	@$(COMPOSER_ENV) composer dump-autoload
+	@composer dump-autoload
 
 test: vendor
 	@phpunit

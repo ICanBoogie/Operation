@@ -1,7 +1,7 @@
 {
 	"name": "icanboogie/operation",
 	"type": "library",
-	"description": "Operation oriented controllers API",
+	"description": "Feature rich controllers dedicated to a single task",
 	"keywords": [ "operation", "dispatch", "controller" ],
 	"homepage": "http://icanboogie.org/",
 	"license": "BSD-3-Clause",
@@ -20,12 +20,11 @@
 	"minimum-stability": "dev",
 	"require": {
 		"php": ">=5.5.0",
-		"icanboogie/errors": "^1.0.0"
+		"icanboogie/errors": "^1.0.0",
+		"icanboogie/bind-routing": "^1.0.0"
 	},
 	"require-dev": {
-        "icanboogie/icanboogie": "^2.4.0",
-		"icanboogie/bind-routing": "^0.2.0",
-		"icanboogie/module": "^3.0.0"
+        "icanboogie/icanboogie": "^3.0.0"
 	},
 	"autoload": {
 		"psr-4": {

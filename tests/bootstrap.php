@@ -12,7 +12,8 @@
 namespace ICanBoogie;
 
 $autoload = require __DIR__ . '/../vendor/autoload.php';
-$autoload->addPsr4('ICanBoogie\Operation\Modules\Sample\\', __DIR__ . 'modules/sample/lib');
+$autoload->addPsr4('ICanBoogie\Operation\Modules\Sample\\', __DIR__ . '/modules/sample/lib');
+$autoload->addPsr4('ICanBoogie\Operation\OperationTest\\', __DIR__ . '/OperationTest');
 
 $app = new Core(array_merge_recursive(get_autoconfig(), [
 

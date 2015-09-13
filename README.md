@@ -1,14 +1,14 @@
 # Operation
 
 [![Release](https://img.shields.io/packagist/v/icanboogie/operation.svg)](https://packagist.org/packages/icanboogie/operation)
-[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation.svg)](http://travis-ci.org/ICanBoogie/Operation)
+[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation/3.0.svg)](http://travis-ci.org/ICanBoogie/Operation)
 [![HHVM](https://img.shields.io/hhvm/icanboogie/operation.svg)](http://hhvm.h4cc.de/package/icanboogie/operation)
-[![Code Quality](https://img.shields.io/scrutinizer/g/ICanBoogie/Operation.svg)](https://scrutinizer-ci.com/g/ICanBoogie/Operation)
-[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation.svg)](https://coveralls.io/r/ICanBoogie/Operation)
+[![Code Quality](https://img.shields.io/scrutinizer/g/ICanBoogie/Operation/3.0.svg)](https://scrutinizer-ci.com/g/ICanBoogie/Operation)
+[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation/3.0.svg)](https://coveralls.io/r/ICanBoogie/Operation)
 [![Packagist](https://img.shields.io/packagist/dt/icanboogie/operation.svg)](https://packagist.org/packages/icanboogie/operation)
 
-Operations are the doers of the MOVE world. They are responsible for making changes to your models,
-and for responding to events triggered by user interactions.
+Operations are feature rich controllers dedicated to a single task, which often is
+to create/update/delete records.
 
 
 
@@ -23,15 +23,15 @@ class inheriting from `ICanBoogie\Operation`. The `rescue` event
 could also be fired on one of its instances, and an event hook could be attached to
 `SaveOperation::rescue` to rescue the operation.
 
-Because the event system is based on class hierarchy
-an event hook attached to `SaveOperation::rescue` is only invoked to rescue instances of `SaveOperation` and its subclasses,
+Because ICanBoogie's event system is based on class hierarchy an event hook attached to
+`SaveOperation::rescue` is only invoked to rescue instances of `SaveOperation` and its subclasses,
 whereas an event hook attached to `ICanBoogie\Operation::rescue` is invoked to rescue instances of
 `ICanBoogie\Operation` and its subclasses, including `SaveOperation`.
 
-Thus, when you see `ICanBoogie\Operation::rescue` read _"the event type 'rescue' fired on an instance
-of the ICanBoogie\Operation subclass I want to listen to"_.
+Thus, when you see `ICanBoogie\Operation::rescue` read _"the event type 'rescue' fired on
+an instance of the ICanBoogie\Operation subclass I want to listen to"_.
 
-Please read the [documentation of the icanboogie/event package] for more details about the event
+Please read the documentation of the [icanboogie/event] package for more details about the event
 system.
 
 
@@ -99,7 +99,7 @@ Third parties may use this event to alter the outcome of the control.
 - On failure the event `ICanBoogie\Operation::failure` of class [FailureEvent][]
 is fired, with its `type` property set to `control`.
 
-- The event `ICanBoogie\Operation::get_form` of class [GetFormEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.GetFormEvent.html)
+- The event `ICanBoogie\Operation::get_form` of class [GetFormEvent][]
 is fired if the `form` getter is not overridden. It allows third parties to provide a form to check
 to parameters of the request.
 
@@ -115,10 +115,10 @@ validation is considered failed if the method returns an empty value or errors a
 
 The following events are fired during the process:
 
-- Before the validation the event `ICanBoogie\Operation::validate:before` of class [BeforeValidateEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.BeforeValidateEvent.html)
+- Before the validation the event `ICanBoogie\Operation::validate:before` of class [BeforeValidateEvent][]
 is fired. Third parties may use this event to alter the errors or the status of the validation.
 
-- After the validation the event `ICanBoogie\Operation::validate` of class [ValidateEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.ValidateEvent.html)
+- After the validation the event `ICanBoogie\Operation::validate` of class [ValidateEvent][]
 is fired. Third parties may use this event to alter the errors or the outcome of the validation.
 
 - On failure the event `ICanBoogie\Operation::failure` of class [FailureEvent][] is fired.
@@ -135,10 +135,11 @@ After the control and the validation, the operation is finally processed by invo
 
 The following events are fired during the process:
 
-- Before the processing the event `ICanBoogie\Operation::process:before` of class [BeforeProcessEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.BeforeProcessEvent.html)
-is fired. Third parties may use this event to alter the request, response or errors.
+- Before the processing, the event `ICanBoogie\Operation::process:before` of class
+[BeforeProcessEvent][] is fired. Third parties may use this event to alter the request,
+response or errors.
 
-- After the processing the event `ICanBoogie\Operation::process` of class [ProcessEvent](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.ProcessEvent.html)
+- After the processing, the event `ICanBoogie\Operation::process` of class [ProcessEvent][]
 is fired. Third parties may use this event to alter the result, request or response.
 
 
@@ -155,9 +156,7 @@ message.
 A [Failure][] exception is also thrown in the response has a client or server error, in which case
 the exception is fired without a previous exception.
 
-**Note**: Failed operations can be rescued by the operation dispatcher.
-
-
+> **Note**: Failed operations may be rescued by the dispatcher.
 
 
 
@@ -166,13 +165,16 @@ the exception is fired without a previous exception.
 ## Forwarded operations
 
 An operation is considered _forwarded_ when the actual destination and operation name is defined
-using the request parameters [Operation::DESTINATION](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.html#DESTINATION)
-and [Operation::NAME](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.html#NAME). The URL of the request
+using the request parameters [Operation::DESTINATION][] and [Operation::NAME][]. The URL of the request
 is irrelevant to forwarded operations, moreover whether they succeed or fail the dispatch process
 simply continues. For instance, this allows forms to be posted to their own _view_ URL (not the
 URL of the operation) and displayed again if an error occurs.
 
-**Note**: Successful responses with a `location` are NOT discarded, they will redirect the request.
+> **Note**: Successful responses with a `location` are NOT discarded, they will redirect the request.
+
+> **Note**: This feature is currently a foundation for the [icanboogie/module][] package and
+its really that package who handles forwarded operations. This may change is the future.
+
 
 ```php
 <?php
@@ -192,7 +194,8 @@ $request = Request::from([
 	]
 ]);
 
-$operation = Operation::from($request);
+$operation = new SaveOperation;
+$response = $operation($request);
 
 $operation->is_forwarded; // true
 ```
@@ -203,10 +206,9 @@ $operation->is_forwarded; // true
 
 ## Response
 
-The response of the operation is represented by a [Response](http://api.icanboogie.org/operation/class-ICanBoogie.Operation.Response.html) instance.
-The value returned by the `process()` method is set to its `rc` property. The operation
-is considered failed if its value is `null`, in which case the status of the operation is set to
-"400 Operation failed".
+The response of the operation is represented by a [Response][] instance. The value returned by
+the `process()` method is set to its `rc` property. The operation is considered failed if its
+value is `null`, in which case the status of the operation is set to "400 Operation failed".
 
 
 
@@ -273,7 +275,7 @@ In summary, a failed operation is rescued if a response is provided during the
 `ICanBoogie\Operation::rescue` event, or later if the request is an XHR. Although the rescue of an
 operation might be successful, the returned response can be an error response.
 
-**Note:** If the operation is forwarded and the operation could not be rescued the request
+> **Note:** If the operation is forwarded and the operation could not be rescued the request
 dispatching process will simply continue.
 
 
@@ -284,9 +286,7 @@ dispatching process will simply continue.
 
 ### Defining operations as routes
 
-Operations can be defined as route controllers. Because the operation dispatcher is executed
-before the routing dispatcher, operation defined as routes are always executed before regular
-routes.
+Because operations are controllers, they may be defined in the same fashion.
 
 The following example demonstrates how the [module Nodes][] defines routes to set/unset the
 `is_online` property:
@@ -294,8 +294,9 @@ The following example demonstrates how the [module Nodes][] defines routes to se
 ```php
 <?php
 
-namespace Icybee\Modules\Nodes;
+namespace Icybee\Modules\Nodes\Operation;
 
+use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 
 return [
@@ -303,8 +304,8 @@ return [
 	'api:nodes/online' => [
 
 		'pattern' => '/api/:constructor/<nid:\d+>/is_online',
-		'controller' =>__NAMESPACE__ . '\OnlineOperation',
-		'via' => 'PUT',
+		'controller' => OnlineOperation::class,
+		'via' => Request::METHOD_PUT,
 		'param_translation_list' => [
 
 			'constructor' => Operation::DESTINATION,
@@ -316,8 +317,8 @@ return [
 	'api:nodes/offline' => [
 
 		'pattern' => '/api/:constructor/<nid:\d+>/is_online',
-		'controller' =>__NAMESPACE__ . '\OfflineOperation',
-		'via' => 'DELETE',
+		'controller' => OfflineOperation::class,
+		'via' => Request::METHOD_DELETE,
 		'param_translation_list' => [
 
 			'constructor' => Operation::DESTINATION,
@@ -333,14 +334,14 @@ The class of the operation is defined as the controller of the route. Notice how
 method is used for the same route to distinguish the operation type.
 
 The `param_translation_list` array is used to define how params captured from the pathinfo
-should be renamed before the operation is created. This handy feature allow routes to be
-formated from records, while providing mapping to operation key features.
+should be translated before the operation is executed. This handy feature allow routes to be
+formatted from records, while providing mapping to operation key features.
 
 ```php
 <?php
 
 $node = $app->models['nodes']->one;
-$path = $app->routes['api:nodes/online']->format($node);
+$path = $app->url_for('api:nodes/online', $node);
 ```
 
 
@@ -419,7 +420,10 @@ be cloned with the following command line:
 ## Documentation
 
 The package is documented as part of the [ICanBoogie][] framework
-[documentation](http://api.icanboogie.org/operation/). You can generate the documentation for the package and its dependencies with the `make doc` command. The documentation is generated in the `build/docs` directory. [ApiGen](http://apigen.org/) is required. The directory can later be cleaned with the `make clean` command.
+[documentation][]. You can generate the documentation for the package and its dependencies
+with the `make doc` command. The documentation is generated in the `build/docs` directory.
+[ApiGen](http://apigen.org/) is required. The directory can later be cleaned with the
+`make clean` command.
 
 
 
@@ -427,12 +431,16 @@ The package is documented as part of the [ICanBoogie][] framework
 
 ## Testing
 
-The test suite is ran with the `make test` command. [PHPUnit](https://phpunit.de/) and [Composer](http://getcomposer.org/) need to be globally available to run the suite. The command installs dependencies as required. The `make test-coverage` command runs test suite and also creates an HTML coverage report in `build/coverage`. The directory can later be cleaned with the `make clean` command.
+The test suite is ran with the `make test` command. [PHPUnit](https://phpunit.de/) and
+[Composer](http://getcomposer.org/) need to be globally available to run the suite.
+The command installs dependencies as required. The `make test-coverage` command runs test suite
+and also creates an HTML coverage report in `build/coverage`. The directory can later be cleaned
+with the `make clean` command.
 
 The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
-[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation.svg)](http://travis-ci.org/ICanBoogie/Operation)
-[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation.svg)](https://coveralls.io/r/ICanBoogie/Operation)
+[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation/3.0.svg)](http://travis-ci.org/ICanBoogie/Operation)
+[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation/3.0.svg)](https://coveralls.io/r/ICanBoogie/Operation)
 
 
 
@@ -446,13 +454,24 @@ The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
 
 
-[documentation of the icanboogie/event package]: https://github.com/ICanBoogie/Event
-[module Nodes]: https://github.com/Icybee/module-nodes
-[BeforeControlEvent]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.BeforeControlEvent.html
-[ControlEvent]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.ControlEvent.html
-[FailureEvent]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.FailureEvent.html
-[Failure]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.Failure.html
-[FormHasExpired]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.FormHasExpired.html
-[FormNotFound]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.FormNotFound.html
-[Operation]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.html
-[RescueEvent]: http://api.icanboogie.org/operation/class-ICanBoogie.Operation.RescueEvent.html
+[documentation]:          http://api.icanboogie.org/operation/3.0/
+[BeforeControlEvent]:     http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.BeforeControlEvent.html
+[BeforeProcessEvent]:     http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.BeforeProcessEvent.html
+[BeforeValidateEvent]:    http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.BeforeValidateEvent.html
+[ControlEvent]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.ControlEvent.html
+[FailureEvent]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.FailureEvent.html
+[Failure]:                http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.Failure.html
+[FormHasExpired]:         http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.FormHasExpired.html
+[FormNotFound]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.FormNotFound.html
+[GetFormEvent]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.GetFormEvent.html
+[Operation]:              http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.html
+[Operation::DESTINATION]: http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.html#DESTINATION
+[Operation::NAME]:        http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.html#NAME
+[ProcessEvent]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.ProcessEvent.html
+[RescueEvent]:            http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.RescueEvent.html
+[Response]:               http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.Response.html
+[ValidateEvent]:          http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.ValidateEvent.html
+
+[module Nodes]:      https://github.com/Icybee/module-nodes
+[icanboogie/event]:  https://github.com/ICanBoogie/Event
+[icanboogie/module]: https://github.com/Icybee/Module

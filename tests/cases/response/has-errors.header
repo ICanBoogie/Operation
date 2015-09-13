@@ -1,0 +1,4 @@
+HTTP/1.0 400 Bad Request
+Date: #{date}
+Content-Type: application/json
+

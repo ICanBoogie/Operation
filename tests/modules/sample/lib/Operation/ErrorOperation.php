@@ -2,9 +2,12 @@
 
 namespace ICanBoogie\Operation\Modules\Sample\Operation;
 
-class ErrorOperation extends \ICanBoogie\Operation
+use ICanBoogie\Errors;
+use ICanBoogie\Operation;
+
+class ErrorOperation extends Operation
 {
-	protected function validate(\ICanBoogie\Errors $errors)
+	protected function validate(Errors $errors)
 	{
 		$errors['one'] = 'One error.';
 		$errors[] = "General error.";

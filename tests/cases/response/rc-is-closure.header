@@ -1,0 +1,5 @@
+HTTP/1.0 200 OK
+Date: #{date}
+Content-Type: text/plain; charset=utf-8
+Content-Length: 267
+

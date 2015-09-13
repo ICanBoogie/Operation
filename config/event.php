@@ -8,6 +8,6 @@ $hooks = Hooks::class . '::';
 
 return [
 
-	ICanBoogie\HTTP\RequestDispatcher::class . '::alter' => $hooks . 'on_alter_request_dispatcher'
+	ICanBoogie\HTTP\RequestDispatcher::class . '::alter' => $hooks . 'on_request_dispatcher_alter'
 
 ];

@@ -1,5 +1,0 @@
-HTTP/1.0 200 OK
-Date: #{date}
-Content-Type: application/json
-
-{"rc":false}
