@@ -475,3 +475,4 @@ The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 [module Nodes]:      https://github.com/Icybee/module-nodes
 [icanboogie/event]:  https://github.com/ICanBoogie/Event
 [icanboogie/module]: https://github.com/Icybee/Module
+I
