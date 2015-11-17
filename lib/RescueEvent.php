@@ -20,6 +20,8 @@ use ICanBoogie\Operation;
  */
 class RescueEvent extends Event
 {
+	const TYPE = 'rescue';
+
 	/**
 	 * Reference to the exception that made the operation fail.
 	 *
@@ -55,6 +57,6 @@ class RescueEvent extends Event
 		$this->request = $request;
 		$this->response = &$response;
 
-		parent::__construct($target, 'rescue');
+		parent::__construct($target, self::TYPE);
 	}
 }

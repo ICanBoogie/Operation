@@ -23,6 +23,8 @@ class BeforeControlEvent extends Event
 {
 	use ControlEventTrait;
 
+	const TYPE = 'control:before';
+
 	/**
 	 * The event is constructed with the type `control:before`.
 	 *
@@ -31,6 +33,6 @@ class BeforeControlEvent extends Event
 	 */
 	public function __construct(Operation $target, array $payload)
 	{
-		parent::__construct($target, 'control:before', $payload);
+		parent::__construct($target, self::TYPE, $payload);
 	}
 }

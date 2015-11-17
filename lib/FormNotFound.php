@@ -23,13 +23,27 @@ class FormNotFound extends \RuntimeException implements Exception
 {
 	use AccessorTrait;
 
+	/**
+	 * @var Operation
+	 */
 	private $operation;
 
+	/**
+	 * @return Operation
+	 */
 	protected function get_operation()
 	{
 		return $this->operation;
 	}
 
+	/**
+	 * FormNotFound constructor.
+	 *
+	 * @param Operation $operation
+	 * @param string|null $message
+	 * @param int $code
+	 * @param \Exception|null $previous
+	 */
 	public function __construct(Operation $operation, $message = null, $code = 500, \Exception $previous = null)
 	{
 		$this->operation = $operation;

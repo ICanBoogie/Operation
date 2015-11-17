@@ -13,6 +13,7 @@ namespace ICanBoogie\Operation;
 
 use ICanBoogie\Errors;
 use ICanBoogie\HTTP\Headers;
+use ICanBoogie\HTTP\Status;
 use ICanBoogie\ToArray;
 use ICanBoogie\ToArrayRecursive;
 
@@ -32,7 +33,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	/**
 	 * Message associated with the response.
 	 *
-	 * @var string|array
+	 * @var string
 	 */
 	private $message;
 
@@ -45,15 +46,13 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	protected function set_message($message)
 	{
-		if (is_array($message) || (is_object($message) && !method_exists($message, '__toString')))
+		if (is_object($message) && !method_exists($message, '__toString'))
 		{
-			throw new \InvalidArgumentException(\ICanBoogie\format
-			(
-				'Invalid message type "{0}", should be a string or an object implementing "__toString()". Given: {1}', array
-				(
-					gettype($message), $message
-				)
-			));
+			throw new \InvalidArgumentException(\ICanBoogie\format('Invalid message type "{0}", should be a string or an object implementing "__toString()". Given: {1}', [
+
+				gettype($message), $message
+
+			]));
 		}
 
 		$this->message = $message;
@@ -76,18 +75,23 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	public $errors;
 
-	protected $metas = [];
+	/**
+	 * Additional response properties.
+	 *
+	 * @var array
+	 */
+	protected $meta = [];
 
 	/**
 	 * Initializes the {@link $errors} property.
 	 *
 	 * @inheritdoc
 	 */
-	public function __construct($body = null, $status = 200, array $headers = [])
+	public function __construct($body = null, $status = Status::OK, array $headers = [])
 	{
 		parent::__construct($body, $status, $headers);
 
-		$this->errors = new Errors();
+		$this->errors = new Errors;
 	}
 
 	/**
@@ -95,7 +99,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 *
 	 * If {@link $rc} is a closure `$body` is set to {@link $rc}.
 	 *
-	 * Otherwise a JSON string is created with the message, errors and {@link $metas} of the
+	 * Otherwise a JSON string is created with the message, errors and {@link $meta} of the
 	 * response. If the response is successful the {@link $rc} property is also present. This JSON
 	 * string is set in `$body`. The `Content-Type` header field is set to
 	 * "application/json" and the `Content-Length` header field is set to the length of the JSON
@@ -147,7 +151,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 			'message' => $this->finalize_message($this->message),
 			'errors'  => $this->finalize_errors($this->errors)
 
-		]) + array_map(function($v) { return $this->finalize_value($v); }, $this->metas);
+		]) + array_map(function($v) { return $this->finalize_value($v); }, $this->meta);
 
 		if ($this->status->is_successful)
 		{
@@ -287,7 +291,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	public function offsetExists($offset)
 	{
-		return isset($this->metas[$offset]);
+		return isset($this->meta[$offset]);
 	}
 
 	/**
@@ -297,7 +301,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	public function offsetGet($offset)
 	{
-		return $this->offsetExists($offset) ? $this->metas[$offset] : null;
+		return $this->offsetExists($offset) ? $this->meta[$offset] : null;
 	}
 
 	/**
@@ -307,7 +311,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	public function offsetSet($offset, $value)
 	{
-		$this->metas[$offset] = $value;
+		$this->meta[$offset] = $value;
 	}
 
 	/**
@@ -317,6 +321,6 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 */
 	public function offsetUnset($offset)
 	{
-		unset($this->metas[$offset]);
+		unset($this->meta[$offset]);
 	}
 }

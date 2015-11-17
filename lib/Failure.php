@@ -24,13 +24,22 @@ class Failure extends \Exception implements Exception
 {
 	use AccessorTrait;
 
+	/**
+	 * @var Operation
+	 */
 	private $operation;
 
+	/**
+	 * @return Operation
+	 */
 	protected function get_operation()
 	{
 		return $this->operation;
 	}
 
+	/**
+	 * @return \Exception
+	 */
 	protected function get_previous()
 	{
 		return $this->getPrevious();
@@ -52,6 +61,13 @@ class Failure extends \Exception implements Exception
 		parent::__construct($message, $code, $previous);
 	}
 
+	/**
+	 * Formats exception message.
+	 *
+	 * @param Operation $operation
+	 *
+	 * @return string
+	 */
 	protected function format_message(Operation $operation)
 	{
 		$message = $operation->response->message ?: "The operation failed.";

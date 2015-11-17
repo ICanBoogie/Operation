@@ -21,6 +21,8 @@ use ICanBoogie\Operation;
  */
 class BeforeProcessEvent extends Event
 {
+	const TYPE = 'process:before';
+
 	/**
 	 * The request that triggered the operation.
 	 *
@@ -50,6 +52,6 @@ class BeforeProcessEvent extends Event
 	 */
 	public function __construct(Operation $target, array $payload)
 	{
-		parent::__construct($target, 'process:before', $payload);
+		parent::__construct($target, self::TYPE, $payload);
 	}
 }

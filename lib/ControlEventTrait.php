@@ -30,7 +30,7 @@ trait ControlEventTrait
 	/**
 	 * The request that triggered the operation.
 	 *
-	 * @ var \ICanBoogie\HTTP\Request
+	 * @var \ICanBoogie\HTTP\Request
 	 */
 	public $request;
 }

@@ -20,6 +20,8 @@ use ICanBoogie\Operation;
  */
 class GetFormEvent extends Event
 {
+	const TYPE = 'get_form';
+
 	/**
 	 * Reference to the result variable.
 	 *
@@ -46,6 +48,6 @@ class GetFormEvent extends Event
 		$this->request = $request;
 		$this->form = &$form;
 
-		parent::__construct($target, 'get_form');
+		parent::__construct($target, self::TYPE);
 	}
 }

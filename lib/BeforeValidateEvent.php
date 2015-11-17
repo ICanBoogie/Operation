@@ -21,6 +21,8 @@ class BeforeValidateEvent extends Event
 {
 	use ValidateEventTrait;
 
+	const TYPE = 'validate:before';
+
 	/**
 	 * The event is constructed with the type `validate:before`.
 	 *
@@ -29,6 +31,6 @@ class BeforeValidateEvent extends Event
 	 */
 	public function __construct(Operation $target, array $payload)
 	{
-		parent::__construct($target, 'validate:before', $payload);
+		parent::__construct($target, self::TYPE, $payload);
 	}
 }

@@ -19,6 +19,8 @@ use ICanBoogie\Operation;
  */
 class ProcessEvent extends Event
 {
+	const TYPE = 'process';
+
 	/**
 	 * Reference to the response result property.
 	 *
@@ -48,6 +50,6 @@ class ProcessEvent extends Event
 	 */
 	public function __construct(Operation $target, array $payload)
 	{
-		parent::__construct($target, 'process', $payload);
+		parent::__construct($target, self::TYPE, $payload);
 	}
 }

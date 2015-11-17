@@ -23,6 +23,8 @@ class ControlEvent extends Event
 {
 	use ControlEventTrait;
 
+	const TYPE = 'control';
+
 	/**
 	 * The event is constructed with the type `control`.
 	 *
@@ -31,6 +33,6 @@ class ControlEvent extends Event
 	 */
 	public function __construct(Operation $target, array $payload)
 	{
-		parent::__construct($target, 'control', $payload);
+		parent::__construct($target, self::TYPE, $payload);
 	}
 }

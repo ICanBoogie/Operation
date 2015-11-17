@@ -28,6 +28,8 @@ class FailureEvent extends Event
 {
 	use AccessorTrait;
 
+	const TYPE = 'failure';
+
 	/**
 	 * The failure occurred during {@link \ICanBoogie\Operation::control()}.
 	 *
@@ -68,14 +70,24 @@ class FailureEvent extends Event
 		$this->type = $type;
 		$this->request = $request;
 
-		parent::__construct($target, 'failure');
+		parent::__construct($target, self::TYPE);
 	}
 
+	/**
+	 * Whether the failure occurred during _control_.
+	 *
+	 * @return bool
+	 */
 	protected function get_is_control()
 	{
 		return $this->type == self::TYPE_CONTROL;
 	}
 
+	/**
+	 * Whether the failure occurred during _validate_.
+	 *
+	 * @return bool
+	 */
 	protected function get_is_validate()
 	{
 		return $this->type == self::TYPE_VALIDATE;
