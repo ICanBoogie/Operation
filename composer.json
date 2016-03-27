@@ -28,9 +28,9 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"ICanBoogie\\Operation\\": "lib"
-		},
-		"classmap": [ "lib/Operation.php" ]
+			"ICanBoogie\\": "lib",
+			"ICanBoogie\\Operation\\": "lib/Operation"
+		}
 	},
 	"scripts": {
 		"post-autoload-dump": "ICanBoogie\\Autoconfig\\Hooks::on_autoload_dump"
