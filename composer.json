@@ -19,12 +19,12 @@
 	},
 	"minimum-stability": "dev",
 	"require": {
-		"php": ">=5.5.0",
-		"icanboogie/errors": "^2.0.0",
-		"icanboogie/bind-routing": "^3.0.0"
+		"php": ">=5.5",
+		"icanboogie/errors": "^2.0",
+		"icanboogie/bind-routing": "^3.0"
 	},
 	"require-dev": {
-        "icanboogie/icanboogie": "^3.0.0"
+        "icanboogie/icanboogie": "^3.0"
 	},
 	"autoload": {
 		"psr-4": {
