@@ -739,11 +739,11 @@ abstract class Operation extends Controller
 	/**
 	 * Validates the operation before processing.
 	 *
-	 * @param Errors $errors
+	 * @param ErrorCollection $errors
 	 *
-	 * @return Errors|bool
+	 * @return ErrorCollection|bool
 	 */
-	abstract protected function validate(Errors $errors);
+	abstract protected function validate(ErrorCollection $errors);
 
 	/**
 	 * Processes the operation.

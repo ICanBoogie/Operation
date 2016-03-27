@@ -11,7 +11,7 @@
 
 namespace ICanBoogie\Operation;
 
-use ICanBoogie\Errors;
+use ICanBoogie\ErrorCollection;
 use ICanBoogie\HTTP\Headers;
 use ICanBoogie\HTTP\Status;
 use ICanBoogie\ToArray;
@@ -19,7 +19,7 @@ use ICanBoogie\ToArrayRecursive;
 
 /**
  * @property string $message The response message.
- * @property Errors $errors
+ * @property ErrorCollection $errors
  */
 class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 {
@@ -71,7 +71,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	/**
 	 * Errors occurring during the response.
 	 *
-	 * @var Errors
+	 * @var ErrorCollection
 	 */
 	public $errors;
 
@@ -91,7 +91,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	{
 		parent::__construct($body, $status, $headers);
 
-		$this->errors = new Errors;
+		$this->errors = new ErrorCollection;
 	}
 
 	/**

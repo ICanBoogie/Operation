@@ -23,7 +23,7 @@ trait ValidateEventTrait
 	/**
 	 * Reference to the validation errors.
 	 *
-	 * @var \ICanBoogie\Errors
+	 * @var \ICanBoogie\ErrorCollection
 	 */
 	public $errors;
 

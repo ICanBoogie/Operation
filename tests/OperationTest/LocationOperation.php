@@ -2,12 +2,12 @@
 
 namespace ICanBoogie\Operation\OperationTest;
 
-use ICanBoogie\Errors;
+use ICanBoogie\ErrorCollection;
 use ICanBoogie\Operation;
 
 class LocationOperation extends Operation
 {
-	public function validate(Errors $errors)
+	public function validate(ErrorCollection $errors)
 	{
 		return true;
 	}

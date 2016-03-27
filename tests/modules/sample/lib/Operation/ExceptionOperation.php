@@ -2,13 +2,13 @@
 
 namespace ICanBoogie\Operation\Modules\Sample\Operation;
 
-use ICanBoogie\Errors;
+use ICanBoogie\ErrorCollection;
 use ICanBoogie\Operation;
 use ICanBoogie\Operation\Modules\Sample\SampleException;
 
 class ExceptionOperation extends Operation
 {
-	protected function validate(Errors $errors)
+	protected function validate(ErrorCollection $errors)
 	{
 		throw new SampleException('My Exception Message.', 500);
 	}

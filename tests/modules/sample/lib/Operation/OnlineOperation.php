@@ -2,12 +2,12 @@
 
 namespace ICanBoogie\Operation\Modules\Sample\Operation;
 
-use ICanBoogie\Errors;
+use ICanBoogie\ErrorCollection;
 use ICanBoogie\Operation;
 
 class OnlineOperation extends Operation
 {
-	protected function validate(Errors $errors)
+	protected function validate(ErrorCollection $errors)
 	{
 		return true;
 	}

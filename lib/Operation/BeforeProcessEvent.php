@@ -40,7 +40,7 @@ class BeforeProcessEvent extends Event
 	/**
 	 * The errors collector.
 	 *
-	 * @var \ICanBoogie\Errors
+	 * @var \ICanBoogie\ErrorCollection
 	 */
 	public $errors;
 
