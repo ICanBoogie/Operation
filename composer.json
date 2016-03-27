@@ -20,7 +20,7 @@
 	"minimum-stability": "dev",
 	"require": {
 		"php": ">=5.5.0",
-		"icanboogie/errors": "^1.0.0",
+		"icanboogie/errors": "^2.0.0",
 		"icanboogie/bind-routing": "^3.0.0"
 	},
 	"require-dev": {

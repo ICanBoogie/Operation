@@ -1,1 +1,1 @@
-{"errors":{"_base":"A global error","title":"An error on the \"Title\" field.","password":true,"message":"Message too long; Message too short"}}
+{"errors":{"__generic__":"A global error","title":"An error on the `Title` field.","password":"","message":"Message too long; Message too short"}}
