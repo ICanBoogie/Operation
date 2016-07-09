@@ -79,8 +79,9 @@ class Failure extends \Exception implements Exception
 
 			foreach ($errors as $id => $error)
 			{
-				if ($error === true)
-				{
+				$error = (string) $error;
+
+				if (!$error) {
 					continue;
 				}
 

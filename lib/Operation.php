@@ -386,7 +386,7 @@ abstract class Operation extends Controller
 
 			$response->status = $code;
 			$response->message = $exception->getMessage();
-			$response['errors'] = [ '_base' => $exception->getMessage() ]; // COMPAT-20140310
+			$response['errors'] = [ ErrorCollection::GENERIC => $exception->getMessage() ]; // COMPAT-20140310
 
 			throw new Failure($this, $exception);
 		}
@@ -733,7 +733,7 @@ abstract class Operation extends Controller
 			throw new FormNotFound($this);
 		}
 
-		return ($form && $form->validate($this->request->params, $this->response->errors));
+		return !$form->validate($this->request->params, $this->response->errors)->count();
 	}
 
 	/**
