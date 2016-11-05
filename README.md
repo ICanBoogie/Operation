@@ -1,10 +1,10 @@
 # Operation
 
 [![Release](https://img.shields.io/packagist/v/icanboogie/operation.svg)](https://packagist.org/packages/icanboogie/operation)
-[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation/3.0.svg)](http://travis-ci.org/ICanBoogie/Operation)
+[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation/4.0.svg)](http://travis-ci.org/ICanBoogie/Operation)
 [![HHVM](https://img.shields.io/hhvm/icanboogie/operation.svg)](http://hhvm.h4cc.de/package/icanboogie/operation)
-[![Code Quality](https://img.shields.io/scrutinizer/g/ICanBoogie/Operation/3.0.svg)](https://scrutinizer-ci.com/g/ICanBoogie/Operation)
-[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation/3.0.svg)](https://coveralls.io/r/ICanBoogie/Operation)
+[![Code Quality](https://img.shields.io/scrutinizer/g/ICanBoogie/Operation/4.0.svg)](https://scrutinizer-ci.com/g/ICanBoogie/Operation)
+[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation/4.0.svg)](https://coveralls.io/r/ICanBoogie/Operation)
 [![Packagist](https://img.shields.io/packagist/dt/icanboogie/operation.svg)](https://packagist.org/packages/icanboogie/operation)
 
 Operations are feature rich controllers dedicated to a single task, which often is
@@ -388,7 +388,7 @@ The following exceptions are defined:
 
 ## Requirements
 
-The package requires PHP 5.5 or later.
+The package requires PHP 5.6 or later.
 
 
 
@@ -439,8 +439,8 @@ with the `make clean` command.
 
 The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
-[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation/3.0.svg)](http://travis-ci.org/ICanBoogie/Operation)
-[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation/3.0.svg)](https://coveralls.io/r/ICanBoogie/Operation)
+[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation/4.0.svg)](http://travis-ci.org/ICanBoogie/Operation)
+[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation/4.0.svg)](https://coveralls.io/r/ICanBoogie/Operation)
 
 
 
@@ -454,23 +454,23 @@ The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
 
 
-[documentation]:          http://api.icanboogie.org/operation/3.0/
-[BeforeControlEvent]:     http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.BeforeControlEvent.html
-[BeforeProcessEvent]:     http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.BeforeProcessEvent.html
-[BeforeValidateEvent]:    http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.BeforeValidateEvent.html
-[ControlEvent]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.ControlEvent.html
-[FailureEvent]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.FailureEvent.html
-[Failure]:                http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.Failure.html
-[FormHasExpired]:         http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.FormHasExpired.html
-[FormNotFound]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.FormNotFound.html
-[GetFormEvent]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.GetFormEvent.html
-[Operation]:              http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.html
-[Operation::DESTINATION]: http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.html#DESTINATION
-[Operation::NAME]:        http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.html#NAME
-[ProcessEvent]:           http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.ProcessEvent.html
-[RescueEvent]:            http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.RescueEvent.html
-[Response]:               http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.Response.html
-[ValidateEvent]:          http://api.icanboogie.org/operation/3.0/class-ICanBoogie.Operation.ValidateEvent.html
+[documentation]:          http://api.icanboogie.org/operation/4.0/
+[BeforeControlEvent]:     http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.BeforeControlEvent.html
+[BeforeProcessEvent]:     http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.BeforeProcessEvent.html
+[BeforeValidateEvent]:    http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.BeforeValidateEvent.html
+[ControlEvent]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.ControlEvent.html
+[FailureEvent]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.FailureEvent.html
+[Failure]:                http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.Failure.html
+[FormHasExpired]:         http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.FormHasExpired.html
+[FormNotFound]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.FormNotFound.html
+[GetFormEvent]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.GetFormEvent.html
+[Operation]:              http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.html
+[Operation::DESTINATION]: http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.html#DESTINATION
+[Operation::NAME]:        http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.html#NAME
+[ProcessEvent]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.ProcessEvent.html
+[RescueEvent]:            http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.RescueEvent.html
+[Response]:               http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.Response.html
+[ValidateEvent]:          http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.ValidateEvent.html
 
 [module Nodes]:      https://github.com/Icybee/module-nodes
 [icanboogie/event]:  https://github.com/ICanBoogie/Event
