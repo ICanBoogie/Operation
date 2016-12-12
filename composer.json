@@ -18,6 +18,7 @@
 		"source": "https://github.com/ICanBoogie/Operation"
 	},
 	"minimum-stability": "dev",
+	"prefer-stable": true,
 	"require": {
 		"php": ">=5.6",
 		"icanboogie/errors": "^2.0",
