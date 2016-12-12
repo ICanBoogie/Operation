@@ -33,7 +33,7 @@ use ICanBoogie\Routing\Controller;
  *
  * @method Operation\Response __invoke(Request $request)
  *
- * @property-read Core|\ICanBoogie\Binding\Routing\CoreBindings|Module\CoreBindings $app
+ * @property-read Application $app
  * @property ActiveRecord $record The target active record object of the operation.
  * @property-read Request $request The request.
  * @property-read array $controls The controls to apply to the operation before it is processed.
