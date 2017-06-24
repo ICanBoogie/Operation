@@ -11,29 +11,15 @@
 
 namespace ICanBoogie;
 
-use ICanBoogie\Autoconfig\Config;
+chdir(__DIR__);
 
 $autoload = require __DIR__ . '/../vendor/autoload.php';
 $autoload->addPsr4('ICanBoogie\Operation\Modules\Sample\\', __DIR__ . '/modules/sample/lib');
 $autoload->addPsr4('ICanBoogie\Operation\OperationTest\\', __DIR__ . '/OperationTest');
 
-class Application extends Core
+class Application extends ApplicationAbstract
 {
 
 }
 
-boot(array_merge_recursive(get_autoconfig(), [
-
-	'config-path' => [
-
-		__DIR__ . DIRECTORY_SEPARATOR . 'config' => Config::CONFIG_WEIGHT_APP
-
-	],
-
-	'module-path' => [
-
-		__DIR__ . DIRECTORY_SEPARATOR . 'modules'
-
-	]
-
-]));
+boot();
