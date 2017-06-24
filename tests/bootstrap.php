@@ -15,7 +15,7 @@ chdir(__DIR__);
 
 $autoload = require __DIR__ . '/../vendor/autoload.php';
 $autoload->addPsr4('ICanBoogie\Operation\Modules\Sample\\', __DIR__ . '/modules/sample/lib');
-$autoload->addPsr4('ICanBoogie\Operation\OperationTest\\', __DIR__ . '/OperationTest');
+$autoload->addPsr4('ICanBoogie\Operation\OperationTest\\', __DIR__ . '/lib/OperationTest');
 
 class Application extends ApplicationAbstract
 {

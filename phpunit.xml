@@ -14,7 +14,7 @@
 >
 	<testsuites>
 		<testsuite name="icanboogie/operation">
-			<directory>./tests</directory>
+			<directory>./tests/lib</directory>
 		</testsuite>
 	</testsuites>
 
