@@ -11,6 +11,7 @@
 
 namespace ICanBoogie\Operation;
 
+use function ICanBoogie\app;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 
@@ -19,18 +20,14 @@ use ICanBoogie\Operation\Modules\Sample\Operation\ErrorOperation;
 use ICanBoogie\Operation\Modules\Sample\Operation\FailureOperation;
 use ICanBoogie\Operation\Modules\Sample\Operation\ExceptionOperation;
 use ICanBoogie\Operation\OperationTest\LocationOperation;
-use ICanBoogie\HTTP\Response;
 
 use ICanBoogie\Operation\Modules\Sample as SampleModule;
-use ICanBoogie\Routing\Route\RescueEvent;
 
 class OperationTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_operation_invoke_successful()
 	{
-		/* @var $app \ICanBoogie\Core|\ICanBoogie\Binding\Event\CoreBindings */
-
-		$app = \ICanBoogie\app();
+		$app = app();
 
 		$before_control_event_called = false;
 		$before_control_eh = $app->events->attach(function(Operation\BeforeControlEvent $event, SuccessOperation $target) use(&$before_control_event_called) {
@@ -102,7 +99,7 @@ class OperationTest extends \PHPUnit\Framework\TestCase
 	 */
 	public function test_operation_invoke_errored()
 	{
-		$app = \ICanBoogie\app();
+		$app = app();
 
 		$operation = new ErrorOperation;
 		$failure_event_called = false;
@@ -215,7 +212,7 @@ class OperationTest extends \PHPUnit\Framework\TestCase
 
 	public function __test_from_route()
 	{
-		$app = \ICanBoogie\app();
+		$app = app();
 
 		$app->routes['api:nodes/online'] = [
 
