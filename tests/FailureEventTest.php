@@ -14,7 +14,7 @@ namespace ICanBoogie\Operation;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 
-class FailureEventTest extends \PHPUnit_Framework_TestCase
+class FailureEventTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_instance()
 	{

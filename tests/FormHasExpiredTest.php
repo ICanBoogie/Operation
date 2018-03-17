@@ -11,7 +11,7 @@
 
 namespace ICanBoogie\Operation;
 
-class FormHasExpiredTest extends \PHPUnit_Framework_TestCase
+class FormHasExpiredTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_instance()
 	{

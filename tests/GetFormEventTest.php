@@ -14,7 +14,7 @@ namespace ICanBoogie\Operation;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
 
-class GetFormEventTest extends \PHPUnit_Framework_TestCase
+class GetFormEventTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_instance()
 	{

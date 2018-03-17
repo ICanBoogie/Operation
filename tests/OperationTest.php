@@ -24,7 +24,7 @@ use ICanBoogie\HTTP\Response;
 use ICanBoogie\Operation\Modules\Sample as SampleModule;
 use ICanBoogie\Routing\Route\RescueEvent;
 
-class OperationTest extends \PHPUnit_Framework_TestCase
+class OperationTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_operation_invoke_successful()
 	{

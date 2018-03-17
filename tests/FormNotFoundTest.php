@@ -13,7 +13,7 @@ namespace ICanBoogie\Operation;
 
 use ICanBoogie\Operation;
 
-class FormNotFoundTest extends \PHPUnit_Framework_TestCase
+class FormNotFoundTest extends \PHPUnit\Framework\TestCase
 {
 	public function test_instance()
 	{
