@@ -454,23 +454,23 @@ The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
 
 
-[documentation]:          http://api.icanboogie.org/operation/4.0/
-[BeforeControlEvent]:     http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.BeforeControlEvent.html
-[BeforeProcessEvent]:     http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.BeforeProcessEvent.html
-[BeforeValidateEvent]:    http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.BeforeValidateEvent.html
-[ControlEvent]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.ControlEvent.html
-[FailureEvent]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.FailureEvent.html
-[Failure]:                http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.Failure.html
-[FormHasExpired]:         http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.FormHasExpired.html
-[FormNotFound]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.FormNotFound.html
-[GetFormEvent]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.GetFormEvent.html
-[Operation]:              http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.html
-[Operation::DESTINATION]: http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.html#DESTINATION
-[Operation::NAME]:        http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.html#NAME
-[ProcessEvent]:           http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.ProcessEvent.html
-[RescueEvent]:            http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.RescueEvent.html
-[Response]:               http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.Response.html
-[ValidateEvent]:          http://api.icanboogie.org/operation/4.0/class-ICanBoogie.Operation.ValidateEvent.html
+[documentation]:          https://icanboogie.org/api/operation/4.0/
+[BeforeControlEvent]:     https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.BeforeControlEvent.html
+[BeforeProcessEvent]:     https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.BeforeProcessEvent.html
+[BeforeValidateEvent]:    https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.BeforeValidateEvent.html
+[ControlEvent]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.ControlEvent.html
+[FailureEvent]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.FailureEvent.html
+[Failure]:                https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.Failure.html
+[FormHasExpired]:         https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.FormHasExpired.html
+[FormNotFound]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.FormNotFound.html
+[GetFormEvent]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.GetFormEvent.html
+[Operation]:              https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.html
+[Operation::DESTINATION]: https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.html#DESTINATION
+[Operation::NAME]:        https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.html#NAME
+[ProcessEvent]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.ProcessEvent.html
+[RescueEvent]:            https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.RescueEvent.html
+[Response]:               https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.Response.html
+[ValidateEvent]:          https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.ValidateEvent.html
 
 [module Nodes]:      https://github.com/Icybee/module-nodes
 [icanboogie/event]:  https://github.com/ICanBoogie/Event
