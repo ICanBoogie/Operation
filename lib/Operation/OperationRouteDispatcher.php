@@ -26,7 +26,7 @@ class OperationRouteDispatcher extends RouteDispatcher
 	 *
 	 * Translates request path parameters using the route's `param_translation_list` property.
 	 */
-	protected function alter_params(Route $route, Request $request, array $captured)
+	protected function alter_params(Route $route, Request $request, array $captured): void
 	{
 		parent::alter_params($route, $request, $captured);
 
@@ -56,12 +56,12 @@ class OperationRouteDispatcher extends RouteDispatcher
 	 * If the exception is a {@link Failure} instance and has a previous exception, it is replaced
 	 * by that exception.
 	 *
-	 * @param \Exception $exception
+	 * @param \Throwable $exception
 	 * @param Request $request
 	 *
 	 * @return \ICanBoogie\HTTP\Response
 	 */
-	public function rescue(\Exception $exception, Request $request)
+	public function rescue(\Throwable $exception, Request $request): \ICanBoogie\HTTP\Response
 	{
 		$failure = null;
 		$operation = $this->resolve_operation($exception, $request, $failure);
@@ -85,16 +85,16 @@ class OperationRouteDispatcher extends RouteDispatcher
 	 * - If the request is an XHR the response of the operation is returned as is.
 	 * - Otherwise, the exception is re-thrown.
 	 *
-	 * @param \Exception $exception
+	 * @param \Throwable $exception
 	 * @param Request $request
 	 * @param Operation $operation
 	 * @param Failure|null $failure
 	 *
 	 * @return Response
 	 *
-	 * @throws \Exception
+	 * @throws \Throwable
 	 */
-	protected function rescue_operation(\Exception $exception, Request $request, Operation $operation, Failure $failure = null)
+	protected function rescue_operation(\Throwable $exception, Request $request, Operation $operation, Failure $failure = null)
 	{
 		$response = null;
 
@@ -121,13 +121,13 @@ class OperationRouteDispatcher extends RouteDispatcher
 	/**
 	 * Resolves the operation from the exception or request's context.
 	 *
-	 * @param \Exception $exception
+	 * @param \Throwable $exception
 	 * @param Request $request
 	 * @param Failure $failure
 	 *
 	 * @return Operation
 	 */
-	protected function resolve_operation(\Exception &$exception, Request $request, Failure &$failure = null)
+	protected function resolve_operation(\Throwable &$exception, Request $request, Failure &$failure = null)
 	{
 		if ($exception instanceof Failure)
 		{

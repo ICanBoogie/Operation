@@ -33,37 +33,16 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	/**
 	 * Message associated with the response.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $message;
 
-	/**
-	 * Sets the response message.
-	 *
-	 * @param string $message
-	 *
-	 * @throws \InvalidArgumentException if the message is an array or an object that do not implement `__toString()`.
-	 */
-	protected function set_message($message)
+	protected function set_message(?string $message): void
 	{
-		if (is_object($message) && !method_exists($message, '__toString'))
-		{
-			throw new \InvalidArgumentException(\ICanBoogie\format('Invalid message type "{0}", should be a string or an object implementing "__toString()". Given: {1}', [
-
-				gettype($message), $message
-
-			]));
-		}
-
 		$this->message = $message;
 	}
 
-	/**
-	 * Returns the response message.
-	 *
-	 * @return string
-	 */
-	protected function get_message()
+	protected function get_message(): ?string
 	{
 		return $this->message;
 	}
@@ -107,7 +86,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 *
 	 * @inheritdoc
 	 */
-	protected function finalize(Headers &$headers, &$body)
+	protected function finalize(Headers &$headers, &$body): void
 	{
 		parent::finalize($headers, $body);
 
@@ -140,18 +119,18 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 * - `errors`: An array of errors, which might only be present if the response is not
 	 * successful.
 	 *
-	 * @param $rc
+	 * @param mixed $rc
 	 *
 	 * @return array
 	 */
-	protected function finalize_as_array($rc)
+	private function finalize_as_array($rc): array
 	{
-		$data = array_filter([
+		$data = \array_filter([
 
 			'message' => $this->finalize_message($this->message),
 			'errors'  => $this->finalize_errors($this->errors)
 
-		]) + array_map(function($v) { return $this->finalize_value($v); }, $this->meta);
+		]) + \array_map(function($v) { return $this->finalize_value($v); }, $this->meta);
 
 		if ($this->status->is_successful)
 		{
@@ -170,9 +149,9 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 * @param Headers $headers
 	 * @param mixed $body
 	 */
-	protected function finalize_as_json(array $rc, Headers &$headers, &$body)
+	private function finalize_as_json(array $rc, Headers &$headers, &$body): void
 	{
-		$body = json_encode($rc);
+		$body = \json_encode($rc);
 
 		$headers['Content-Type'] = 'application/json';
 	}
@@ -192,7 +171,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 *
 	 * @return mixed
 	 */
-	protected function finalize_value($value)
+	private function finalize_value($value)
 	{
 		return is_object($value) ? $this->finalize_value_object($value) : $value;
 	}
@@ -205,11 +184,11 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 * - If the value is an instance of {@link ToArray} the value is converted into an array.
 	 * - Otherwise the value is returned as is.
 	 *
-	 * @param $value
+	 * @param mixed $value
 	 *
 	 * @return mixed
 	 */
-	protected function finalize_value_object($value)
+	private function finalize_value_object($value)
 	{
 		if (method_exists($value, '__toString'))
 		{
@@ -236,7 +215,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 *
 	 * @return mixed
 	 */
-	protected function finalize_rc($rc)
+	private function finalize_rc($rc)
 	{
 		return $this->finalize_value($rc);
 	}
@@ -248,7 +227,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	 *
 	 * @return string
 	 */
-	protected function finalize_message($message)
+	private function finalize_message($message): string
 	{
 		return (string) $message;
 	}
@@ -256,11 +235,11 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 	/**
 	 * Finalizes errors into a nice array.
 	 *
-	 * @param $errors
+	 * @param array|mixed $errors
 	 *
 	 * @return array
 	 */
-	protected function finalize_errors($errors)
+	private function finalize_errors($errors): array
 	{
 		$simplified = [];
 
@@ -277,7 +256,7 @@ class Response extends \ICanBoogie\HTTP\Response implements \ArrayAccess
 			}
 			else
 			{
-				$simplified[$identifier] = is_bool($message) ? $message : (string) $message;
+				$simplified[$identifier] = \is_bool($message) ? $message : (string) $message;
 			}
 		}
 

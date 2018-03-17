@@ -18,7 +18,7 @@ use ICanBoogie\Operation;
  * Exception raised when an operation fails.
  *
  * @property-read Operation $operation The operation that failed.
- * @property-read \Exception $previous The previous exception.
+ * @property-read \Throwable $previous The previous exception.
  */
 class Failure extends \Exception implements Exception
 {
@@ -38,7 +38,7 @@ class Failure extends \Exception implements Exception
 	}
 
 	/**
-	 * @return \Exception
+	 * @return \Throwable
 	 */
 	protected function get_previous()
 	{
@@ -49,9 +49,9 @@ class Failure extends \Exception implements Exception
 	 * Initialize the {@link $operation} property.
 	 *
 	 * @param Operation $operation
-	 * @param \Exception $previous
+	 * @param \Throwable $previous
 	 */
-	public function __construct(Operation $operation, \Exception $previous=null)
+	public function __construct(Operation $operation, \Throwable $previous=null)
 	{
 		$this->operation = $operation;
 

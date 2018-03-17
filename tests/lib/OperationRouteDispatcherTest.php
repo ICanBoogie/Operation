@@ -53,7 +53,7 @@ class OperationRouteDispatcherTest
 
 			$this->fail('An exception should have been raised.');
 		}
-		catch (\Exception $e)
+		catch (\Throwable $e)
 		{
 			$this->assertSame($exception, $e);
 		}

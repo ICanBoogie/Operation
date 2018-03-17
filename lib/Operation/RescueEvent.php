@@ -25,7 +25,7 @@ class RescueEvent extends Event
 	/**
 	 * Reference to the exception that made the operation fail.
 	 *
-	 * @var \Exception
+	 * @var \Throwable
 	 */
 	public $exception;
 
@@ -47,11 +47,11 @@ class RescueEvent extends Event
 	 * The event is constructed with the type `rescue`.
 	 *
 	 * @param Operation $target
-	 * @param \Exception $exception
+	 * @param \Throwable $exception
 	 * @param Request $request
 	 * @param Response|null $response
 	 */
-	public function __construct(Operation $target, \Exception &$exception, Request $request, &$response)
+	public function __construct(Operation $target, \Throwable &$exception, Request $request, &$response)
 	{
 		$this->exception = &$exception;
 		$this->request = $request;

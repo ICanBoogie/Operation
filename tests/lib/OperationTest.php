@@ -152,7 +152,7 @@ class OperationTest extends \PHPUnit\Framework\TestCase
 			$this->assertInstanceOf(SampleModule\SampleException::class, $previous);
 			$this->assertEquals($previous->getMessage(), $response->message);
 		}
-		catch (\Exception $e)
+		catch (\Throwable $e)
 		{
 			$this->fail("Expected Failure");
 		}

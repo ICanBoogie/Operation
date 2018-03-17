@@ -364,7 +364,7 @@ catch (\ICanBoogie\Operation\Exception $e)
 {
 	// an Operation exception
 }
-catch (\Exception $e)
+catch (\Throwable $e)
 {
 	// some other exception
 }
@@ -388,7 +388,7 @@ The following exceptions are defined:
 
 ## Requirements
 
-The package requires PHP 5.6 or later.
+The package requires PHP 7.2 or later.
 
 
 

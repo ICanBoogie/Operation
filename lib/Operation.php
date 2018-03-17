@@ -375,7 +375,7 @@ abstract class Operation extends Controller
 				}
 			}
 		}
-		catch (\Exception $exception)
+		catch (\Throwable $exception)
 		{
 			$code = $exception->getCode();
 
@@ -574,7 +574,7 @@ abstract class Operation extends Controller
 	 *
 	 * @return boolean true if all the controls pass, false otherwise.
 	 *
-	 * @throws \Exception Depends on the control.
+	 * @throws \Throwable Depends on the control.
 	 */
 	protected function control(array $controls)
 	{

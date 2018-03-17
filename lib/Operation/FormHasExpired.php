@@ -18,7 +18,7 @@ namespace ICanBoogie\Operation;
  */
 class FormHasExpired extends \Exception implements Exception
 {
-	public function __construct($message = "The form associated with the request has expired.", $code = 500, \Exception $previous = null)
+	public function __construct($message = "The form associated with the request has expired.", $code = 500, \Throwable $previous = null)
 	{
 		parent::__construct($message, $code, $previous);
 	}

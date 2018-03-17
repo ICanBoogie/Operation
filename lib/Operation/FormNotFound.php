@@ -42,9 +42,9 @@ class FormNotFound extends \RuntimeException implements Exception
 	 * @param Operation $operation
 	 * @param string|null $message
 	 * @param int $code
-	 * @param \Exception|null $previous
+	 * @param \Throwable|null $previous
 	 */
-	public function __construct(Operation $operation, $message = null, $code = 500, \Exception $previous = null)
+	public function __construct(Operation $operation, $message = null, $code = 500, \Throwable $previous = null)
 	{
 		$this->operation = $operation;
 
