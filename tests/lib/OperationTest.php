@@ -11,6 +11,7 @@
 
 namespace ICanBoogie\Operation;
 
+use ICanBoogie\Operation\Modules\Sample\SampleException;
 use function ICanBoogie\app;
 use ICanBoogie\HTTP\Request;
 use ICanBoogie\Operation;
@@ -125,12 +126,10 @@ class OperationTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
-	/**
-	 * @expectedException \ICanBoogie\Operation\Failure
-	 */
 	public function test_operation_invoke_failed()
 	{
 		$operation = new FailureOperation;
+		$this->expectException(Failure::class);
 		$operation(Request::from());
 	}
 
@@ -149,7 +148,7 @@ class OperationTest extends \PHPUnit\Framework\TestCase
 			$previous = $e->previous;
 			$response = $e->operation->response;
 
-			$this->assertInstanceOf(SampleModule\SampleException::class, $previous);
+			$this->assertInstanceOf(SampleException::class, $previous);
 			$this->assertEquals($previous->getMessage(), $response->message);
 		}
 		catch (\Throwable $e)
@@ -158,12 +157,10 @@ class OperationTest extends \PHPUnit\Framework\TestCase
 		}
 	}
 
-	/**
-	 * @expectedException \ICanBoogie\Operation\Modules\Sample\SampleException
-	 */
 	public function test_operation_invoke_exception_using_dispatch()
 	{
 		$request = Request::from('/api/exception');
+		$this->expectException(SampleException::class);
 		$request();
 	}
 

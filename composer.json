@@ -2,6 +2,7 @@
 	"name": "icanboogie/operation",
 	"type": "library",
 	"description": "Feature rich controllers dedicated to a single task",
+	"version": "5.0",
 	"keywords": [
 		"operation",
 		"dispatch",
@@ -21,17 +22,21 @@
 		"issues": "https://github.com/ICanBoogie/Operation/issues",
 		"source": "https://github.com/ICanBoogie/Operation"
 	},
+	"config": {
+		"sort-packages": true
+	},
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"prefer-dist": true,
 	"require": {
-		"php": "^7.2",
-		"icanboogie/errors": "^2.0",
-		"icanboogie/bind-routing": "^5.0"
+		"php": ">=7.2",
+		"icanboogie/bind-routing": "^5.0",
+		"icanboogie/errors": "^2.0"
 	},
 	"require-dev": {
 		"icanboogie/icanboogie": "^5.0",
-		"icanboogie/module": "^5.0"
+		"icanboogie/module": "^5.0",
+		"phpunit/phpunit": "^8.5"
 	},
 	"autoload": {
 		"psr-4": {

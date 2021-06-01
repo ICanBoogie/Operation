@@ -11,6 +11,8 @@
 
 namespace ICanBoogie;
 
+use function ob_start;
+
 chdir(__DIR__);
 
 $autoload = require __DIR__ . '/../vendor/autoload.php';
@@ -23,3 +25,5 @@ class Application extends ApplicationAbstract
 }
 
 boot();
+
+ob_start(); // Prevents PHPUnit from sending headers

@@ -73,17 +73,17 @@ use ICanBoogie\Operation;
 
 class SaveOperation extends Operation
 {
-	protected function get_controls()
-	{
-		return [
+    protected function get_controls()
+    {
+        return [
 
-			self::CONTROL_PERMISSION => Module::PERMISSION_CREATE,
-			self::CONTROL_RECORD => true,
-			self::CONTROL_OWNERSHIP => true,
-			self::CONTROL_FORM => true
+            self::CONTROL_PERMISSION => Module::PERMISSION_CREATE,
+            self::CONTROL_RECORD => true,
+            self::CONTROL_OWNERSHIP => true,
+            self::CONTROL_FORM => true
 
-		] + parent::get_controls();
-	}
+        ] + parent::get_controls();
+    }
 }
 ```
 
@@ -184,14 +184,14 @@ use ICanBoogie\Operation;
 
 $request = Request::from([
 
-	'path' => '/',
-	'request_params' => [
+    'path' => '/',
+    'request_params' => [
 
-		Operation::DESTINATION => 'form',
-		Operation::NAME => 'post',
+        Operation::DESTINATION => 'form',
+        Operation::NAME => 'post',
 
-		// …
-	]
+        // …
+    ]
 ]);
 
 $operation = new SaveOperation;
@@ -301,31 +301,31 @@ use ICanBoogie\Operation;
 
 return [
 
-	'api:nodes/online' => [
+    'api:nodes/online' => [
 
-		'pattern' => '/api/:constructor/<nid:\d+>/is_online',
-		'controller' => OnlineOperation::class,
-		'via' => Request::METHOD_PUT,
-		'param_translation_list' => [
+        'pattern' => '/api/:constructor/<nid:\d+>/is_online',
+        'controller' => OnlineOperation::class,
+        'via' => Request::METHOD_PUT,
+        'param_translation_list' => [
 
-			'constructor' => Operation::DESTINATION,
-			'nid' => Operation::KEY
+            'constructor' => Operation::DESTINATION,
+            'nid' => Operation::KEY
 
-		]
-	],
+        ]
+    ],
 
-	'api:nodes/offline' => [
+    'api:nodes/offline' => [
 
-		'pattern' => '/api/:constructor/<nid:\d+>/is_online',
-		'controller' => OfflineOperation::class,
-		'via' => Request::METHOD_DELETE,
-		'param_translation_list' => [
+        'pattern' => '/api/:constructor/<nid:\d+>/is_online',
+        'controller' => OfflineOperation::class,
+        'via' => Request::METHOD_DELETE,
+        'param_translation_list' => [
 
-			'constructor' => Operation::DESTINATION,
-			'nid' => Operation::KEY
+            'constructor' => Operation::DESTINATION,
+            'nid' => Operation::KEY
 
-		]
-	]
+        ]
+    ]
 
 ];
 ```
@@ -358,15 +358,15 @@ interface so that they can easily be identified:
 
 try
 {
-	// …
+    // …
 }
 catch (\ICanBoogie\Operation\Exception $e)
 {
-	// an Operation exception
+    // an Operation exception
 }
 catch (\Throwable $e)
 {
-	// some other exception
+    // some other exception
 }
 ```
 
@@ -396,22 +396,9 @@ The package requires PHP 7.2 or later.
 
 ## Installation
 
-The recommended way to install this package is through [Composer](http://getcomposer.org/):
-
+```bash
+composer require icanboogie/operation
 ```
-$ composer require icanboogie/operation
-```
-
-
-
-
-
-### Cloning the repository
-
-The package is [available on GitHub](https://github.com/ICanBoogie/Operation), its repository can
-be cloned with the following command line:
-
-	$ git clone https://github.com/ICanBoogie/Operation.git
 
 
 
@@ -431,16 +418,9 @@ with the `make doc` command. The documentation is generated in the `build/docs` 
 
 ## Testing
 
-The test suite is ran with the `make test` command. [PHPUnit](https://phpunit.de/) and
-[Composer](http://getcomposer.org/) need to be globally available to run the suite.
-The command installs dependencies as required. The `make test-coverage` command runs test suite
-and also creates an HTML coverage report in `build/coverage`. The directory can later be cleaned
-with the `make clean` command.
-
-The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
-
-[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation/4.0.svg)](http://travis-ci.org/ICanBoogie/Operation)
-[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation/4.0.svg)](https://coveralls.io/r/ICanBoogie/Operation)
+Run `make test-container` to create and log into the test container, then run `make test` to run the
+test suite. Alternatively, run `make test-coverage` to run the test suite with test coverage. Open
+`build/coverage/index.html` to see the breakdown of the code coverage.
 
 
 
@@ -448,7 +428,7 @@ The package is continuously tested by [Travis CI](http://about.travis-ci.org/).
 
 ## License
 
-**icanboogie/operation** is licensed under the New BSD License - See the LICENSE file for details.
+**icanboogie/operation** is released under the [New BSD License](LICENSE).
 
 
 
