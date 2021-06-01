@@ -1,10 +1,9 @@
 # Operation
 
 [![Release](https://img.shields.io/packagist/v/icanboogie/operation.svg)](https://packagist.org/packages/icanboogie/operation)
-[![Build Status](https://img.shields.io/travis/ICanBoogie/Operation/4.0.svg)](http://travis-ci.org/ICanBoogie/Operation)
-[![HHVM](https://img.shields.io/hhvm/icanboogie/operation.svg)](http://hhvm.h4cc.de/package/icanboogie/operation)
-[![Code Quality](https://img.shields.io/scrutinizer/g/ICanBoogie/Operation/4.0.svg)](https://scrutinizer-ci.com/g/ICanBoogie/Operation)
-[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation/4.0.svg)](https://coveralls.io/r/ICanBoogie/Operation)
+[![Build Status](https://img.shields.io/github/workflow/status/ICanBoogie/Operation/test)](https://github.com/ICanBoogie/Operation/actions?query=workflow%3Atest)
+[![Code Quality](https://img.shields.io/scrutinizer/g/ICanBoogie/Operation.svg)](https://scrutinizer-ci.com/g/ICanBoogie/Operation)
+[![Code Coverage](https://img.shields.io/coveralls/ICanBoogie/Operation.svg)](https://coveralls.io/r/ICanBoogie/Operation)
 [![Packagist](https://img.shields.io/packagist/dt/icanboogie/operation.svg)](https://packagist.org/packages/icanboogie/operation)
 
 Operations are feature rich controllers dedicated to a single task, which often is
@@ -434,23 +433,23 @@ test suite. Alternatively, run `make test-coverage` to run the test suite with t
 
 
 
-[documentation]:          https://icanboogie.org/api/operation/4.0/
-[BeforeControlEvent]:     https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.BeforeControlEvent.html
-[BeforeProcessEvent]:     https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.BeforeProcessEvent.html
-[BeforeValidateEvent]:    https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.BeforeValidateEvent.html
-[ControlEvent]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.ControlEvent.html
-[FailureEvent]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.FailureEvent.html
-[Failure]:                https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.Failure.html
-[FormHasExpired]:         https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.FormHasExpired.html
-[FormNotFound]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.FormNotFound.html
-[GetFormEvent]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.GetFormEvent.html
-[Operation]:              https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.html
-[Operation::DESTINATION]: https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.html#DESTINATION
-[Operation::NAME]:        https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.html#NAME
-[ProcessEvent]:           https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.ProcessEvent.html
-[RescueEvent]:            https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.RescueEvent.html
-[Response]:               https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.Response.html
-[ValidateEvent]:          https://icanboogie.org/api/operation/4.0/class-ICanBoogie.Operation.ValidateEvent.html
+[documentation]:          https://icanboogie.org/api/operation/master/
+[BeforeControlEvent]:     https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.BeforeControlEvent.html
+[BeforeProcessEvent]:     https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.BeforeProcessEvent.html
+[BeforeValidateEvent]:    https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.BeforeValidateEvent.html
+[ControlEvent]:           https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.ControlEvent.html
+[FailureEvent]:           https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.FailureEvent.html
+[Failure]:                https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.Failure.html
+[FormHasExpired]:         https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.FormHasExpired.html
+[FormNotFound]:           https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.FormNotFound.html
+[GetFormEvent]:           https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.GetFormEvent.html
+[Operation]:              https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.html
+[Operation::DESTINATION]: https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.html#DESTINATION
+[Operation::NAME]:        https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.html#NAME
+[ProcessEvent]:           https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.ProcessEvent.html
+[RescueEvent]:            https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.RescueEvent.html
+[Response]:               https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.Response.html
+[ValidateEvent]:          https://icanboogie.org/api/operation/master/class-ICanBoogie.Operation.ValidateEvent.html
 
 [module Nodes]:      https://github.com/Icybee/module-nodes
 [icanboogie/event]:  https://github.com/ICanBoogie/Event
